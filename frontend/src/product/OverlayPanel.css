@@ -1,0 +1,364 @@
+/* A drawer over the map, with a handle that never leaves.
+
+   Square, unshadowed, unblurred — a rule separates the panel from the map,
+   because a rule is a fact about the surface and a frosted pane is a claim
+   about a light source. */
+
+:root {
+  --ov-handle: 34px;
+  /* How far a closed handle stands off the viewport edge.
+
+     Not decoration. Flush against the edge, a handle has no outer border to
+     draw — the edge of the window ends it — so a closed drawer read as a box
+     someone had cut in half. Standing it off lets it close its own geometry,
+     and states the truth that the panel is over the map rather than part of
+     the frame.
+
+     Applied to the handle, not to the panel's own transform. Under-translating
+     the panel by this much would float the handle *and* leave that same strip
+     of the closed body showing past the edge — a stray rule beside the tab,
+     which is the defect it was meant to fix. */
+  --ov-float: 10px;
+}
+
+@media (pointer: coarse) {
+  :root {
+    --ov-handle: 46px;
+  }
+}
+
+.ov {
+  --ov-width: min(
+    var(--ov-preferred-width, 320px),
+    calc(100vw - var(--ov-handle) - var(--ov-float) - 3rem)
+  );
+  position: absolute;
+  z-index: 30;
+  /* Hang under the shell band (ProductShell bleed rule) — full remaining
+     height with no dead pad inside the drawer body. The instrument sits
+     above this dock (z-index), so Find and the lenses stay reachable
+     without leaving a strip of map under the panel. */
+  top: var(--dock-top, 0px);
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+  pointer-events: none;
+  /* Closing is an absorb: the drawer accelerates back into the edge it came
+     from and is captured there. Opening is its time reverse — see `.is-open`.
+     The transition declared on a state governs the move *into* that state, so
+     the two laws live one on each. `motion-dna.md`, "Intent rules". */
+  transition: transform var(--motion-absorb-duration, 240ms)
+    var(--motion-absorb-curve, ease-in);
+}
+
+/* Each side puts the handle on the map-facing edge, so the tab is always
+   between the panel and the thing the panel is about. A closed drawer parks its
+   body fully off-screen and leaves the handle standing `--ov-float` clear of
+   the edge. */
+.ov--left {
+  left: 0;
+  flex-direction: row-reverse;
+  transform: translateX(calc(-1 * var(--ov-width)));
+}
+
+.ov--right {
+  right: 0;
+  flex-direction: row;
+  transform: translateX(var(--ov-width));
+}
+
+.ov.is-open {
+  /* Emit: released with the escape impulse, decelerating into its authored
+     home. The impulse is fully spent at rest, so the drawer arrives without a
+     bounce it would have had to borrow from somewhere. */
+  transform: translate(0, 0);
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+.ov__body {
+  position: relative;
+  display: flex;
+  width: var(--ov-width);
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+  /* A platform scrollbar lands on the panel's own edge and reads as a second,
+     heavier border. Thin, and drawn in the panel's own ink. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 30%, transparent) transparent;
+}
+
+/* Only the map-facing edge is drawn: the other three are the window. */
+.ov__body {
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.ov--left > .ov__body {
+  border-left: 0;
+}
+
+.ov--right > .ov__body {
+  border-right: 0;
+}
+
+/* One child owns the whole box: no padding, no stacking, and the panel does not
+   scroll — the child does, wherever it decides scrolling belongs. A reader with
+   a pinned header and a scrolling middle cannot be built inside a parent that
+   has already claimed the scroll. */
+.ov__body--flush {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+/* ---------------------------------------------------------------- the resize
+   On the map-facing edge, straddling the panel's own border so the target is
+   symmetric about the line it moves. Invisible until reached for: a permanent
+   grip bar is a second border. */
+
+.ov__resize {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  width: 9px;
+  outline: 0;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.ov--right > .ov__body > .ov__resize {
+  left: -4px;
+}
+
+.ov--left > .ov__body > .ov__resize {
+  right: -4px;
+}
+
+.ov__resize::after {
+  position: absolute;
+  inset: 0 3px;
+  background: transparent;
+  content: "";
+  /* Reached for, then released: the same two laws as the drawer itself. */
+  transition: background var(--motion-absorb-duration, 240ms)
+    var(--motion-absorb-curve, ease-in);
+}
+
+.ov__resize:hover::after,
+.ov__resize:focus-visible::after,
+html.is-panel-resizing .ov__resize::after {
+  background: var(--ink-muted);
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+.ov__handle {
+  /* Full height of the panel's edge, which is what the component's own
+     docstring has always claimed it is and what it was not: it was
+     `align-self: center` with a `7.5rem` floor, so a 120px tab floated in the
+     middle of an 855px edge and read as a stub someone had left there. A tab
+     you can hit without aiming is the whole argument for the shape — that
+     argument requires the edge, not a twelfth of it. */
+  align-self: stretch;
+  display: flex;
+  width: var(--ov-handle);
+  min-width: var(--ov-handle);
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0;
+  /* All four sides. The shared edge is removed below, and only while the panel
+     it would be shared with is actually on screen.
+
+     Both the rule and the fill leave at rest, so a closed drawer is its own
+     name written down the edge of the map rather than a slab bolted to it. */
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--rule) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+      transparent
+    );
+  border-radius: 0;
+  background: color-mix(
+    in srgb,
+    var(--panel) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+    transparent
+  );
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  /* Rides the same two laws as the panel it belongs to, so the tab settling
+     against the edge and the drawer arriving are one movement.
+
+     `transition` is a shorthand, so this declaration replaces the one `.chrome`
+     sets rather than adding to it — the recession properties have to be
+     restated here or the handle's box would snap while everything else eased. */
+  transition:
+    transform var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    --chrome-box var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    color var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    border-color var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in);
+}
+
+.ov.is-open > .ov__handle {
+  transform: none;
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+/* The library tab sits flush to the window edge.
+ *
+ * The float above is still right for the reader on the other side — a panel
+ * standing clear of the frame reads as something over the map rather than part
+ * of it. The library is the exception, and deliberately: it is the one handle
+ * that is always there on the map surface, it is reached by throwing the
+ * pointer at the edge, and a 10px gap is exactly wide enough to miss. Fitts's
+ * law gives an edge-flush target infinite depth; ten pixels short of the edge
+ * gives it 34.
+ *
+ * That matters more on touch, where the same throw is a thumb arriving from
+ * off-screen. */
+.ov--left:not(.is-open) > .ov__handle {
+  transform: none;
+}
+
+.ov--right:not(.is-open) > .ov__handle {
+  transform: translateX(calc(-1 * var(--ov-float)));
+}
+
+/* The handle and its body are one object, so the edge between them is not
+   drawn — but only once the body is there to share it. Closed, the handle
+   closes its own box. */
+.ov--left.is-open > .ov__handle {
+  border-left: 0;
+}
+
+.ov--right.is-open > .ov__handle {
+  border-right: 0;
+}
+
+.ov.is-open .ov__handle {
+  color: var(--ink);
+}
+
+.ov__handle:hover {
+  color: var(--ink);
+}
+
+.ov__handle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+/* Vertical, and turned so each tab reads outward from the map rather than
+   upside down on one of the two sides. The console reads across. */
+.ov__handle-text {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  /* The tab is as long as its text, up to a limit. "Graphs" is six characters;
+     a node title is however long the author made it, and an unbounded tab would
+     run the full height of the window and stop reading as a tab at all. */
+  max-height: min(22rem, 60vh);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+
+.ov__handle-label {
+  min-height: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov--left .ov__handle-text {
+  transform: rotate(180deg);
+}
+
+/* A state the closed handle has to carry — a count, "working". Square and in
+   the panel's own ink, never a coloured dot: this says *something is there*,
+   which is a fact, not an alert. */
+.ov__handle-text em {
+  display: grid;
+  place-items: center;
+  min-width: 1.05em;
+  min-height: 1.05em;
+  padding: 0.06em 0.18em;
+  border: 1px solid currentcolor;
+  color: var(--ink);
+  font-style: normal;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  /* The tab is rotated; its badge is not. A rotated digit is unreadable and a
+     rotated dot is a smear. */
+  writing-mode: horizontal-tb;
+}
+
+.ov--left .ov__handle-text em {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov,
+  .ov__handle {
+    transition-duration: 1ms;
+  }
+}
+
+@media (max-width: 560px) {
+  .ov {
+    --ov-width: calc(100vw - var(--ov-handle) - var(--ov-float));
+  }
+
+  .ov__handle {
+    min-height: 6.2rem;
+  }
+}
+
+/* ---------------------------------------------------------------- a thumb
+   The drawer's own resize, which is the same 9px grip as `.panel-divider` and
+   was missed by that file's fix for being a different class doing the same
+   job. Two components answering one question is a §2.3 problem in its own
+   right; this is the touch half of it, and the merge is a separate change.
+
+   Same shape as the sibling: the reach grows, the mark does not. The offsets
+   that straddle the panel border move with the width so the target stays
+   centred on the line it moves. */
+@media (pointer: coarse) {
+  .ov__resize {
+    width: 44px;
+  }
+
+  .ov--right > .ov__body > .ov__resize {
+    left: -22px;
+  }
+
+  .ov--left > .ov__body > .ov__resize {
+    right: -22px;
+  }
+
+  .ov__resize::after {
+    inset: 0 21px;
+  }
+}

@@ -1,0 +1,132 @@
+# Dependencies seed corpus cases (microservice topology; only LEADSTO edges).
+#
+# Node ids reference `seeds.get_dependencies_data()`.
+
+- id: deps_enum_leadsto
+  query: "Which services call or depend on other services?"
+  seed: dependencies
+  query_class: enumeration
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: global
+  ground_truth:
+    answerable: true
+    required_edge_types: [leadsto]
+    required_node_ids_any: [svc_gateway, svc_order, svc_auth, svc_payment]
+    min_edge_count: 5
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate the LEADSTO dependency edges between services and
+      databases (gateway -> auth, gateway -> order, order -> payment,
+      order -> inventory, auth -> userdb, payment -> userdb,
+      inventory -> inventorydb).
+    must_not_contain:
+      - "no dependencies"
+      - "no edges"
+    expected_aspects:
+      - service-to-service calls
+      - service-to-database queries
+  tags: [v6_enumeration]
+
+- id: deps_relation_proof_order_payment
+  query: "Does the OrderService depend on the PaymentService?"
+  seed: dependencies
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [leadsto]
+    required_node_ids_all: [svc_order, svc_payment]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm the LEADSTO edge OrderService -> PaymentService labelled
+      'calls'. Name both services explicitly.
+    must_contain: [OrderService, PaymentService]
+  tags: [v6_relation_proof]
+
+- id: deps_fanout_root_cause_userdb
+  query: "What services ultimately depend on the UserDB?"
+  seed: dependencies
+  query_class: fanout
+  evidence_shapes_expected: [node_set, path]
+  proof_mode: relational
+  scope: regional
+  ground_truth:
+    answerable: true
+    required_edge_types: [leadsto]
+    required_node_ids_all: [db_user]
+    required_node_ids_any: [svc_auth, svc_payment, svc_order, svc_gateway]
+    min_edge_count: 2
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Trace LEADSTO paths terminating at UserDB. At minimum AuthService and
+      PaymentService query UserDB directly; OrderService and API Gateway
+      depend on it transitively.
+    must_contain: [UserDB]
+    expected_aspects:
+      - direct dependencies
+      - transitive dependencies
+  tags: [v6_fanout, root_cause]
+
+- id: deps_overview
+  query: "What is this system about?"
+  seed: dependencies
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 4
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a microservice topology: API Gateway fronting
+      Auth/Order services, Order delegating to Payment/Inventory, backed by
+      UserDB and InventoryDB.
+    must_contain: [service]
+    expected_aspects:
+      - services
+      - databases
+  tags: [v6_overview]
+
+- id: deps_meta_gap_caching_layer
+  query: "Which caching layer sits between the Payment service and UserDB?"
+  seed: dependencies
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: local
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Report that the graph does not contain a caching layer between
+      Payment and UserDB — the only edge between them is the direct
+      'queries' LEADSTO. This is a graph-coverage gap.
+    must_not_contain:
+      - Redis cache
+      - Memcached
+    expected_aspects:
+      - gap acknowledgement
+  tags: [v6_meta_gap, honest_failure]

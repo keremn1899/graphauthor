@@ -1,0 +1,60 @@
+.connect-ring-lab {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 2.5rem;
+}
+
+.connect-ring-lab__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 44rem;
+}
+
+.connect-ring-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.connect-ring-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.connect-ring-lab__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.connect-ring-lab__nav {
+  margin: 0 0 0.85rem;
+  font-size: 0.85rem;
+}
+
+.connect-ring-lab__nav a {
+  color: var(--ink);
+}
+
+.connect-ring-lab__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.connect-ring-lab__log {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

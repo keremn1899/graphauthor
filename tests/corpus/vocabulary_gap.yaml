@@ -1,0 +1,125 @@
+# Vocabulary-gap seed — forces the planner to bridge colloquial query
+# vocabulary ("screen clutter", "focus") to graph-native terms
+# ("cognitive load", "working memory", "intrinsic load").
+
+- id: vocab_gap_overview
+  query: "What is this graph about?"
+  seed: vocabulary_gap
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 3
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a cognitive-load concept map covering
+      intrinsic / germane cognitive load, working memory, and schema
+      automation.
+    expected_aspects:
+      - cognitive load types
+      - working memory
+  tags: [v6_overview]
+
+- id: vocab_gap_alternative_screen_clutter
+  query: "How does screen clutter affect a person's ability to concentrate?"
+  seed: vocabulary_gap
+  query_class: semantic_lookup
+  evidence_shapes_expected: [node_set]
+  proof_mode: semantic
+  scope: local
+  ground_truth:
+    answerable: true
+    required_node_ids_any: [cognitive_load, working_memory, intrinsic_load]
+    min_node_count: 1
+    expected_verdict: [CONFIRMED, ALTERNATIVE]
+  rubric:
+    expected_answer_summary: |
+      Translate 'screen clutter' into graph vocabulary (extraneous
+      cognitive load / distractions) and explain the effect on working
+      memory. Either CONFIRMED with vocabulary bridging or ALTERNATIVE
+      with a vocabulary-correction note is acceptable.
+    expected_aspects:
+      - vocabulary bridging
+      - cognitive load → working memory effect
+    must_not_contain:
+      - "no information about screens"
+  tags: [v6_alternative, vocab_bridging]
+  notes: "Regression for the vocabulary-gap ALTERNATIVE pathway."
+
+- id: vocab_gap_relation_proof_schema_automation
+  query: "Does schema automation reduce cognitive load?"
+  seed: vocabulary_gap
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [expresses]
+    required_node_ids_all: [schema_automation, cognitive_load]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm via the EXPRESSES edge schema_automation -> cognitive_load
+      labelled 'reduces'.
+    must_contain: [schema, cognitive]
+  tags: [v6_relation_proof]
+
+- id: vocab_gap_synonym_mental_fatigue
+  query: "Does mental fatigue impair learning efficiency? What does sustained cognitive effort do to performance?"
+  seed: vocabulary_gap
+  query_class: semantic_lookup
+  evidence_shapes_expected: [node_set, path]
+  proof_mode: semantic
+  scope: local
+  ground_truth:
+    answerable: true
+    required_node_ids_any: [cognitive_load, intrinsic_load, working_memory]
+    min_node_count: 1
+    expected_verdict: [CONFIRMED, ALTERNATIVE]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Bridge "mental fatigue" and "sustained cognitive effort" to the
+      graph's vocabulary: intrinsic cognitive load, working memory
+      capacity, and task performance degradation. The answer must
+      reference graph nodes rather than claiming no relevant information
+      exists.
+    must_not_contain:
+      - "no information about mental fatigue"
+      - "not found in the graph"
+    expected_aspects:
+      - vocabulary bridging (mental fatigue → cognitive load)
+      - effect on working memory or performance
+  tags: [vocab_bridging, semantic_lookup]
+  notes: "Tests synonym bridging: query terms absent from graph but semantically map to intrinsic_load / cognitive_load."
+
+- id: vocab_gap_meta_gap_attention_span
+  query: "How many minutes of sustained attention can the average user maintain?"
+  seed: vocabulary_gap
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: global
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+  rubric:
+    expected_answer_summary: |
+      Report that the graph contains no quantitative attention-span
+      data. This is a graph-coverage gap — do not invent a number.
+    must_not_contain:
+      - "8 seconds"
+      - "20 minutes"
+  tags: [v6_meta_gap, honest_failure]

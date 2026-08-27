@@ -1,0 +1,28 @@
+.proximity-ring {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.proximity-ring__svg {
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.proximity-ring__circle {
+  fill: var(--canvas);
+  stroke: var(--rule);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 4;
+}
+
+.proximity-ring__hit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: crosshair;
+  pointer-events: all;
+  z-index: 5;
+}

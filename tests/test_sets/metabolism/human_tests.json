@@ -1,0 +1,249 @@
+[
+  {
+    "id": "h_met_001",
+    "query": "What causes insulin resistance?",
+    "query_type": "causal_backward",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "n_003",
+    "ground_truth": {
+      "required_nodes": ["n_001", "n_002", "n_012", "n_003"],
+      "required_trail": [
+        "Sedentary Lifestyle --LEADSTO--> Insulin Resistance",
+        "High-Glycaemic Diet --LEADSTO--> Insulin Resistance",
+        "Chronic Stress --LEADSTO--> Insulin Resistance"
+      ],
+      "answer_must_contain": ["sedentary", "diet", "stress"],
+      "answer_must_not_contain": ["gut microbiome", "genetics"],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "multi_hop",
+      "notes": "Three root causes of insulin resistance; all three required for full answer"
+    }
+  },
+  {
+    "id": "h_met_002",
+    "query": "How does sedentary lifestyle connect to liver disease?",
+    "query_type": "bridge",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "n_001",
+    "ground_truth": {
+      "required_nodes": ["n_001", "n_003", "n_005", "n_007"],
+      "required_trail": [
+        "Sedentary Lifestyle --LEADSTO--> Insulin Resistance --LEADSTO--> Hyperinsulinaemia --LEADSTO--> Non-Alcoholic Fatty Liver Disease"
+      ],
+      "answer_must_contain": ["insulin", "liver"],
+      "answer_must_not_contain": ["alcohol", "hepatitis C"],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "bridge",
+      "notes": "Multi-hop path via insulin resistance and hyperinsulinaemia"
+    }
+  },
+  {
+    "id": "h_met_003",
+    "query": "What is metabolic syndrome?",
+    "query_type": "detail_retrieval",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "n_010",
+    "ground_truth": {
+      "required_nodes": ["n_010", "n_006", "n_007"],
+      "required_trail": [],
+      "answer_must_contain": ["metabolic syndrome", "insulin resistance"],
+      "answer_must_not_contain": [],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "domain_survey",
+      "notes": "Should retrieve n_010 plus its CONTAINS children (n_006, n_007)"
+    }
+  },
+  {
+    "id": "h_met_004",
+    "query": "What does chronic inflammation lead to?",
+    "query_type": "causal_forward",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "n_004",
+    "ground_truth": {
+      "required_nodes": ["n_004", "n_003", "n_008"],
+      "required_trail": [
+        "Chronic Inflammation --LEADSTO--> Insulin Resistance",
+        "Chronic Inflammation --LEADSTO--> Neurological Effects"
+      ],
+      "answer_must_contain": ["insulin resistance", "neurological"],
+      "answer_must_not_contain": [],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "multi_hop",
+      "notes": "Bidirectional loop and metanode crossing opportunity"
+    }
+  },
+  {
+    "id": "h_met_005",
+    "query": "What is the role of the gut microbiome in metabolic syndrome?",
+    "query_type": "unanswerable_absent",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "",
+    "ground_truth": {
+      "required_nodes": [],
+      "required_trail": [],
+      "answer_must_contain": [],
+      "answer_must_not_contain": ["gut microbiome directly causes", "microbiome is responsible for"],
+      "expected_gap_contains": "gut microbiome",
+      "answerable": false,
+      "difficulty": "single_hop",
+      "notes": "Gut microbiome is absent from this graph — confirmed not in nodes or anchors"
+    }
+  },
+  {
+    "id": "h_met_006",
+    "query": "How does chronic stress contribute to insulin resistance?",
+    "query_type": "causal_forward",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "n_012",
+    "ground_truth": {
+      "required_nodes": ["n_012", "n_003"],
+      "required_trail": ["Chronic Stress --LEADSTO--> Insulin Resistance"],
+      "answer_must_contain": ["cortisol", "insulin"],
+      "answer_must_not_contain": [],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "single_hop",
+      "notes": "Direct edge n_012 → n_003 with label 'contributes_to'"
+    }
+  },
+  {
+    "id": "h_met_007",
+    "query": "What genetic factors drive metabolic syndrome?",
+    "query_type": "unanswerable_absent",
+    "authored_by": "ai_curated",
+    "graph_id": "metabolism",
+    "source_node": "",
+    "ground_truth": {
+      "required_nodes": [],
+      "required_trail": [],
+      "answer_must_contain": [],
+      "answer_must_not_contain": ["gene mutation causes", "genetic variant directly"],
+      "expected_gap_contains": "genetic",
+      "answerable": false,
+      "difficulty": "single_hop",
+      "notes": "Genetics not modelled in this graph — lifestyle and metabolic mechanisms only"
+    }
+  },
+  {
+    "id": "h_auth_001",
+    "query": "What happens when a user logs in?",
+    "query_type": "causal_forward",
+    "authored_by": "ai_curated",
+    "graph_id": "auth_service",
+    "source_node": "a_004",
+    "ground_truth": {
+      "required_nodes": ["a_004", "a_006", "a_002", "a_007", "a_003", "a_008"],
+      "required_trail": [
+        "Login Handler --LEADSTO--> Rate Limiter",
+        "Login Handler --LEADSTO--> Credential Validator --LEADSTO--> User Repository",
+        "Login Handler --LEADSTO--> Token Manager --LEADSTO--> Token Store"
+      ],
+      "answer_must_contain": ["credential", "token", "rate limit"],
+      "answer_must_not_contain": ["authorisation", "OAuth"],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "multi_hop",
+      "notes": "Full login flow; rate limiter checked first"
+    }
+  },
+  {
+    "id": "h_auth_002",
+    "query": "What security constraints apply to refresh tokens?",
+    "query_type": "detail_retrieval",
+    "authored_by": "ai_curated",
+    "graph_id": "auth_service",
+    "source_node": "a_010",
+    "ground_truth": {
+      "required_nodes": ["a_010", "a_005", "a_008"],
+      "required_trail": [],
+      "answer_must_contain": ["Token Store", "revoked", "HttpOnly"],
+      "answer_must_not_contain": ["SQL injection", "OAuth"],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "single_hop",
+      "notes": "Security Constraints node (a_010) plus Refresh Handler and Token Store"
+    }
+  },
+  {
+    "id": "h_auth_003",
+    "query": "What is the authorisation flow for checking permissions?",
+    "query_type": "unanswerable_absent",
+    "authored_by": "ai_curated",
+    "graph_id": "auth_service",
+    "source_node": "",
+    "ground_truth": {
+      "required_nodes": [],
+      "required_trail": [],
+      "answer_must_contain": [],
+      "answer_must_not_contain": ["authorisation flow is", "permission check calls"],
+      "expected_gap_contains": "authorisation",
+      "answerable": false,
+      "difficulty": "single_hop",
+      "notes": "Auth service handles authentication only; authorisation is a separate service not in this graph"
+    }
+  },
+  {
+    "id": "h_mem_001",
+    "query": "What are the different types of memory?",
+    "query_type": "domain_survey",
+    "authored_by": "ai_curated",
+    "graph_id": "memory_cognition",
+    "source_node": "m_001",
+    "ground_truth": {
+      "required_nodes": ["m_001", "m_002", "m_003", "m_004", "m_005"],
+      "required_trail": [],
+      "answer_must_contain": ["working memory", "long-term", "episodic"],
+      "answer_must_not_contain": ["procedural memory system", "sensory store"],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "domain_survey",
+      "notes": "CONTAINS subtree survey from Human Memory root"
+    }
+  },
+  {
+    "id": "h_mem_002",
+    "query": "How does sleep affect memory consolidation?",
+    "query_type": "causal_forward",
+    "authored_by": "ai_curated",
+    "graph_id": "memory_cognition",
+    "source_node": "m_008",
+    "ground_truth": {
+      "required_nodes": ["m_008", "m_003"],
+      "required_trail": ["Sleep and Memory Consolidation --LEADSTO--> Long-Term Memory"],
+      "answer_must_contain": ["sleep", "consolidation", "long-term"],
+      "answer_must_not_contain": [],
+      "expected_gap_contains": "",
+      "answerable": true,
+      "difficulty": "single_hop",
+      "notes": "Direct LEADSTO edge m_008 → m_003 with label 'consolidates_into'"
+    }
+  },
+  {
+    "id": "h_mem_003",
+    "query": "What is the role of dopamine in memory formation?",
+    "query_type": "unanswerable_absent",
+    "authored_by": "ai_curated",
+    "graph_id": "memory_cognition",
+    "source_node": "",
+    "ground_truth": {
+      "required_nodes": [],
+      "required_trail": [],
+      "answer_must_contain": [],
+      "answer_must_not_contain": ["dopamine directly causes", "dopamine receptor"],
+      "expected_gap_contains": "dopamine",
+      "answerable": false,
+      "difficulty": "single_hop",
+      "notes": "Dopamine not modelled in this graph; neurochemical layer absent"
+    }
+  }
+]

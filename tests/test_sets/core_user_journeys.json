@@ -1,0 +1,24 @@
+[
+  {
+    "id": "journey_dependencies_root_cause",
+    "query_type": "user_journey",
+    "query": "Why is checkout timing out and what should we inspect first?",
+    "ground_truth": {
+      "answerable": true,
+      "required_nodes": ["service_checkout", "db_user"],
+      "answer_must_contain": ["checkout", "timeout"],
+      "answer_must_not_contain": ["I have no idea"]
+    }
+  },
+  {
+    "id": "journey_followup_clarification",
+    "query_type": "user_journey",
+    "query": "Clarify whether this is auth, network, or database related.",
+    "ground_truth": {
+      "answerable": true,
+      "required_nodes": ["service_auth"],
+      "answer_must_contain": ["clarify"],
+      "answer_must_not_contain": ["fabricated"]
+    }
+  }
+]

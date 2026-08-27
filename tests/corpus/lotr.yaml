@@ -1,0 +1,194 @@
+# LOTR seed corpus cases.
+#
+# Shape is validated by `tests/test_corpus_schema.py` against the
+# `CorpusCase` Pydantic model in `models.py`. Stage-A (deterministic) checks
+# live under `ground_truth`; Stage-B (LLM judge) checks live under `rubric`.
+#
+# Node ids referenced here must match `seeds.get_lotr_data()`.
+
+- id: lotr_enum_expresses
+  query: "What nodes are connected via an 'expresses' connection?"
+  seed: lotr
+  query_class: enumeration
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: global
+  ground_truth:
+    answerable: true
+    required_edge_types: [expresses]
+    required_node_ids_any: [char_frodo, item_ring, char_aragorn]
+    min_edge_count: 3
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      List EXPRESSES edges as (source label) -> (target label) pairs. The
+      answer should name specific node labels such as Frodo, the One Ring,
+      Aragorn, Gondor, Sauron or Mordor. It must not claim that no EXPRESSES
+      edges exist in the graph.
+    must_not_contain:
+      - "no expresses"
+      - "no 'expresses'"
+      - "no connections found"
+    expected_aspects:
+      - edge-pair enumeration
+      - source->target labels
+  tags: [regression, v6_enumeration]
+  notes: "Regression for the v5 false-EXHAUSTED failure on EXPRESSES enumeration."
+
+- id: lotr_relation_proof_frodo_ring
+  query: "Is Frodo the bearer of the One Ring?"
+  seed: lotr
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [expresses]
+    required_node_ids_all: [char_frodo, item_ring]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm that Frodo is bonded to the One Ring via an EXPRESSES edge
+      labelled 'is_bearer_of'. Cite the edge explicitly.
+    must_contain: [Frodo, Ring]
+    must_not_contain:
+      - "no evidence"
+      - "cannot confirm"
+  tags: [v6_relation_proof]
+
+- id: lotr_fanout_fellowship
+  query: "What does the Fellowship of the Ring contain?"
+  seed: lotr
+  query_class: fanout
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [contains]
+    required_node_ids_all: [org_fellowship]
+    required_node_ids_any: [char_frodo, char_sam, char_gandalf, char_aragorn]
+    min_edge_count: 5
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate the Fellowship's members using the seven CONTAINS edges
+      leading into `org_fellowship`: Frodo, Sam, Gandalf, Aragorn, Boromir,
+      Legolas, Gimli.
+    must_contain: [Fellowship]
+    expected_aspects:
+      - membership enumeration
+  tags: [v6_fanout]
+
+- id: lotr_overview
+  query: "What is this graph about?"
+  seed: lotr
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 5
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a Lord of the Rings knowledge map: Middle-earth
+      characters, the One Ring, factions like the Fellowship, and locations
+      such as the Shire, Mordor, Gondor.
+    must_contain:
+      - Ring
+    expected_aspects:
+      - characters
+      - locations
+      - Fellowship
+  tags: [v6_overview]
+
+- id: lotr_ill_posed_napoleon
+  query: "Is Napoleon Bonaparte a member of the Fellowship of the Ring?"
+  seed: lotr
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: false
+    expected_verdict: [ILL_POSED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Reject the query structurally — Napoleon Bonaparte is not a node in
+      this graph. The answer must not invent a connection or claim Napoleon
+      appears in Middle-earth lore.
+    must_not_contain:
+      - "Napoleon"
+      - "was a member"
+      - "could be considered"
+  tags: [v11_plan_validation, ill_posed, honest_failure]
+  notes: "Tests v11 plan validation: source entity absent from graph → ILL_POSED short-circuit."
+
+- id: lotr_composite_arc
+  query: "What drove Frodo's journey from the Shire to Mount Doom? Trace the full arc of cause and consequence."
+  seed: lotr
+  query_class: composite
+  evidence_shapes_expected: [path, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    required_node_ids_any: [char_frodo, item_ring, loc_mordor, loc_shire]
+    min_node_count: 4
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Synthesise a narrative tracing Frodo's arc: the burden of the Ring
+      (EXPRESSES is_bearer_of), the Fellowship's formation (CONTAINS),
+      the threat of Sauron and Mordor (LEADSTO), and the journey's
+      culmination. Must reference at least three distinct nodes and their
+      relationships.
+    must_contain: [Frodo, Ring, Mordor]
+    expected_aspects:
+      - causal arc
+      - multiple nodes referenced
+      - relational connectives (leads to / contains / expresses)
+  tags: [v11_exploratory, composite, synthesis]
+  notes: "Tests that open-ended arc synthesis routes to exploratory, not contract_driven."
+
+- id: lotr_meta_gap_economic_system
+  query: "What is the economic system of Middle-earth in this graph?"
+  seed: lotr
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: global
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED, ILL_POSED]
+    expected_gap_types_required: [missing_concept]
+  rubric:
+    expected_answer_summary: |
+      Acknowledge that the graph does not cover Middle-earth economics —
+      there are no nodes representing currency, trade, or economic systems.
+      Report this as a graph-coverage gap rather than inventing content.
+    must_not_contain:
+      - "gold standard"
+      - "barter system"
+    expected_aspects:
+      - explicit gap acknowledgement
+  tags: [v6_meta_gap, honest_failure]
+  notes: "Probes meta_gap honesty — the seed has no economic concepts."

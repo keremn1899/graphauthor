@@ -1,0 +1,129 @@
+.nodefind {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.nodefind--wide {
+  display: flex;
+  width: 100%;
+}
+
+.nodefind--wide,
+.nodefind--wide .nodefind__input,
+.nodefind--wide .nodefind__input:focus {
+  width: 100%;
+}
+
+.nodefind--wide .nodefind__list {
+  min-width: 100%;
+  max-width: none;
+}
+
+.nodefind__input {
+  width: 15ch;
+  padding: 3px 8px;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  /* Emit: the field opens under the caret with the released impulse, spent
+     exactly at its authored width. `120ms ease` was a hand-picked number that
+     matched nothing else on the surface — see `styles/motion.ts`, which is the
+     one place a duration or a curve is allowed to be decided. */
+  transition:
+    width var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    border-color var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out);
+}
+
+/* Widen only while in use — the toolbar is shared, and an idle search box has
+   no claim on space it is not using. */
+.nodefind__input:focus {
+  width: 24ch;
+  border-color: var(--ink-muted);
+  outline: none;
+}
+
+.nodefind__input:disabled {
+  opacity: 0.5;
+}
+
+.nodefind__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  min-width: 28ch;
+  max-width: 46ch;
+  max-height: 46vh;
+  margin: 0;
+  padding: 4px;
+  overflow-y: auto;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  list-style: none;
+}
+
+.nodefind__row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 8px;
+  cursor: pointer;
+  transition: background var(--motion-hold-duration, 90ms)
+    var(--motion-hold-curve, linear);
+}
+
+.nodefind__row--active {
+  background: var(--rule);
+}
+
+.nodefind__row--empty {
+  color: var(--ink-muted);
+  cursor: default;
+  font-size: 12px;
+}
+
+.nodefind__label {
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+.nodefind__anchor {
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- a thumb
+   The finder is the touch operator's only way to reach a node by name — the
+   map's own labels are too small to aim at with a finger, and there is no
+   keyboard. Which makes its 42px rows the wrong thing to have left at mouse
+   size.
+
+   42 is not far off, and that is the trap: it is the size that looks fine in a
+   screenshot and misses under a thumb. */
+@media (pointer: coarse) {
+  /* 16px is not a taste decision. Mobile Safari zooms the whole page when a
+     field smaller than 16px takes focus, and a page that zooms on focus is a
+     map that has moved by the time you look back at it. */
+  .nodefind__input {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .nodefind__row {
+    min-height: 48px;
+    justify-content: center;
+    padding: 6px 10px;
+  }
+}

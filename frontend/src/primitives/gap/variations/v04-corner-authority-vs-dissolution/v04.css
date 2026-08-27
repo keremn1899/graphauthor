@@ -1,0 +1,19 @@
+.v04-far {
+  animation: v04-drift 2.8s ease-in-out infinite;
+}
+
+@keyframes v04-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0.8px, 0.6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v04-far {
+    animation: none;
+  }
+}

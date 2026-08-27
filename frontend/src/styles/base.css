@@ -1,0 +1,210 @@
+:root {
+  color-scheme: light;
+  --canvas: #f0f0f0;
+  --ink: #202020;
+  --ink-muted: #8d8d8d;
+  --panel: #e8e8e8;
+  --rule: #d9d9d9;
+  --gap-stroke: #1c1c1c;
+  --gap-void: transparent;
+  --node-fill: #2c2c2c;
+  --node-ink: #f2f2f2;
+
+  /* `--attention`, `--alarm` and `--settled` are deliberately not here. Colour
+     tokens have one source, `styles/graphDna.ts`, so that a theme can move them
+     — see `GRAPH_DNA_STATUS`. The shell spreads them onto its own root. */
+
+  /* Switch UI typefaces here — keep in sync with styles/typography.ts */
+  --font-sans: Jost, "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* Motion DNA: emitted, absorbed, released, continuously flowing, held. */
+  --motion-emit-duration: 280ms;
+  --motion-emit-curve: cubic-bezier(0.333333, 0.666667, 0.666667, 1);
+  --motion-absorb-duration: 190ms;
+  --motion-absorb-curve: cubic-bezier(0.333333, 0, 0.666667, 0.333333);
+  --motion-settle-duration: 320ms;
+  --motion-settle-curve: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-hold-duration: 90ms;
+  --motion-flow-curve: linear;
+  --motion-travel: 8.6px;
+
+  font-family: var(--font-sans);
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--panel);
+}
+
+@property --canvas {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f0f0f0;
+}
+
+@property --panel {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e8e8e8;
+}
+
+@property --ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #202020;
+}
+
+@property --ink-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8d8d8d;
+}
+
+@property --rule {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d9d9d9;
+}
+
+@property --matter-surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f0f0f0;
+}
+
+@property --matter-canvas {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f0f0f0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  /* The product shell is a fixed frame — `height: 100vh; overflow: hidden` —
+     so the document itself has no reason to scroll sideways, and every pixel
+     past the viewport is something reaching out of its box rather than content
+     that needs reaching. The map page carried a full-width horizontal scrollbar
+     for exactly that reason: chrome clusters extend an invisible margin of
+     pointer reach past their own edges, and an overflow the page cannot use is
+     still an overflow the page will offer to scroll.
+
+     `clip` rather than `hidden`: `hidden` makes the element a scroll container,
+     which silently breaks `position: sticky` in anything nested under it. */
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* A button the product has not painted is painted by the browser.
+   `font: inherit` alone left `background` and `color` to the user agent, whose
+   dark-mode ButtonFace is rgb(107, 107, 107) — so a secondary action rendered
+   as a mid-grey slab nobody chose, in a product that spends colour on exactly
+   four pinned status values.
+
+   It is a whole bug class rather than one bug: it cost the composer's blue
+   checkboxes and every secondary decision button in Review, and the design
+   suite structurally cannot catch it, because a UA default is never written in
+   a stylesheet for a rule to find. Reset once, here. */
+button {
+  font: inherit;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+/* The same bug, in the control the button reset did not reach.
+
+   That comment above says "reset once, here", and it was half true: it reset
+   `button` and left every native input painting itself in the UA accent, which
+   in Chrome is a blue nothing in this product chose. So the fix was applied
+   per-component instead — `accent-color` appears in three separate stylesheets,
+   once per class that happened to have a checkbox in it — and Settings then
+   grew a fourth class, `settings__check`, which nobody remembered to patch. Its
+   "check the key with OpenRouter first" box has been Chrome blue ever since.
+
+   Per-component patching cannot close a bug whose symptom is the *absence* of a
+   declaration: there is no failing selector to find, only a class that was
+   never given one. So it goes on the element, once, and a new checkbox is
+   correct by default rather than by memory.
+
+   `--ink` rather than a status colour: a ticked box is not a state the product
+   reports, it is the operator's own mark. */
+input {
+  accent-color: var(--ink);
+}
+
+/* The same bug class again, in the register only a finger can see.
+   ------------------------------------------------------------------------
+   Two things the browser does to a touched control that this product did not
+   ask for, and that no amount of reading the stylesheets would reveal, because
+   both are the *absence* of a declaration:
+
+   1. Every tap flashes a translucent slab over the control — Chrome's default
+      here measured `rgba(0, 0, 0, 0.18)`. In a product whose entire feedback
+      language is boundary and weight, and which spends colour on four pinned
+      status values, that is a grey rectangle nobody chose, arriving on the one
+      interaction a touch operator performs most.
+
+   2. Double-tap zooms the page. The product is a fixed frame with its own
+      pinch on the map; a double-tap on a *bar* has nothing to zoom, so all it
+      does is make every single tap wait to find out whether a second one is
+      coming. `manipulation` keeps pan and pinch and drops that wait.
+
+   Scoped to the whole document rather than to chrome, because the exception is
+   the map, and the map already states it: `.product-graph-canvas` sets
+   `touch-action: none` to claim its own gestures. A rule that has to be
+   remembered per control is the bug above wearing a different costume. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.route-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  background: var(--panel);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Visible to a screen reader, to nothing else.
+
+   This lived inside `ReviewWorkspace.css`'s toolbar block, so deleting that
+   block deleted the only definition and every `sr-only` label in the product
+   became visible text. A utility used by more than one surface belongs to the
+   base, not to whichever component happened to need it first. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

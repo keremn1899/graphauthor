@@ -1,0 +1,34 @@
+.variation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.variation-panel__header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.variation-panel__id {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.variation-panel__thesis {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.variation-panel__note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.variation-panel__stage {
+  min-width: 0;
+}

@@ -1,0 +1,27 @@
+.type-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: min(280px, 86vw);
+}
+
+.type-picker__opt {
+  margin: 0;
+  min-height: 48px;
+  padding: 0.65rem 0.5rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  touch-action: manipulation;
+  border-radius: 0;
+}
+
+.type-picker__opt--on,
+.type-picker__opt:active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--panel);
+}

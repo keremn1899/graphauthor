@@ -1,0 +1,43 @@
+.flow-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.flow-disc__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0.55rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease,
+    border-width 120ms ease;
+}
+
+.flow-disc--source .flow-disc__face {
+  border-width: 3px;
+  transform: scale(1.03);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.flow-disc--target .flow-disc__face {
+  background: color-mix(in srgb, var(--node-fill) 72%, var(--ink) 28%);
+  box-shadow: inset 0 0 0 3px var(--ink);
+}
+
+.flow-disc__handle {
+  z-index: 0;
+}

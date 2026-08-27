@@ -1,0 +1,415 @@
+.md-node-lab {
+  min-height: 100vh;
+  padding: 1.4rem;
+  background: #efefed;
+  color: #171717;
+}
+
+.md-node-lab__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 88rem;
+  margin: 0 auto 1.15rem;
+}
+
+.md-node-lab__header h1 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.5rem, 2vw, 2.15rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.md-node-lab__header p:not(.md-node-lab__eyebrow) {
+  max-width: 42rem;
+  margin: 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.md-node-lab__header a {
+  flex: 0 0 auto;
+  color: inherit;
+  font-size: 0.82rem;
+}
+
+.md-node-lab__eyebrow {
+  margin: 0 0 0.35rem;
+  color: #777;
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.md-node-lab__workspace {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0;
+  width: 100%;
+  max-width: 88rem;
+  height: min(740px, calc(100vh - 9.5rem));
+  min-height: 580px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #c8c8c5;
+  background: #fff;
+  transition: grid-template-columns 240ms ease;
+}
+
+.md-node-lab__workspace:has(.md-node-lab__panel--open) {
+  grid-template-columns: minmax(28rem, 1fr) minmax(30rem, 38%);
+}
+
+.md-node-lab__graph-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  background:
+    linear-gradient(#f1f1ef 1px, transparent 1px),
+    linear-gradient(90deg, #f1f1ef 1px, transparent 1px),
+    #fff;
+  background-size: 32px 32px;
+}
+
+.md-node-lab__graph-meta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid #dededb;
+  background: rgb(255 255 255 / 88%);
+  color: #747474;
+  font-size: 0.69rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.md-node-lab__graph {
+  min-width: 0;
+  min-height: 0;
+}
+
+.md-node-lab__panel {
+  display: grid;
+  grid-template-rows: auto auto 38rem auto;
+  width: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-left: 0 solid #c8c8c5;
+  background: #fff;
+  opacity: 0;
+  transform: translateX(1rem);
+  transition:
+    width 240ms ease,
+    opacity 180ms ease,
+    transform 240ms ease;
+}
+
+.md-node-lab__panel--open {
+  width: 100%;
+  border-left-width: 1px;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.md-node-lab__panel-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 30rem;
+  min-height: 2.9rem;
+  padding: 0.48rem 0.75rem;
+  border-bottom: 0;
+  background: rgb(255 255 255 / 96%);
+  backdrop-filter: blur(8px);
+}
+
+.md-node-lab__panel-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.65rem;
+}
+
+.md-node-lab__panel-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.md-node-lab__panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.md-node-lab__mode-switch {
+  display: flex;
+  border: 1px solid #cececa;
+  background: #efefec;
+}
+
+.md-node-lab__mode-switch button {
+  min-width: 3.8rem;
+  height: 1.65rem;
+  padding: 0 0.58rem;
+  border: 0;
+  border-right: 1px solid #cececa;
+  background: transparent;
+  color: #6b6b68;
+  font-size: 0.67rem;
+  cursor: pointer;
+}
+
+.md-node-lab__mode-switch button:last-child {
+  border-right: 0;
+}
+
+.md-node-lab__mode-switch button[aria-pressed="true"] {
+  background: #fff;
+  color: #171717;
+  font-weight: 600;
+}
+
+.md-node-lab__close {
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border: 1px solid #cececa;
+  background: transparent;
+  color: #555;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.md-node-lab__information {
+  min-width: 30rem;
+  padding: 0.85rem 1rem 0.95rem;
+  border-bottom: 1px solid #e1e1de;
+  background: #fff;
+}
+
+.md-node-lab__status {
+  padding: 0.18rem 0.38rem;
+  border: 1px solid #b8b8b4;
+  background: #fff;
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.md-node-lab__status--active {
+  border-color: #789a80;
+  color: #356044;
+  background: #edf4ee;
+}
+
+.md-node-lab__status--review {
+  border-color: #b49a67;
+  color: #73571d;
+  background: #f8f2e5;
+}
+
+.md-node-lab__status--draft {
+  color: #666;
+  background: #e9e9e6;
+}
+
+.md-node-lab__metadata {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0;
+}
+
+.md-node-lab__metadata > div {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.md-node-lab__metadata dt {
+  margin-bottom: 0.13rem;
+  color: #7a7a76;
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.md-node-lab__metadata dd {
+  overflow: hidden;
+  margin: 0;
+  color: #262626;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.md-node-lab__metadata code {
+  padding: 0;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.67rem;
+}
+
+.md-node-lab__connections {
+  min-width: 0;
+  margin-top: 0.8rem;
+}
+
+.md-node-lab__connections ul {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 0 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  list-style: none;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.md-node-lab__connections li {
+  flex: 0 0 auto;
+}
+
+.md-node-lab__connections button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem;
+  width: auto;
+  padding: 0.32rem 0.48rem;
+  border: 1px solid #cbcbc7;
+  background: #fff;
+  color: #252525;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.md-node-lab__connections button:hover {
+  border-color: #777;
+}
+
+.md-node-lab__connections button span {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.md-node-lab__connections button small {
+  color: #777;
+  font-size: 0.61rem;
+}
+
+.md-node-lab__editor {
+  min-width: 30rem;
+  min-height: 38rem;
+  padding: 0 0.65rem;
+}
+
+.md-node-lab__editor .w-md-editor {
+  height: 100% !important;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.md-node-lab__editor .w-md-editor-toolbar {
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid #e1e1de;
+  border-radius: 0;
+  background: #fff;
+}
+
+.md-node-lab__editor .w-md-editor-text {
+  --md-editor-font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+.md-node-lab__editor .w-md-editor-text-input,
+.md-node-lab__editor .w-md-editor-text-pre,
+.md-node-lab__editor .w-md-editor-text-pre > code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.65 !important;
+}
+
+.md-node-lab__editor .wmde-markdown {
+  color: #242424;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.md-node-lab__editor .wmde-markdown code,
+.md-node-lab__editor .wmde-markdown pre {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.md-node-lab__editor .wmde-markdown h1,
+.md-node-lab__editor .wmde-markdown h2 {
+  border-bottom-color: #dededb;
+  font-weight: 500;
+}
+
+.md-node-lab__panel-footer {
+  display: flex;
+  justify-content: space-between;
+  min-width: 30rem;
+  padding: 0.65rem 0.85rem;
+  border-top: 1px solid #e1e1de;
+  background: #fff;
+  color: #777;
+  font-size: 0.67rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .md-node-lab__workspace,
+  .md-node-lab__workspace:has(.md-node-lab__panel--open) {
+    grid-template-columns: 1fr;
+  }
+
+  .md-node-lab__panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: 5;
+    max-width: min(34rem, 92vw);
+    box-shadow: -18px 0 45px rgb(0 0 0 / 12%);
+  }
+}
+
+@media (max-width: 600px) {
+  .md-node-lab {
+    padding: 0.8rem;
+  }
+
+  .md-node-lab__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .md-node-lab__workspace {
+    height: calc(100vh - 10.5rem);
+    min-height: 32rem;
+  }
+}

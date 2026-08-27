@@ -1,0 +1,132 @@
+.mass-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.mass-node__field {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mass-node__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  padding: 0.65rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  overflow: hidden;
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 2;
+}
+
+/* Label layer only — silhouette comes from the noise SVG underneath */
+.mass-node__face--noise {
+  border: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.mass-node__noise {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mass-node__noise-path {
+  fill: var(--node-fill);
+}
+
+.mass-node__face:active {
+  cursor: grabbing;
+}
+
+.mass-node__label {
+  margin: 0;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.mass-node__verdict {
+  width: 14px;
+  height: 14px;
+  color: var(--node-ink);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.mass-node__handle {
+  background: transparent !important;
+  z-index: 3;
+}
+
+.mass-node__orbiters {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.mass-node__orbit-track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation-name: mass-orbit;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.mass-node__orbiter {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--canvas);
+  box-sizing: border-box;
+}
+
+.mass-node__orbiter--accreting {
+  left: 0;
+  top: 0;
+}
+
+@keyframes mass-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.reduced-motion .mass-node__orbit-track {
+  animation: none !important;
+}

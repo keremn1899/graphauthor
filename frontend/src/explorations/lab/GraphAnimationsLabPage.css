@@ -1,0 +1,311 @@
+.galab {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+  background: #f0f0f0;
+  color: #202020;
+  font-family: var(--font-sans);
+}
+
+.galab__header {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 0.5rem;
+}
+
+.galab__nav {
+  margin: 0 0 0.4rem;
+  font-size: 0.76rem;
+}
+
+.galab__nav a {
+  color: #202020;
+}
+
+.galab__header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.galab__lede {
+  max-width: 44rem;
+  margin: 0.45rem 0 0;
+  color: #646464;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.galab__trials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-width: 76rem;
+  margin: 0.85rem auto 0;
+  padding: 0 1.5rem 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.galab__trials button,
+.galab__modes button,
+.galab__actions button {
+  appearance: none;
+  border: 1px solid #e0e0e0;
+  background: #f9f9f9;
+  color: #202020;
+  font: inherit;
+  font-size: 0.74rem;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+}
+
+.galab__trials button.is-active,
+.galab__modes button.is-active,
+.galab__actions button.is-active {
+  border-color: #202020;
+  background: #202020;
+  color: #f9f9f9;
+}
+
+.galab__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 76rem;
+  margin: 0.85rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.galab__modes {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.galab__perf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.85rem;
+  align-items: baseline;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: #646464;
+}
+
+.galab__perf strong {
+  color: #202020;
+  font-size: 0.95rem;
+}
+
+.galab__mode-copy,
+.galab__note {
+  max-width: 76rem;
+  margin: 0.55rem auto 0;
+  padding: 0 1.5rem;
+  color: #646464;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.galab__mode-copy strong {
+  color: #202020;
+}
+
+.galab__note {
+  margin-top: 0.25rem;
+}
+
+.galab__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-width: 76rem;
+  margin: 0.65rem auto 0;
+  padding: 0 1.5rem;
+  align-items: center;
+}
+
+.galab__load-hint {
+  margin: 0;
+  color: #646464;
+  font-size: 0.74rem;
+}
+
+.galab__stage-wrap {
+  position: relative;
+  max-width: 76rem;
+  margin: 0.85rem auto 0;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0;
+  align-items: stretch;
+}
+
+.galab__stage-slot {
+  position: relative;
+  min-width: 0;
+}
+
+.galab__stage {
+  height: min(72vh, 820px);
+  border: 1px solid #e0e0e0;
+  background: #f9f9f9;
+  transition: background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+}
+
+.galab__stage-wrap.is-focus .galab__stage {
+  background: #111;
+  border-color: #2a2a2a;
+}
+
+.galab__stage-wrap.is-dim .galab__stage {
+  opacity: 0.4;
+}
+
+.galab__wait {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.65rem;
+  background: color-mix(in srgb, #f0f0f0 55%, transparent);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  text-align: center;
+  z-index: 2;
+}
+
+.galab__wait p {
+  margin: 0;
+  color: #646464;
+  font-size: 0.8rem;
+}
+
+.galab__spinner {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.galab__spinner span {
+  width: 0.4rem;
+  height: 0.4rem;
+  background: #202020;
+  animation: galab-pulse 1s ease infinite;
+}
+
+.galab__spinner span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.galab__spinner span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes galab-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.galab__editor {
+  width: 0;
+  overflow: hidden;
+  border: 1px solid transparent;
+  background: #f9f9f9;
+  transition: width 0.28s ease, border-color 0.2s ease;
+}
+
+.galab__editor[data-open="true"] {
+  width: min(18rem, 36vw);
+  border-color: #e0e0e0;
+  border-left: 0;
+}
+
+.galab__editor header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.82rem;
+}
+
+.galab__editor header button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #646464;
+  font: inherit;
+  font-size: 0.74rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.galab__editor-body {
+  padding: 0.75rem;
+  color: #646464;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .galab__stage-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .galab__editor[data-open="true"] {
+    width: 100%;
+    border-left: 1px solid #e0e0e0;
+    border-top: 0;
+  }
+
+  .galab__stage {
+    height: 62vh;
+  }
+}
+
+/* The verdict, beside the raw numbers rather than instead of them.
+
+   Draw-ms and frame-ms answer different questions and the page needs both on
+   screen at once: one effect can repaint in 8 ms and still miss every frame
+   because it repaints on all of them. Same readout shape as `galab__perf` so
+   the two read as a pair. */
+.galab__verdict {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.85rem;
+  align-items: baseline;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: #646464;
+}
+
+.galab__verdict strong {
+  color: #202020;
+  font-size: 0.95rem;
+}
+
+.galab__measure {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #d0d0d0;
+  background: transparent;
+  color: #202020;
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.galab__measure:disabled {
+  color: #9a9a9a;
+  cursor: default;
+}

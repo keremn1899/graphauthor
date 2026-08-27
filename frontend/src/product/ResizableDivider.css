@@ -1,0 +1,69 @@
+.panel-divider {
+  position: relative;
+  z-index: 6;
+  width: 9px;
+  min-width: 9px;
+  min-height: 0;
+  outline: 0;
+  background: var(--panel);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.panel-divider::after {
+  position: absolute;
+  inset: 0 4px;
+  background: var(--rule);
+  content: "";
+  /* Reached for, then released — the same two laws every other approachable
+     thing on the surface rides. */
+  transition:
+    inset var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    background var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in);
+}
+
+.panel-divider:hover::after,
+.panel-divider:focus-visible::after {
+  inset-inline: 3px;
+  background: var(--ink-muted);
+}
+
+html.is-panel-resizing,
+html.is-panel-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+/* ---------------------------------------------------------------- a thumb
+   The gesture was already right — pointer events, `touch-action: none`, and a
+   capture — and the target was 9px wide, which is a mouse's whole tolerance
+   and about a fifth of a finger's.
+
+   The reach grows and the mark does not: a finger finds 44px of divider, the
+   eye still sees the same hairline in the same place. Widening the mark would
+   have put the two panes further apart on a tablet than on a laptop, which is
+   the same content in different chrome.
+
+   **`width` was the wrong way to do that, and shipped a worse bug than the one
+   it fixed.** The divider sits in a grid track that both workspaces declare as
+   a literal `9px`, so a 44px element did not widen its column — it overflowed
+   it, entirely to the right, and laid 35px of resize target over the left edge
+   of the pane beside it. Measured: the queue ended at 479, the divider ran
+   479–523, and the inspector began at 488. Every tap in that strip resized a
+   panel instead of doing what it was aimed at. A target that grows into its
+   neighbour is not a bigger target, it is a smaller neighbour.
+
+   An overlay is the honest form. The element keeps its 9px of layout, and the
+   part that receives the pointer is a `::before` that extends past it equally
+   on both sides — no track to fight, and symmetric about the line it moves. */
+@media (pointer: coarse) {
+  .panel-divider::before {
+    position: absolute;
+    inset-block: 0;
+    /* (44 - 9) / 2, so the reach is centred on the rule rather than beside it. */
+    inset-inline: -17.5px;
+    content: "";
+  }
+}

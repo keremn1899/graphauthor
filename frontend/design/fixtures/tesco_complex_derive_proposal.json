@@ -1,0 +1,71 @@
+{
+  "corpus": "tesco-returns-help",
+  "purpose": "Adjudicate customer return and refund eligibility across Tesco Help pages\n(change of mind, faulty, online vs in-store, chilled/frozen, Whoosh, gift cards,\nmobile) — decide GOVERNED vs UNGOVERNED for a support ticket, without inventing\ngoodwill or competitor price-match rules that the pages do not state.",
+  "grain_statement": "One node = a return or refund eligibility condition stated on Tesco Help that can decide GOVERNED vs UNGOVERNED for a support ticket.",
+  "subjects": [
+    {
+      "subject": "Change-of-mind online grocery / GM",
+      "quote": "You can return most online grocery and General Merchandise items within 14 days of delivery if you change your mind."
+    },
+    {
+      "subject": "Faulty / not as described",
+      "quote": "If an item is faulty, damaged, or not as described, you may be entitled to a repair, replacement, or refund under your legal rights."
+    },
+    {
+      "subject": "Chilled and frozen",
+      "quote": "Chilled and frozen food bought online usually cannot be returned for change of mind once delivered, because of food safety."
+    }
+  ],
+  "too_fine": "One node per sentence on every Help page, including refund timing and contact chrome.",
+  "too_coarse": "One node for “Tesco returns” covering every channel, product class, and journey step.",
+  "exemplars": [
+    {
+      "id": "ex_change_mind_14d",
+      "label": "Change of mind · 14 days",
+      "text_content": "Customer requests a change-of-mind return for eligible online GM within 14 days, unused, original packaging where required.",
+      "quote": "return most online grocery and General Merchandise items within 14 days of delivery if you change your mind"
+    },
+    {
+      "id": "ex_faulty_legal",
+      "label": "Faulty item · legal rights",
+      "text_content": "Customer reports a fault after delivery; entitlement is repair, replacement, or refund under legal rights — not limited to the change-of-mind window.",
+      "quote": "Faulty returns are not limited to the change-of-mind window."
+    },
+    {
+      "id": "ex_chilled_fused",
+      "label": "Chilled · fused (edit me)",
+      "text_content": "Chilled/frozen cannot be returned for change of mind, and also Whoosh and gift cards follow the same 14-day grocery window with store drop-off. (Fused — split or correct before confirm.)",
+      "quote": "Chilled and frozen food bought online usually cannot be returned for change of mind once delivered"
+    },
+    {
+      "id": "ex_gift_card",
+      "label": "Gift cards non-refundable",
+      "text_content": "Gift cards and e-vouchers are generally non-refundable once purchased except where law requires (e.g. faulty).",
+      "quote": "Gift cards and e-vouchers are generally non-refundable once purchased, except where required by law"
+    }
+  ],
+  "alternative_cut": {
+    "grain_statement": "One node = one Tesco Help article / topic page (returning online, faulty, Whoosh, gift cards, …).",
+    "subjects": [
+      {
+        "subject": "Help page",
+        "quote": "Use Your orders or Help chat for return eligibility questions."
+      },
+      {
+        "subject": "Whoosh page",
+        "quote": "Whoosh orders follow Whoosh return rules."
+      }
+    ],
+    "rejected_because": "Purpose is ticket adjudication (GOVERNED vs UNGOVERNED), not mapping the Help IA. Page-per-node fuses multiple eligibility rules and weakens attribution."
+  },
+  "ambiguity": {
+    "model_level": "faq-diffuse",
+    "reason": "FAQ prose is diffuse — eligibility-rule cut fits purpose; page cut is the easy derive trap."
+  },
+  "reference_health": {
+    "status": "thin",
+    "coverage": "4 seeds · multi-page FAQ · one fused body",
+    "consistency": "Chilled exemplar mixes Whoosh/gift-card rules",
+    "note": "Advisory — thin is expected on this corpus; edit before spend."
+  }
+}

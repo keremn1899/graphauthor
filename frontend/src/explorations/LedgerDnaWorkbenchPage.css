@@ -1,0 +1,967 @@
+.ldna {
+  --ldna-canvas: #fcfcfc;
+  --ldna-surface: #f9f9f9;
+  --ldna-ink: #202020;
+  --ldna-muted: #646464;
+  --ldna-rule: #b4b4b4;
+  --ldna-held: #202020;
+  --ldna-row-gap: 7px;
+  --ldna-row-padding: 14px;
+  --ldna-summary-size: 14px;
+  --ldna-meta-size: 11px;
+  --ldna-inspector-width: 390px;
+  --ldna-attention-rail: 3px;
+  --ldna-ambient-opacity: 0.56;
+  --ldna-selected-inset: 2px;
+  --ldna-motion-emit: 280ms;
+  --ldna-motion-absorb: 190ms;
+  --ldna-motion-settle: 320ms;
+  --ldna-gravity-travel: 9px;
+  --ldna-emit-curve: cubic-bezier(0.16, 1, 0.3, 1);
+  --ldna-absorb-curve: cubic-bezier(0.7, 0, 0.84, 0);
+  --ldna-settle-curve: cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-height: 100vh;
+  background: var(--ldna-surface);
+  color: var(--ldna-ink);
+  font-family: var(--font-sans, Jost, sans-serif);
+}
+
+.ldna button,
+.ldna input,
+.ldna select {
+  font: inherit;
+}
+
+.ldna button {
+  color: inherit;
+}
+
+.ldna__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 118px;
+  padding: 1.25rem 1.4rem 1.1rem;
+  border-bottom: 1px solid var(--ldna-rule);
+  background: var(--ldna-surface);
+}
+
+.ldna__nav {
+  margin: 0 0 0.45rem;
+  color: var(--ldna-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ldna__nav a {
+  color: inherit;
+}
+
+.ldna__header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.45rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+}
+
+.ldna__header p:last-child {
+  max-width: 49rem;
+  margin: 0.45rem 0 0;
+  color: var(--ldna-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.ldna__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.ldna__header-actions span {
+  margin-right: 0.4rem;
+  color: var(--ldna-muted);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.ldna__header-actions button,
+.ldna__specimen-bar button {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 0;
+  background: var(--ldna-surface);
+  color: var(--ldna-ink);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.ldna__header-actions button:hover,
+.ldna__specimen-bar button:hover {
+  border-color: var(--ldna-ink);
+}
+
+.ldna__workbench {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  height: calc(100dvh - 118px);
+  min-height: 650px;
+}
+
+.ldna__controls {
+  min-height: 0;
+  padding: 0 1rem 1.4rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--ldna-rule);
+  background: var(--ldna-surface);
+  scrollbar-color: var(--ldna-rule) transparent;
+  scrollbar-width: thin;
+}
+
+.ldna__controls section {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 0 1.05rem;
+  border-bottom: 1px solid var(--ldna-rule);
+}
+
+.ldna__controls h2 {
+  margin: 0;
+  color: var(--ldna-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ldna__controls section > p {
+  margin: 0;
+  color: var(--ldna-muted);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.ldna__switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.ldna__switch button {
+  padding: 0.38rem 0.45rem;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 0;
+  background: var(--ldna-surface);
+  cursor: pointer;
+}
+
+.ldna__switch button.is-active {
+  border-color: var(--ldna-ink);
+  background: var(--ldna-ink);
+  color: var(--ldna-surface);
+}
+
+.ldna__range {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+}
+
+.ldna__range > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ldna__range output {
+  color: var(--ldna-muted);
+  font-size: 0.63rem;
+}
+
+.ldna__range input {
+  width: 100%;
+  height: 1px;
+  margin: 0.38rem 0;
+  appearance: none;
+  background: var(--ldna-rule);
+  accent-color: var(--ldna-ink);
+}
+
+.ldna__range input::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  appearance: none;
+  border: 1px solid var(--ldna-ink);
+  border-radius: 50%;
+  background: var(--ldna-surface);
+  cursor: ew-resize;
+}
+
+.ldna__radix {
+  display: grid;
+  grid-template-columns: minmax(4.8rem, 1fr) 1rem minmax(5.4rem, 1fr) 2.7rem;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+}
+
+.ldna__radix > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ldna__radix i {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 50%;
+}
+
+.ldna__radix select {
+  min-width: 0;
+  padding: 0.24rem 0.28rem;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 0;
+  background: var(--ldna-surface);
+  color: var(--ldna-ink);
+  font-size: 0.63rem;
+}
+
+.ldna__specimen {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--ldna-canvas);
+}
+
+.ldna__specimen-bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid var(--ldna-rule);
+  background: var(--ldna-surface);
+}
+
+.ldna__specimen-bar > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.ldna__specimen-bar strong {
+  font-size: 0.76rem;
+  font-weight: 550;
+}
+
+.ldna__specimen-bar span {
+  color: var(--ldna-muted);
+  font-size: 0.65rem;
+}
+
+.ldna__surface {
+  display: grid;
+  grid-template-columns: minmax(390px, 1fr) var(--ldna-inspector-width);
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  background: var(--ldna-canvas);
+  transition: grid-template-columns var(--ldna-motion-settle)
+    var(--ldna-settle-curve);
+}
+
+.ldna__queue {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  padding: 1.1rem 1.2rem 1.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--ldna-rule) transparent;
+  scrollbar-width: thin;
+}
+
+.ldna__queue-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+}
+
+.ldna__queue-header p {
+  margin: 0 0 0.15rem;
+  color: var(--ldna-muted);
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ldna__queue-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 550;
+  letter-spacing: -0.025em;
+}
+
+.ldna__queue-header > span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ldna-muted);
+  font-size: 0.65rem;
+}
+
+.ldna__queue-header > span i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ldna-ink);
+}
+
+.ldna__queue-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--ldna-rule);
+  border-bottom: 1px solid var(--ldna-rule);
+}
+
+.ldna__queue-nav button {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.52rem 0.68rem;
+  border: 0;
+  border-right: 1px solid var(--ldna-rule);
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.ldna__queue-nav button:hover {
+  background: var(--ldna-surface);
+}
+
+.ldna__queue-nav button.is-active {
+  background: var(--ldna-ink);
+  color: var(--ldna-canvas);
+}
+
+.ldna__queue-nav code {
+  color: inherit;
+  font-size: 0.61rem;
+  opacity: 0.7;
+}
+
+.ldna__queue-status {
+  margin: 0;
+  padding: 0.72rem 0;
+  color: var(--ldna-muted);
+  font-size: 0.65rem;
+}
+
+.ldna__activities {
+  display: grid;
+  gap: var(--ldna-row-gap);
+  min-height: 0;
+}
+
+.ldna__activity {
+  position: relative;
+  border: 1px solid var(--ldna-rule);
+  background: var(--ldna-surface);
+  transform-origin: 50% 50%;
+  transition:
+    border-color var(--ldna-motion-settle) var(--ldna-settle-curve),
+    box-shadow var(--ldna-motion-settle) var(--ldna-settle-curve),
+    opacity var(--ldna-motion-settle) var(--ldna-settle-curve);
+}
+
+.ldna__activity > button {
+  display: grid;
+  grid-template-columns: var(--ldna-attention-rail) 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.72rem;
+  width: 100%;
+  padding: var(--ldna-row-padding);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ldna__activity > button:focus-visible {
+  outline: 1px dotted var(--ldna-ink);
+  outline-offset: 2px;
+}
+
+.ldna__activity:hover {
+  border-color: var(--ldna-ink);
+}
+
+.ldna__activity.is-selected {
+  border-color: var(--ldna-ink);
+  box-shadow: inset 0 0 0 var(--ldna-selected-inset) var(--ldna-ink);
+}
+
+.ldna__activity.is-ambient {
+  border-style: dotted;
+  opacity: var(--ldna-ambient-opacity);
+}
+
+.ldna__activity.is-ambient.is-selected,
+.ldna__activity.is-ambient:hover {
+  opacity: 1;
+}
+
+.ldna__activity.is-settled:not(.is-selected) {
+  color: var(--ldna-muted);
+}
+
+.ldna__activity.is-absorbing {
+  pointer-events: none;
+  animation: ldna-row-absorb var(--ldna-motion-absorb)
+    var(--ldna-absorb-curve) forwards;
+}
+
+@keyframes ldna-row-absorb {
+  to {
+    opacity: 0.22;
+    transform: translateY(calc(var(--ldna-gravity-travel) * 0.45))
+      scale(0.992);
+  }
+}
+
+.ldna__attention {
+  align-self: stretch;
+  min-height: 34px;
+  background: transparent;
+}
+
+.ldna__activity.is-notable .ldna__attention {
+  width: 1px;
+  background: var(--ldna-rule);
+}
+
+.ldna__activity.is-demanding .ldna__attention {
+  background: var(--ldna-held);
+}
+
+.ldna__activity.is-incident .ldna__attention {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--ldna-held) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+.ldna__actor {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 50%;
+  color: var(--ldna-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+}
+
+.ldna__activity.needs-me .ldna__actor,
+.ldna__activity.is-selected .ldna__actor {
+  border-color: var(--ldna-ink);
+  color: var(--ldna-ink);
+}
+
+.ldna__activity-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.28rem;
+}
+
+.ldna__activity-copy strong {
+  font-size: var(--ldna-summary-size);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ldna__activity.needs-me .ldna__activity-copy strong {
+  font-weight: 600;
+}
+
+.ldna__activity-copy small {
+  overflow: hidden;
+  color: var(--ldna-muted);
+  font-size: var(--ldna-meta-size);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ldna__activity-meta {
+  display: grid;
+  grid-template-columns: auto auto 1.5rem;
+  align-items: center;
+  justify-items: end;
+  gap: 0.38rem;
+  color: var(--ldna-muted);
+  font-size: var(--ldna-meta-size);
+}
+
+.ldna__activity-meta span,
+.ldna__activity-meta em {
+  padding: 0.15rem 0.34rem;
+  border: 1px dotted var(--ldna-rule);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.ldna__activity.needs-me .ldna__activity-meta em,
+.ldna__activity.is-incident .ldna__activity-meta em {
+  border-style: solid;
+  border-color: var(--ldna-ink);
+  color: var(--ldna-ink);
+}
+
+.ldna__activity-meta code {
+  font-size: calc(var(--ldna-meta-size) - 1px);
+  text-align: center;
+}
+
+.ldna__empty {
+  display: grid;
+  min-height: 170px;
+  place-content: center;
+  gap: 0.25rem;
+  border: 1px dotted var(--ldna-rule);
+  color: var(--ldna-muted);
+  text-align: center;
+}
+
+.ldna__empty strong {
+  color: var(--ldna-ink);
+  font-size: 0.9rem;
+  font-weight: 550;
+}
+
+.ldna__empty span {
+  font-size: 0.72rem;
+}
+
+.ldna__inspector {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--ldna-rule);
+  background: var(--ldna-surface);
+  overflow: hidden;
+}
+
+.ldna__inspector-scroll {
+  height: 100%;
+  padding: 1.1rem 1.1rem 2rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--ldna-rule) transparent;
+  scrollbar-width: thin;
+  animation: ldna-inspector-settle var(--ldna-motion-settle)
+    var(--ldna-settle-curve) both;
+}
+
+@keyframes ldna-inspector-settle {
+  from {
+    opacity: 0.4;
+    transform: translateX(var(--ldna-gravity-travel));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ldna__inspector-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--ldna-rule);
+}
+
+.ldna__inspector-header p,
+.ldna__inspector-header h2 {
+  margin: 0;
+}
+
+.ldna__inspector-header p {
+  color: var(--ldna-muted);
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ldna__inspector-header h2 {
+  margin-top: 0.2rem;
+  font-size: 1.18rem;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+}
+
+.ldna__authority {
+  padding: 0.2rem 0.38rem;
+  border: 1px dotted var(--ldna-ink);
+  color: var(--ldna-muted);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+}
+
+.ldna__authority.is-human {
+  border-style: solid;
+  color: var(--ldna-ink);
+}
+
+.ldna__inspector-summary {
+  margin: 1rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ldna__facts,
+.ldna__linkage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+  border-top: 1px solid var(--ldna-rule);
+  border-left: 1px solid var(--ldna-rule);
+}
+
+.ldna__facts > div,
+.ldna__linkage > div {
+  min-width: 0;
+  padding: 0.55rem 0.62rem;
+  border-right: 1px solid var(--ldna-rule);
+  border-bottom: 1px solid var(--ldna-rule);
+}
+
+.ldna__facts dt,
+.ldna__linkage dt {
+  color: var(--ldna-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ldna__facts dd,
+.ldna__linkage dd {
+  margin: 0.18rem 0 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ldna__inspector-section,
+.ldna__decision {
+  margin-top: 1.1rem;
+}
+
+.ldna__inspector-section h3 {
+  margin: 0 0 0.55rem;
+  color: var(--ldna-muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ldna__subjects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.ldna__subjects code {
+  padding: 0.23rem 0.38rem;
+  border: 1px dotted var(--ldna-rule);
+  font-size: 0.63rem;
+}
+
+.ldna__graph-link {
+  display: inline-block;
+  margin-top: 0.55rem;
+  padding: 0.36rem 0.58rem;
+  border: 1px solid var(--ldna-ink);
+  color: var(--ldna-ink);
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+
+.ldna__graph-link:hover {
+  background: var(--ldna-ink);
+  color: var(--ldna-surface);
+}
+
+.ldna__decision {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.8rem;
+  border: var(--ldna-attention-rail) solid var(--ldna-ink);
+  background: var(--ldna-canvas);
+}
+
+.ldna__decision p,
+.ldna__decision strong,
+.ldna__decision small {
+  margin: 0;
+}
+
+.ldna__decision p {
+  color: var(--ldna-muted);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ldna__decision strong {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.78rem;
+  font-weight: 550;
+}
+
+.ldna__decision label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.ldna__decision label span {
+  color: var(--ldna-muted);
+  font-size: 0.62rem;
+}
+
+.ldna__decision input {
+  width: 100%;
+  padding: 0.42rem 0.5rem;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 0;
+  background: var(--ldna-surface);
+  color: var(--ldna-ink);
+  font-size: 0.72rem;
+}
+
+.ldna__decision-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ldna__decision button {
+  justify-self: start;
+  padding: 0.38rem 0.6rem;
+  border: 1px solid var(--ldna-ink);
+  border-radius: 0;
+  background: var(--ldna-surface);
+  color: var(--ldna-ink);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.ldna__decision button.is-primary {
+  background: var(--ldna-ink);
+  color: var(--ldna-surface);
+}
+
+.ldna__decision button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ldna__decision small {
+  color: var(--ldna-muted);
+  font-size: 0.61rem;
+}
+
+.ldna__timeline,
+.ldna__plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ldna__timeline {
+  display: grid;
+}
+
+.ldna__timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 1fr);
+  gap: 0.55rem;
+  padding-bottom: 0.75rem;
+}
+
+.ldna__timeline li::before {
+  position: absolute;
+  top: 1.1rem;
+  bottom: 0;
+  left: 0.56rem;
+  width: 1px;
+  background: var(--ldna-rule);
+  content: "";
+}
+
+.ldna__timeline li:last-child::before {
+  display: none;
+}
+
+.ldna__timeline li.is-inferred::before {
+  width: 0;
+  border-left: 1px dotted var(--ldna-rule);
+  background: transparent;
+}
+
+.ldna__timeline li > span {
+  z-index: 1;
+  display: grid;
+  width: 1.15rem;
+  height: 1.15rem;
+  place-items: center;
+  border: 1px solid var(--ldna-rule);
+  border-radius: 50%;
+  background: var(--ldna-surface);
+  color: var(--ldna-muted);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+}
+
+.ldna__timeline li.is-degraded > span {
+  border-style: dotted;
+  border-color: var(--ldna-ink);
+  color: var(--ldna-ink);
+}
+
+.ldna__timeline code {
+  font-size: 0.64rem;
+}
+
+.ldna__timeline p {
+  margin: 0.16rem 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.ldna__timeline small {
+  color: var(--ldna-muted);
+  font-size: 0.62rem;
+}
+
+.ldna__plain-list {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.ldna__plain-list li {
+  padding: 0.34rem 0.45rem;
+  border-left: 1px dotted var(--ldna-ink);
+  background: var(--ldna-canvas);
+  font-size: 0.7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ldna *,
+  .ldna *::before,
+  .ldna *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .ldna__workbench {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+
+  .ldna__surface {
+    grid-template-columns: minmax(330px, 1fr) minmax(
+        310px,
+        var(--ldna-inspector-width)
+      );
+  }
+
+  .ldna__activity > button {
+    grid-template-columns: var(--ldna-attention-rail) 28px minmax(0, 1fr);
+  }
+
+  .ldna__activity-meta {
+    grid-column: 3;
+    justify-self: start;
+    justify-items: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .ldna__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ldna__header-actions {
+    justify-content: flex-start;
+  }
+
+  .ldna__workbench {
+    display: block;
+    height: auto;
+  }
+
+  .ldna__controls {
+    max-height: 44vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--ldna-rule);
+  }
+
+  .ldna__specimen {
+    min-height: 760px;
+  }
+
+  .ldna__surface {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .ldna__queue,
+  .ldna__inspector {
+    overflow: visible;
+  }
+
+  .ldna__inspector {
+    border-top: 1px solid var(--ldna-rule);
+    border-left: 0;
+  }
+
+  .ldna__inspector-scroll {
+    height: auto;
+    overflow: visible;
+  }
+}

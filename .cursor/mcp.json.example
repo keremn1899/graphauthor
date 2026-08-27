@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "graphauthor": {
+      "command": "graphauthor-mcp",
+      "env": {
+        "SST_DB_PATH": "ABS/PATH/TO/graph.lbug",
+        "PYTHONPATH": "ABS/PATH/TO/this/repo"
+      }
+    }
+  }
+}

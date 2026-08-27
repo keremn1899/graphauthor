@@ -1,0 +1,74 @@
+.concept-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.concept-node__body {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0.65rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  overflow: visible;
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 2;
+}
+
+.concept-node__body:active {
+  cursor: grabbing;
+}
+
+.concept-node--selected .concept-node__body {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* Provisional preview at confirmation only — concentric, geometric */
+.concept-node__concentric {
+  position: absolute;
+  inset: -7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.concept-node__label {
+  margin: 0;
+  text-align: center;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  z-index: 1;
+}
+
+/* Quiet unread modifier — small geometric mark, not a badge */
+.concept-node__unread {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid var(--node-ink);
+  border-radius: 0;
+  background: var(--node-ink);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.concept-node__handle {
+  background: transparent !important;
+  z-index: 3;
+}

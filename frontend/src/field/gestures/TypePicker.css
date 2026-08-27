@@ -1,0 +1,44 @@
+.field-type-picker {
+  position: absolute;
+  z-index: 20;
+  min-width: 180px;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  box-shadow: none;
+}
+
+.field-type-picker__label {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.field-type-picker__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field-type-picker__choices button,
+.field-type-picker__cancel {
+  min-height: 40px;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.field-type-picker__choices button:hover {
+  border-color: var(--ink);
+}
+
+.field-type-picker__cancel {
+  margin-top: 0.45rem;
+  color: var(--ink-muted);
+}

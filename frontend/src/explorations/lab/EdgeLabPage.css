@@ -1,0 +1,89 @@
+.edge-lab {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--panel);
+}
+
+.edge-lab__chrome {
+  flex: 0 0 auto;
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 44rem;
+}
+
+.edge-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.edge-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.edge-lab__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.edge-lab__lede code {
+  font-size: 0.85em;
+  color: var(--ink);
+}
+
+.edge-lab__nav {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.edge-lab__nav a {
+  color: var(--ink);
+}
+
+.edge-lab__canvas {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--canvas);
+}
+
+.edge-lab__canvas .react-flow__node {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.edge-lab-node {
+  position: relative;
+  pointer-events: none;
+}
+
+.edge-lab-node__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.7rem;
+  font-weight: 500;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.edge-lab__label {
+  position: absolute;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  pointer-events: none;
+}

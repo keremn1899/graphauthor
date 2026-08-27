@@ -1,0 +1,95 @@
+/* Presence layers. Time and curve come from the spine on `.product-shell`.
+   Travel is the canonical field (8.6px), except docks whose displacement is
+   their own geometry while duration stays the kernel's.
+
+   Into-state owns the law: rest / out carries absorb; `.is-in` carries emit. */
+
+.motion-layer {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-absorb-duration, 190ms)
+      var(--motion-absorb-curve, ease-in),
+    transform var(--motion-absorb-duration, 190ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s linear var(--motion-absorb-duration, 190ms);
+}
+
+.motion-layer--rise {
+  transform: translateY(calc(-1 * var(--motion-travel, 8.6px)));
+}
+
+.motion-layer--dock-right {
+  transform: translateX(100%);
+}
+
+.motion-layer--fade {
+  transform: none;
+}
+
+.motion-layer.is-in {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+  transition-delay: 0s;
+}
+
+.motion-swap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.motion-swap__was {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.motion-swap__is {
+  position: relative;
+  z-index: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ov__body--flush > .motion-swap,
+.ov__body--flush > .motion-swap > .motion-swap__is {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.traversal-modal > .motion-swap,
+.traversal-modal > .motion-swap > .motion-swap__is {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.traversal-modal > .motion-swap > .motion-swap__is > .traversal-modal__inspector,
+.traversal-modal > .motion-swap > .motion-swap__was > .traversal-modal__inspector {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-layer,
+  .motion-layer.is-in,
+  .motion-swap__was,
+  .motion-swap__is {
+    animation: none;
+    transition-duration: 1ms;
+    transform: none;
+  }
+}

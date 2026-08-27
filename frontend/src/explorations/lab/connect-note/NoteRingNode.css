@@ -1,0 +1,75 @@
+.note-ring-node {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.note-ring-node__ring {
+  position: absolute;
+  inset: -12.5%;
+  width: 125%;
+  height: 125%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.note-ring-node__ring-circle {
+  fill: var(--canvas);
+  stroke: var(--rule);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 4;
+  opacity: 0;
+}
+
+.note-ring-node__ring-circle--active {
+  opacity: 1;
+}
+
+.note-ring-node__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 0.55rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  cursor: grab;
+  z-index: 2;
+}
+
+.note-ring-node__face:active {
+  cursor: grabbing;
+}
+
+.note-ring-node--target .note-ring-node__face {
+  background: color-mix(in srgb, var(--node-fill) 72%, var(--ink) 28%);
+  box-shadow: inset 0 0 0 3px var(--ink);
+  cursor: crosshair;
+}
+
+.note-ring-node.touch-target .note-ring-node__face {
+  background: color-mix(in srgb, var(--node-fill) 72%, var(--ink) 28%);
+  box-shadow: inset 0 0 0 3px var(--ink);
+}
+
+.note-ring-node__hit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: transparent;
+  cursor: crosshair;
+}
+
+.note-ring-node__handle {
+  z-index: 10;
+}

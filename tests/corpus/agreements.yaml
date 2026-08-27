@@ -1,0 +1,97 @@
+# Agreements (international organisations) seed corpus cases.
+#
+# Node ids reference `seeds.get_agreements_data()` — a density-stressed
+# CONTAINS-dominated graph.
+
+- id: agreements_enum_contains
+  query: "Which countries are members of international organisations in this graph?"
+  seed: agreements
+  query_class: enumeration
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: global
+  ground_truth:
+    answerable: true
+    required_edge_types: [contains]
+    required_node_ids_any: [c_usa, c_france, c_germany, c_japan]
+    min_edge_count: 10
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate (country -> organisation) pairs via CONTAINS 'is_member_of'
+      or 'is_partner_in' edges — ISS, ESA, ITER, CERN, etc.
+    must_not_contain:
+      - "no memberships"
+    expected_aspects:
+      - country-to-organisation membership
+  tags: [v6_enumeration, density]
+
+- id: agreements_fanout_france
+  query: "Which international organisations is France a member of?"
+  seed: agreements
+  query_class: fanout
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_node_ids_all: [c_france]
+    required_node_ids_any: [org_esa, org_iter, org_cern]
+    min_edge_count: 2
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate the international organisations France participates in —
+      ESA, ITER, CERN at minimum.
+    must_contain: [France]
+  tags: [v6_fanout]
+
+- id: agreements_overview
+  query: "What is this graph about?"
+  seed: agreements
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 8
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a map of international organisations and
+      their member countries (ISS, ITER, CERN, ESA, Paris Agreement,
+      WHO, WTO, Svalbard Seed Vault).
+    expected_aspects:
+      - organisations
+      - memberships
+  tags: [v6_overview]
+
+- id: agreements_meta_gap_treaty_dates
+  query: "What is the signing date of each treaty in this graph?"
+  seed: agreements
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: global
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Report that the graph does not carry signing-date properties for
+      organisations or treaties. This is a graph-coverage gap.
+    must_not_contain:
+      - "signed on"
+      - "was signed in"
+  tags: [v6_meta_gap, honest_failure]

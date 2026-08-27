@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Refuse to commit a modified graph binary unless it was meant.
+#
+# Opening a .lbug rewrites it. Twenty-four of them are still tracked because
+# tests read them as inputs, so an ordinary read-only session leaves them
+# staged-and-changed, and `git add -A` then commits a multi-megabyte blob whose
+# diff nobody can review. That has happened 69 times in this history, and once
+# it produced a 21-test regression that did not exist.
+#
+# This does not stop a deliberate graph update. It stops an accidental one:
+#
+#     ALLOW_GRAPH_COMMIT=1 git commit ...
+#
+# Install (once, per clone):
+#     git config core.hooksPath scripts/hooks
+set -euo pipefail
+
+if [ "${ALLOW_GRAPH_COMMIT:-}" = "1" ]; then
+    exit 0
+fi
+
+staged=$(git diff --cached --name-only --diff-filter=ACM \
+         | grep -E '\.(lbug|lbug\.idx|sqlite)$' || true)
+
+if [ -n "$staged" ]; then
+    count=$(printf '%s\n' "$staged" | wc -l | tr -d ' ')
+    echo "pre-commit: refusing $count staged graph binary change(s):" >&2
+    printf '  %s\n' $staged >&2
+    echo >&2
+    echo "Opening a graph rewrites it, so this is usually a side effect of" >&2
+    echo "reading, not an intended change. To discard:" >&2
+    echo "    git restore --staged --worktree -- <path>" >&2
+    echo "If the change IS intended:" >&2
+    echo "    ALLOW_GRAPH_COMMIT=1 git commit ..." >&2
+    exit 1
+fi

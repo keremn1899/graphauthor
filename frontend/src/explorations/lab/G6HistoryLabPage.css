@@ -1,0 +1,230 @@
+.history-lab {
+  --history-accent: #55743e;
+  --history-accent-soft: #dbe8c8;
+}
+
+.history-lab__chrome {
+  max-width: 64rem;
+}
+
+.history-lab__actions {
+  align-items: center;
+}
+
+.history-lab__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.history-lab__action-divider {
+  width: 1px;
+  height: 1.5rem;
+  margin: 0 0.15rem;
+  background: var(--rule);
+}
+
+.history-lab__workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+  gap: 1rem;
+  padding: 1rem 1.4rem 0;
+}
+
+.history-lab__graph-column {
+  min-width: 0;
+}
+
+.history-lab__status {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.74rem;
+}
+
+.history-lab__stage {
+  width: 100%;
+  height: min(640px, calc(100vh - 17rem));
+  min-height: 460px;
+  margin: 0;
+  background-color: #fff;
+}
+
+.history-lab__hint {
+  margin: 0.5rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.history-lab__timeline {
+  min-height: 460px;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+}
+
+.history-lab__timeline-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.history-lab__timeline-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.history-lab__timeline-heading output {
+  padding: 0.2rem 0.4rem;
+  color: var(--ink-muted);
+  border: 1px solid var(--rule);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+}
+
+.history-lab__scrubber {
+  width: 100%;
+  margin: 1rem 0 0.8rem;
+  accent-color: var(--history-accent);
+}
+
+.history-lab__checkpoints {
+  max-height: 330px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.history-lab__checkpoints li {
+  position: relative;
+}
+
+.history-lab__checkpoints li:not(:last-child)::after {
+  position: absolute;
+  top: 1.65rem;
+  bottom: -0.45rem;
+  left: 0.38rem;
+  width: 1px;
+  background: var(--rule);
+  content: "";
+}
+
+.history-lab__checkpoints button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 0.8rem 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.45rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-lab__checkpoints button:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+
+.history-lab__dot {
+  position: relative;
+  z-index: 1;
+  width: 0.78rem;
+  height: 0.78rem;
+  margin-top: 0.18rem;
+  border: 1px solid var(--ink-muted);
+  border-radius: 50%;
+  background: var(--canvas);
+}
+
+.history-lab__checkpoints strong,
+.history-lab__checkpoints small {
+  display: block;
+}
+
+.history-lab__checkpoints strong {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.history-lab__checkpoints small {
+  margin-top: 0.12rem;
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+}
+
+.history-lab__checkpoints .is-applied .history-lab__dot {
+  border-color: var(--history-accent);
+  background: var(--history-accent);
+}
+
+.history-lab__checkpoints .is-current button {
+  color: var(--history-accent);
+}
+
+.history-lab__checkpoints .is-current .history-lab__dot {
+  border: 3px solid var(--history-accent);
+  background: var(--history-accent-soft);
+}
+
+.history-lab__checkpoints .is-future {
+  opacity: 0.42;
+}
+
+.history-lab__research {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+
+.history-lab__research ul {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.history-lab__research code {
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 840px) {
+  .history-lab__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .history-lab__timeline {
+    min-height: 0;
+  }
+
+  .history-lab__stage {
+    height: 520px;
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 560px) {
+  .history-lab__workspace {
+    padding-inline: 0.8rem;
+  }
+
+  .history-lab__status {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .history-lab__action-divider {
+    display: none;
+  }
+}

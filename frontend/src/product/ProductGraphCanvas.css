@@ -1,0 +1,74 @@
+.product-graph-canvas,
+.product-graph-canvas__stage {
+  position: absolute;
+  inset: 0;
+}
+
+.product-graph-canvas {
+  overflow: hidden;
+  background: var(--matter-canvas, var(--canvas));
+}
+
+/* The map owns its own gestures.
+ *
+ * Without this the browser claims the touch gestures it recognises before the
+ * canvas hears about them: a two-finger pinch became page zoom, so the graph
+ * never received it — the renderer supports pinch and was simply never given
+ * the event. One-finger drag still reached `drag-canvas`, which is why panning
+ * worked and zooming did not, and why it read like a missing feature rather
+ * than a claimed gesture.
+ *
+ * `none` rather than `pan-x pan-y`: the map is not a scrolling document, and
+ * every pan on it is one the graph should handle so the camera stays the
+ * single source of where you are looking. */
+.product-graph-canvas,
+.product-graph-canvas__stage {
+  touch-action: none;
+}
+
+.product-graph-canvas__stage {
+  min-width: 0;
+  min-height: 0;
+}
+
+.product-graph-canvas .gdna__ant-ring {
+  position: absolute;
+  z-index: 5;
+  overflow: visible;
+  opacity: 1;
+  transform: scale(1);
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.product-graph-canvas .gdna__ant-ring circle {
+  animation: product-ant-march var(--gdna-ant-cycle) linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.product-graph-canvas .gdna__ant-ring.is-held circle {
+  animation-play-state: paused;
+}
+
+.product-graph-canvas .gdna__ant-ring.is-still circle,
+.product-graph-canvas .gdna__ant-ring[data-pattern="solid"] circle {
+  animation: none;
+}
+
+@keyframes product-ant-march {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-graph-canvas,
+  .product-graph-canvas .gdna__ant-ring,
+  .product-graph-canvas .gdna__ant-ring circle {
+    animation: none !important;
+    transition: none !important;
+  }
+}

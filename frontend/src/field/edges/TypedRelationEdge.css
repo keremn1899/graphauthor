@@ -1,0 +1,17 @@
+.typed-relation__stroke {
+  stroke: var(--ink);
+  fill: none;
+}
+
+.typed-relation__paren {
+  stroke: var(--ink);
+  fill: none;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+.typed-relation__label {
+  fill: var(--ink-muted);
+  font-size: 10px;
+  pointer-events: none;
+}

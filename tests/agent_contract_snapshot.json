@@ -1,0 +1,489 @@
+{
+  "contract_gap_types": [
+    "coverage_shallow",
+    "missing_concept",
+    "missing_relationship",
+    "schema_gap"
+  ],
+  "contract_version": "1",
+  "governance_fields_stripped_from_discovery": [
+    "conformance_ruling",
+    "governance_verdict",
+    "kind",
+    "status",
+    "ungoverned_predicate"
+  ],
+  "tools": {
+    "contract": {
+      "additionalProperties": false,
+      "arguments": {
+        "include_markdown": {
+          "default": true,
+          "enum": null,
+          "type": "boolean"
+        }
+      },
+      "description_length": 346,
+      "required": []
+    },
+    "expand": {
+      "additionalProperties": false,
+      "arguments": {
+        "context_ref": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "depth": {
+          "default": 1,
+          "enum": null,
+          "type": "integer"
+        },
+        "direction": {
+          "default": "both",
+          "enum": [
+            "outgoing",
+            "incoming",
+            "both"
+          ],
+          "type": "string"
+        },
+        "edge_labels": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        },
+        "edge_types": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "include_content": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "node_ids": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        }
+      },
+      "description_length": 503,
+      "required": [
+        "node_ids"
+      ]
+    },
+    "history": {
+      "additionalProperties": false,
+      "arguments": {
+        "action": {
+          "default": "versions",
+          "enum": [
+            "versions",
+            "diff",
+            "changed_since"
+          ],
+          "type": "string"
+        },
+        "v1": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "v2": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        }
+      },
+      "description_length": 363,
+      "required": []
+    },
+    "lookup": {
+      "additionalProperties": false,
+      "arguments": {
+        "context_ref": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "include_content": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "references": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        }
+      },
+      "description_length": 465,
+      "required": [
+        "references"
+      ]
+    },
+    "orient": {
+      "additionalProperties": false,
+      "arguments": {
+        "context": {
+          "default": "graph_card",
+          "enum": [
+            "capabilities",
+            "graph_card",
+            "full_map"
+          ],
+          "type": "string"
+        }
+      },
+      "description_length": 1354,
+      "required": []
+    },
+    "path": {
+      "additionalProperties": false,
+      "arguments": {
+        "context_ref": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "edge_types": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "include_content": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "max_hops": {
+          "default": 4,
+          "enum": null,
+          "type": "integer"
+        },
+        "source_ids": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        },
+        "target_ids": {
+          "default": null,
+          "enum": null,
+          "type": "array"
+        }
+      },
+      "description_length": 429,
+      "required": [
+        "source_ids",
+        "target_ids"
+      ]
+    },
+    "proposal_status": {
+      "additionalProperties": false,
+      "arguments": {
+        "proposal_id": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        }
+      },
+      "description_length": 225,
+      "required": [
+        "proposal_id"
+      ]
+    },
+    "propose": {
+      "additionalProperties": false,
+      "arguments": {
+        "check_gate": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "claim_level": {
+          "default": "L0",
+          "enum": [
+            "L0",
+            "L1"
+          ],
+          "type": "string"
+        },
+        "dry_run": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "encoding": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        },
+        "expected_graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "provenance": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        },
+        "target_gap_id": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "traversal_receipt": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        }
+      },
+      "description_length": 1062,
+      "required": [
+        "encoding",
+        "expected_graph_version",
+        "target_gap_id"
+      ]
+    },
+    "read_cypher": {
+      "additionalProperties": false,
+      "arguments": {
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "max_chars": {
+          "default": 20000,
+          "enum": null,
+          "type": "integer"
+        },
+        "max_rows": {
+          "default": 200,
+          "enum": null,
+          "type": "integer"
+        },
+        "parameters": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        },
+        "query": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "timeout_ms": {
+          "default": 5000,
+          "enum": null,
+          "type": "integer"
+        }
+      },
+      "description_length": 753,
+      "required": [
+        "query"
+      ]
+    },
+    "retrieve": {
+      "additionalProperties": false,
+      "arguments": {
+        "context_ref": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "evidence": {
+          "default": "content",
+          "enum": [
+            "summary",
+            "packet",
+            "content"
+          ],
+          "type": "string"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "program": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        }
+      },
+      "description_length": 739,
+      "required": [
+        "program"
+      ]
+    },
+    "run_ephemeral_traversal": {
+      "additionalProperties": false,
+      "arguments": {
+        "evidence": {
+          "default": "packet",
+          "enum": [
+            "summary",
+            "packet",
+            "content"
+          ],
+          "type": "string"
+        },
+        "explain": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "parameters": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        },
+        "program": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        }
+      },
+      "description_length": 420,
+      "required": [
+        "program"
+      ]
+    },
+    "run_traversal": {
+      "additionalProperties": false,
+      "arguments": {
+        "evidence": {
+          "default": "packet",
+          "enum": [
+            "summary",
+            "packet",
+            "content"
+          ],
+          "type": "string"
+        },
+        "explain": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "name": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "parameters": {
+          "default": null,
+          "enum": null,
+          "type": "object"
+        },
+        "version": {
+          "default": null,
+          "enum": null,
+          "type": "integer"
+        }
+      },
+      "description_length": 474,
+      "required": [
+        "name",
+        "parameters"
+      ]
+    },
+    "search": {
+      "additionalProperties": false,
+      "arguments": {
+        "context_ref": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "graph_version": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        },
+        "include_content": {
+          "default": false,
+          "enum": null,
+          "type": "boolean"
+        },
+        "limit": {
+          "default": 8,
+          "enum": null,
+          "type": "integer"
+        },
+        "mode": {
+          "default": "semantic",
+          "enum": [
+            "lexical",
+            "semantic"
+          ],
+          "type": "string"
+        },
+        "query": {
+          "default": null,
+          "enum": null,
+          "type": "string"
+        }
+      },
+      "description_length": 714,
+      "required": [
+        "query"
+      ]
+    }
+  },
+  "verdict_spaces": {
+    "confirmation": [
+      "ALTERNATIVE",
+      "CONFIRMED",
+      "EXHAUSTED",
+      "ILL_POSED",
+      "UNKNOWN_TO_GRAPH"
+    ],
+    "coverage": [
+      "ABSENT",
+      "GOVERNED",
+      "PARTIALLY_GOVERNED",
+      "UNGOVERNED"
+    ],
+    "ruling": [
+      "CONFORMS",
+      "INSUFFICIENT_EVIDENCE",
+      "UNGOVERNED",
+      "VIOLATES"
+    ]
+  }
+}

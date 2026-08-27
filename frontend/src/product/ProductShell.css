@@ -1,0 +1,638 @@
+/* The shell: identity on top, instrument at the bottom, subject in between.
+
+   Chrome colour is NOT declared here. `ProductShell` applies `--canvas`,
+   `--panel`, `--ink`, `--ink-muted` and `--rule` from `GRAPH_DNA_CHROME` on
+   every render, so the graph's palette and the product's chrome are one source.
+   Restating them here as hex is what let the two drift apart before.
+
+   ---------------------------------------------------------------------------
+
+   **Two chromes, and they do not mix** (`chrome-constraints.md` §3.1).
+
+   *Identity* — Graph, Logs, appearance, settings. Used
+   rarely, read constantly. One geometry on every surface, and its contents do
+   not vary by page.
+
+   *Instrument* — the verbs of whichever surface you are on. Used constantly,
+   read rarely. One fixed place on every surface; contents entirely local, and
+   filled by the page itself through `Instrument` (a portal, so page state stays
+   in the page).
+
+   This file used to do the opposite of both. The header had a `--bleed` fork
+   that changed its *shape* between Graph and everything else while its
+   *contents* stayed identical — chrome telling the operator something had
+   changed when nothing had (§2.4) — and each surface invented its own answer to
+   where page controls live: Graph floated a cluster under the header, Review
+   grew a second full-width band, Construct put a stepper inside the reading
+   column (§2.5). Three answers to one question.
+
+   It also contained **two complete copies of its own base rules**, and the
+   later copy won. That is why the current tab was a filled block: the first
+   copy argues, in a comment, that the current surface is marked "by ink and a
+   hairline under the word, not by a filled block ... a fill is the heaviest
+   mark available and this is the lightest thing on screen" — and then a
+   duplicate two hundred lines down reinstated `background: var(--canvas)`. The
+   reasoning lost to a paste. One authoring now (§2.13). */
+
+.product-shell.is-motion-ready {
+  transition:
+    --canvas var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    --panel var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    --ink var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    --ink-muted var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    --rule var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    --matter-surface var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    --matter-canvas var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out);
+}
+
+.product-shell.is-motion-ready.is-focus {
+  transition-duration: var(--motion-absorb-duration, 190ms);
+  transition-timing-function: var(--motion-absorb-curve, ease-in);
+}
+
+.product-shell {
+  /* The two bands, sized so each bar stands the same distance clear of the
+     window edge it floats against. A bar hard against the edge reads as part of
+     the frame rather than as something over the surface — the same argument
+     `--ov-float` makes for a closed drawer handle.
+
+     Band minus cell, halved, is that distance: (60-28)/2 and (62-30)/2 both
+     give 16px. Change a cell height and the band has to move with it, or the
+     two rows stop matching. */
+  --shell-band: 60px;
+  --instrument-band: 62px;
+  /* The left/right gutter the floating rows keep clear of a drawer handle.
+     Both bars are centred, so this only bites on a narrow window — but that is
+     exactly where a centred bar can reach a handle. */
+  --chrome-gutter: calc(
+    var(--ov-float, 10px) + var(--ov-handle, 34px) + 0.5rem
+  );
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--panel);
+  color: var(--ink);
+}
+
+/* The tokens themselves come from the theme the shell resolves — including the
+   status trio, which moves between light and dark like every other colour; this
+   only tells the platform which form controls and scrollbars to draw. */
+.product-shell.is-dark {
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ identity
+   Floating, centred, on every surface.
+
+   Centred rather than spread because the two corners it used to occupy are the
+   two columns the drawers occupy — so opening a panel put chrome and content in
+   the same place, and the corner a control sat in had nothing to do with what
+   the control did. Floating on every surface, not just the map, because the
+   alternative is a header that is a band here and a strip there, which is the
+   shape-change §2.4 forbids.
+
+   One rule governs everything else: **the floating header owns the top band in
+   the middle, and the docks own the edges.** Nothing has to be ordered against
+   anything else, because the two never occupy the same column. */
+
+.product-shell__top {
+  position: absolute;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--shell-band);
+  /* Both gutters clear the same thing the surface's own instrument clears.
+     `--shell-inset-left` additionally clears whatever the surface below has
+     docked against that edge — the DNA workbench's parameter rail. */
+  padding: 0 var(--chrome-gutter) 0
+    calc(var(--shell-inset-left, 0px) + var(--chrome-gutter));
+  /* Only the bar takes the pointer, so the surface can be dragged either side. */
+  pointer-events: none;
+}
+
+/* A strip divided into cells of one height, separated by the same hairline that
+   bounds it. Everything in it is the same size and sits on one baseline; what
+   differs between cells is only their ink, which is the one difference that is
+   about meaning.
+
+   Square, unshadowed, unblurred: a rule separates a floating surface from what
+   is under it, because a rule is a fact about the surface and a frosted pane is
+   a claim about a light source. */
+.product-shell__bar {
+  --chrome-cell: 28px;
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+  min-width: 0;
+  height: var(--chrome-cell);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--rule) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+      transparent
+    );
+  background: color-mix(
+    in srgb,
+    var(--panel) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+    transparent
+  );
+  pointer-events: auto;
+}
+
+/* Every member of the bar, and every item inside its two groups, is a cell.
+   No exceptions — that is the whole point of the rule. */
+.product-shell__bar > *,
+.product-shell__nav > a,
+.product-shell__utils > * {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0 0.7rem;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.product-shell__bar > * + *,
+.product-shell__nav > a + a,
+.product-shell__utils > * + * {
+  border-left: 1px solid
+    color-mix(
+      in srgb,
+      var(--rule) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+      transparent
+    );
+}
+
+/* Surface verb in the identity bar — Publish / Return. Empty until a graph
+   that can move between shelves is open, so it must not leave a blank cell. */
+.product-shell__action {
+  padding: 0;
+}
+
+.product-shell__action:empty {
+  display: none;
+}
+
+.product-shell__action > button {
+  height: 100%;
+  padding: 0 0.7rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.product-shell__action > button:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.product-shell__action > button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.product-shell__action > button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+/* A nav cell holds its label and, on Review, a count. The shared cell rule
+   above centres a single item; without a column flow the two would stack into
+   the same grid cell and print the number on top of the word. */
+.product-shell__nav > a {
+  grid-auto-flow: column;
+  gap: 0.4rem;
+}
+
+/* How many things are waiting for a person.
+
+   `--attention` rather than a hue of its own: this is the same claim the
+   queue's row mark makes, and one meaning gets one colour. It is a bare
+   numeral, not a filled pill — a pill is a shape the eye finds before it finds
+   anything else on the bar, and the top bar is deliberately the least
+   important thing on screen. The colour is enough to be found on purpose and
+   quiet enough not to be found by accident.
+
+   Tabular figures so 9 → 10 does not shift the cells to its right. */
+.product-shell__demand {
+  color: var(--attention);
+  font-size: 0.63rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* The groups are containers of cells, not cells, so they carry no padding of
+   their own — otherwise their first item would sit one padding further in than
+   every other cell in the bar. */
+.product-shell__nav,
+.product-shell__utils {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+}
+
+/* Host-down used to be a chip here. It is a blocking notice now. */
+.product-shell__host {
+  color: var(--ink);
+  cursor: default;
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-shell__utils > .product-shell__host:hover {
+  color: var(--ink);
+}
+
+/* The current surface is marked by ink and a hairline under the word.
+   A fill is the heaviest mark available and this is the lightest thing on
+   screen; the underline says the same thing at a tenth the weight. This is the
+   rule the duplicate block used to overwrite. */
+.product-shell__nav a[aria-current="page"] {
+  color: var(--ink);
+  box-shadow: inset 0 -1px 0 0 var(--ink);
+}
+
+.product-shell__nav a,
+.product-shell__utils > * {
+  transition:
+    color var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    box-shadow var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out);
+}
+
+.product-shell__nav a:hover,
+.product-shell__utils > *:hover {
+  color: var(--ink);
+}
+
+.product-shell__nav a:focus-visible,
+.product-shell__utils > *:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+.product-shell__local,
+.product-shell__workspace {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: default;
+}
+
+.product-shell__workspace {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---------------------------------------------------------------- the subject
+   Everything between the two bands. The docks inside it run the full height of
+   the window: the header floats in the middle and never meets them.
+
+   **A scrolling surface stops short of both bands; a fixed one does not.** The
+   map runs edge to edge under the chrome on purpose — a graph reads fine under
+   a word, and it is the surface that should use every pixel. A scrolling
+   document cannot: mid-scroll its text passes *through* the bands, and at rest
+   the bands are lettering with no box, so text crosses text and neither can be
+   read. Those surfaces inset their own scroll viewport by the two bands. */
+
+.product-shell__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  --dock-top: 0px;
+}
+
+.product-shell__scenes {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.product-shell__scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.product-shell__scene.is-in {
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------- instrument
+   The verbs of whichever surface you are on, in one place on every surface.
+
+   At the foot of the window, not the top, for the reason in §3.8: a control is
+   where the hand already is. These are pressed constantly and read rarely, so
+   they belong near the pointer's resting place rather than at the top edge
+   because that is where toolbars have traditionally lived. It also stops the
+   surface's controls competing with the header for the same 90px of the window,
+   which on the map meant both rows crossing the same nodes.
+
+   The band is a *slot*: the shell owns where it is, and the surface owns what is
+   in it, filled through a portal so page state stays in the page. */
+
+.product-shell__instrument {
+  position: absolute;
+  /* Above OverlayPanel (30): the reader used to swallow the bar. */
+  z-index: 40;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--instrument-band);
+  padding: 0 var(--chrome-gutter) 0
+    calc(var(--shell-inset-left, 0px) + var(--chrome-gutter));
+  pointer-events: none;
+}
+
+/* A surface with nothing to say here must not leave a band of dead chrome at
+   the foot of the window. */
+.product-shell__instrument:empty {
+  display: none;
+}
+
+/* One strip, same cell geometry as identity. The two bands are the same kind of
+   object and must read as one system; what separates them is where they are and
+   what is in them, not how they are drawn. */
+.instrument {
+  --chrome-cell: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.7rem;
+  max-width: 100%;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.instrument > * {
+  pointer-events: auto;
+}
+
+/* A cluster inside the instrument: a bordered strip of equal cells, exactly the
+   identity bar's geometry. */
+.instrument__group {
+  display: flex;
+  align-items: stretch;
+  height: var(--chrome-cell);
+  min-height: var(--chrome-cell);
+  padding: 0;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--rule) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+      transparent
+    );
+  background: color-mix(
+    in srgb,
+    var(--panel) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+    transparent
+  );
+  pointer-events: auto;
+}
+
+/* Facts beside the verbs. No rule, no plate, no cell dividers — lettering on
+   the band so a reading cannot be mistaken for a control that shares a strip. */
+.instrument__readings {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  height: var(--chrome-cell);
+  min-height: var(--chrome-cell);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  pointer-events: auto;
+}
+
+.instrument__readings:empty {
+  display: none;
+}
+
+.instrument__readings.motion-layer:empty {
+  display: flex;
+}
+
+.instrument__group > * + * {
+  border-left: 1px solid
+    color-mix(
+      in srgb,
+      var(--rule) calc(var(--chrome-box, 1) * var(--chrome-opacity, 1) * 100%),
+      transparent
+    );
+}
+
+/* Every member of a cluster is a cell of one height. `grid-auto-flow: column`
+   because a cell may hold more than one thing — a label and its count — and
+   those sit beside each other on one baseline. Without it the count dropped to
+   a second line and doubled the band's height. */
+.instrument__group > * {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.4rem;
+  place-items: center;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0 0.7rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    box-shadow var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    opacity var(--motion-absorb-duration, 190ms) var(--motion-absorb-curve, ease-in);
+}
+
+.instrument__group > *:hover:not(:disabled):not(.gm__reading) {
+  color: var(--ink);
+}
+
+.instrument__group > *:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.instrument__group > *[aria-pressed="true"] {
+  color: var(--ink);
+  box-shadow: inset 0 -1px 0 0 var(--ink);
+}
+
+.instrument__group > *:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+/* A cluster whose members are all conditional must be able to vanish, or an
+   ordinary surface carries an empty box at the foot of the window. */
+.instrument__group:empty {
+  display: none;
+}
+
+.instrument__group.motion-layer:empty {
+  display: flex;
+}
+
+/* ---------------------------------------------------------------- responsive */
+
+@media (max-width: 680px) {
+  .product-shell__top,
+  .product-shell__instrument {
+    padding: 0 0.55rem;
+  }
+
+  /* The bars are centred and cannot spread, so on a narrow window they shed the
+     cells that only report a condition and keep the ones you act with. */
+  .product-shell__local,
+  .product-shell__workspace {
+    display: none;
+  }
+
+  .product-shell__bar > *,
+  .product-shell__nav > a,
+  .product-shell__utils > * {
+    padding: 0 0.5rem;
+  }
+}
+
+/* The way back from a hidden chrome. See the note in `ProductShell.tsx`: this
+   is the one control that must not carry `.chrome`, because it is what undoes
+   the state that hides everything carrying it. Bottom-left is the corner no
+   drawer and no bar ever claims. */
+.product-shell__restore {
+  position: fixed;
+  z-index: 60;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity var(--motion-absorb-duration, 240ms)
+    var(--motion-absorb-curve, ease-in);
+}
+
+.product-shell__restore:hover,
+.product-shell__restore:focus-visible {
+  opacity: 1;
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+/* ------------------------------------------------------------------- touch
+   A thumb is not a pointer.
+
+   The bar is deliberately the least important thing on screen, and 28px cells
+   are right for a mouse: small, quiet, and precise because the pointer is
+   precise. A finger is not — every cell in this product measured 27–29px tall,
+   which is under every published minimum and about half a fingertip.
+
+   So the *look* is unchanged and the target grows, only where the input is
+   coarse. `--ov-handle` already did exactly this (34 → 46px); this finishes the
+   job it started for the rest of the chrome.
+
+   `pointer: coarse` rather than a width query: a small window on a laptop is
+   still driven by a mouse, and a large tablet is still driven by a thumb. The
+   question is what is touching the screen, not how wide it is. */
+@media (pointer: coarse) {
+  /* 46, not 44: the bar is border-box with a 1px rule on each side, so a cell
+     at `height: 100%` lands two pixels short of whatever is set here. Setting
+     the target itself is how you ship a 43px "44px" target. */
+  .product-shell__bar {
+    --chrome-cell: 46px;
+  }
+
+  /* The instrument band keeps its own cell height and so needed its own bump —
+     it is the *more* used of the two bars, being the verbs of the surface
+     rather than the navigation. */
+  .instrument {
+    --chrome-cell: 46px;
+  }
+
+  .product-shell {
+    --shell-band: 76px;
+    --instrument-band: 78px;
+  }
+
+  /* Padding, not height: these sit inside a 44px cell already, so they need
+     the horizontal half of the target rather than a taller box. */
+  .product-shell__bar > *,
+  .product-shell__nav > a,
+  .product-shell__utils > * {
+    padding: 0 0.95rem;
+  }
+
+  /* The instrument cells were given height by the rule above and left at
+     mouse width, which is only a target on the cells whose label is long
+     enough to make one. Measured after that change, "Ask" was 40px across —
+     tall enough, and still under the floor on the axis nobody checked.
+     `min-width` rather than more padding: it holds for a one-word verb and
+     changes nothing for a cell that is already wider. */
+  .instrument__group > * {
+    min-width: 44px;
+    padding-inline: 0.95rem;
+  }
+
+  /* The escape hatch most of all. It exists because `.` is unreachable without
+     a keyboard, so it is the single control a touch operator *must* be able to
+     hit — and at 1.9rem it was the smallest target in the product. */
+  .product-shell__restore {
+    width: 44px;
+    height: 44px;
+  }
+}

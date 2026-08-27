@@ -1,0 +1,138 @@
+.orbiter-lab {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 3rem;
+}
+
+.orbiter-lab__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 44rem;
+}
+
+.orbiter-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.orbiter-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.orbiter-lab__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.orbiter-lab__nav {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.orbiter-lab__nav a {
+  color: var(--ink);
+}
+
+.orbiter-lab__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+}
+
+.orbiter-lab__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.orbiter-lab__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.orbiter-lab__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.orbiter-lab__chip {
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  min-height: 40px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.orbiter-lab__chip--on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--panel);
+}
+
+.orbiter-lab__chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.orbiter-lab__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.orbiter-lab__stage {
+  padding: 2.5rem 1rem 1rem;
+}
+
+.orbiter-lab__log {
+  margin: 3.5rem auto 0;
+  max-width: 28rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.orbiter-lab__legend {
+  max-width: 40rem;
+  margin: 1.5rem auto 0;
+  padding: 0 1.4rem;
+}
+
+.orbiter-lab__legend h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.orbiter-lab__legend ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.orbiter-lab__legend strong {
+  color: var(--ink);
+  font-weight: 500;
+}

@@ -1,0 +1,23 @@
+.v03-fray--2 {
+  animation: v03-loose 2.4s ease-in-out infinite 0.2s;
+}
+
+.v03-fray--3 {
+  animation: v03-loose 1.8s ease-in-out infinite 0.45s;
+}
+
+@keyframes v03-loose {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v03-fray {
+    animation: none;
+  }
+}

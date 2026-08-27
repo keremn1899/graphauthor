@@ -1,0 +1,110 @@
+.connect-lab {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 2.5rem;
+}
+
+.connect-lab__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 44rem;
+}
+
+.connect-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.connect-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.connect-lab__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.connect-lab__lede em {
+  font-style: normal;
+  color: var(--ink);
+}
+
+.connect-lab__nav {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.connect-lab__nav a {
+  color: var(--ink);
+}
+
+.connect-lab__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+}
+
+.connect-lab__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.connect-lab__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.connect-lab__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.connect-lab__chip {
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  min-height: 40px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.connect-lab__chip--on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--panel);
+}
+
+.connect-lab__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.connect-lab__stage-wrap {
+  padding: 1.5rem 1rem 0;
+}
+
+.connect-lab__log {
+  margin: 1rem auto 0;
+  max-width: 36rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}

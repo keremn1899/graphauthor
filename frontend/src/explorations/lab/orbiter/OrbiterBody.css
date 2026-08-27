@@ -1,0 +1,64 @@
+.orbiter-body {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.orbiter-body:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.orbiter-body--selected {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.orbiter-body__crisp {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-sizing: border-box;
+}
+
+/* Amplified for small scale — same vocabulary as provisional mass, larger relative amp */
+.orbiter-body__wobbly {
+  width: 20px;
+  height: 20px;
+  background: var(--ink);
+  box-sizing: border-box;
+  border-radius: 58% 42% 55% 45% / 42% 58% 40% 60%;
+  animation: orbiter-wobble-strong 1.7s ease-in-out infinite alternate;
+  will-change: border-radius;
+}
+
+.orbiter-body--still .orbiter-body__wobbly {
+  animation: none;
+  border-radius: 55% 45% 48% 52% / 48% 55% 42% 58%;
+}
+
+@keyframes orbiter-wobble-strong {
+  from {
+    border-radius: 62% 38% 58% 42% / 40% 62% 36% 64%;
+  }
+  to {
+    border-radius: 38% 62% 42% 58% / 64% 36% 62% 40%;
+  }
+}
+
+.orbiter-body svg {
+  display: block;
+  overflow: visible;
+  transform-origin: 50% 50%;
+  transform: rotate(var(--orbiter-face, 0deg));
+}

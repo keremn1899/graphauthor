@@ -1,0 +1,82 @@
+.ring-stage {
+  position: relative;
+  width: min(760px, 100%);
+  height: 520px;
+  margin: 1rem 1.4rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Above discs: endpoints sit on the painted rim */
+.ring-stage__edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  overflow: visible;
+}
+
+.ring-stage__firm {
+  stroke: var(--ink);
+  stroke-width: 1.75;
+  stroke-linecap: square;
+  opacity: 1;
+}
+
+.ring-stage__tether {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 21;
+}
+
+.ring-stage__node-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ring-stage__disc {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0.5rem;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.ring-stage__disc span {
+  line-height: 1.2;
+}
+
+.ring-stage__near-hint {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ring-stage__hint {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.65rem;
+  right: 0.85rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  pointer-events: none;
+  z-index: 1;
+}

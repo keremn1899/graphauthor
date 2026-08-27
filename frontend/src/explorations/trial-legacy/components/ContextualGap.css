@@ -1,0 +1,43 @@
+.contextual-gap {
+  pointer-events: none;
+}
+
+.contextual-gap svg {
+  display: block;
+  overflow: visible;
+}
+
+.contextual-gap__handle {
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  pointer-events: none;
+}
+
+.contextual-gap__oversight line {
+  animation: gap-unsettle 2.6s ease-in-out infinite;
+}
+
+.contextual-gap__oversight line:nth-child(2n) {
+  animation-delay: 0.4s;
+  animation-duration: 3.1s;
+}
+
+@keyframes gap-unsettle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translate(0.5px, -0.4px);
+  }
+}
+
+.reduced-motion .contextual-gap__oversight line {
+  animation: none !important;
+}

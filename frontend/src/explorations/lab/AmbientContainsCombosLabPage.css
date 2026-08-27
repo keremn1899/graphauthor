@@ -1,0 +1,142 @@
+.ambient-combos {
+  /* Radix mauve night — match ambient-canvas dark. */
+  --ac-bg: #121113; /* mauveDark1 */
+  --ac-surface: #1a191b; /* mauveDark2 */
+  --ac-ink: #7c7a85; /* mauveDark10 */
+  --ac-muted: #6f6d78; /* mauveDark9 */
+  --ac-rule: #323035; /* mauveDark5 */
+  --ac-chip: #232225; /* mauveDark3 */
+  min-height: 100vh;
+  padding-bottom: 2rem;
+  background: var(--ac-bg);
+  color: var(--ac-ink);
+  font-family: var(--font-sans);
+}
+
+.ambient-combos__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+  gap: 2rem;
+  align-items: end;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 1.1rem;
+}
+
+.ambient-combos__eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--ac-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ambient-combos__header h1 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.ambient-combos__lede {
+  max-width: 42rem;
+  margin: 0.85rem 0 0;
+  color: var(--ac-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.ambient-combos__nav {
+  margin: 0.7rem 0 0;
+  font-size: 0.76rem;
+}
+
+.ambient-combos__nav a {
+  color: var(--ac-ink);
+}
+
+.ambient-combos__note {
+  padding: 1rem 1.1rem;
+  border-left: 2px solid var(--ac-ink);
+  background: color-mix(in srgb, var(--ac-surface) 80%, transparent);
+}
+
+.ambient-combos__note span {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--ac-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ambient-combos__note strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.ambient-combos__note p {
+  margin: 0.4rem 0 0;
+  color: var(--ac-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.ambient-combos__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 76rem;
+  margin: 0 auto 0.85rem;
+  padding: 0 1.5rem;
+}
+
+.ambient-combos__toolbar button {
+  appearance: none;
+  border: 1px solid var(--ac-rule);
+  background: var(--ac-surface);
+  color: var(--ac-ink);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.ambient-combos__toolbar button:hover {
+  border-color: var(--ac-ink);
+}
+
+.ambient-combos__status {
+  margin: 0;
+  color: var(--ac-muted);
+  font-size: 0.78rem;
+}
+
+.ambient-combos__stage-shell {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.ambient-combos__stage {
+  height: min(72vh, 820px);
+  border: 1px solid var(--ac-rule);
+  background: var(--ac-bg);
+}
+
+@media (max-width: 820px) {
+  .ambient-combos__header {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .ambient-combos__stage {
+    height: 62vh;
+  }
+}

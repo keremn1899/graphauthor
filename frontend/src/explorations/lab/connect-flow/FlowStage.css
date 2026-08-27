@@ -1,0 +1,40 @@
+.flow-stage {
+  position: relative;
+  width: min(760px, 100%);
+  height: 520px;
+  margin: 1rem 1.4rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  overflow: hidden;
+}
+
+.flow-stage .react-flow {
+  width: 100%;
+  height: 100%;
+  background: var(--canvas);
+}
+
+.flow-stage .react-flow__node {
+  cursor: pointer;
+}
+
+.flow-stage--reaching {
+  cursor: crosshair;
+}
+
+.flow-stage--reaching .react-flow__node {
+  cursor: pointer;
+}
+
+.flow-stage__hint {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.65rem;
+  right: 0.85rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  pointer-events: none;
+  z-index: 5;
+}

@@ -1,0 +1,137 @@
+/* Operator notices. Same drawing language as identity and the drawers:
+   square, unshadowed, unblurred. A rule separates the card from the subject.
+   The sentence is the notice; colour does not carry the meaning.
+
+   Block covers the subject and leaves identity, instrument, and OverlayPanel
+   drawers reachable. Dock sits above the instrument, centred, so a left
+   library and a right reader do not share its column. */
+
+.notice-block {
+  position: absolute;
+  z-index: 15;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--shell-band, 60px) var(--chrome-gutter, 1rem)
+    var(--instrument-band, 62px);
+  background: color-mix(in srgb, var(--canvas) 78%, transparent);
+  pointer-events: auto;
+}
+
+/* Positioning only — motion lives on an inner wrapper so rise's translateY
+   never fights a centring transform, and `.motion-layer.is-in { transform: none }`
+   cannot un-centre the dock. */
+.notice-dock {
+  position: absolute;
+  z-index: 18;
+  right: 0;
+  bottom: calc(var(--instrument-band, 62px) + 6px);
+  left: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--chrome-gutter, 1rem);
+  pointer-events: none;
+}
+
+.notice-dock__motion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: min(28rem, 100%);
+  pointer-events: auto;
+}
+
+.notice-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 28rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  animation: motion-swap-in var(--motion-emit-duration, 280ms)
+    var(--motion-emit-curve, ease-out);
+}
+
+/* Block and dock already emit via `.motion-layer`; the card must not also
+   play `motion-swap-in` or the entrance is a compounded fade. Inline cards
+   (publish fault, settings) keep the keyframe — nothing else animates them. */
+.notice-block .notice-card,
+.notice-dock .notice-card {
+  animation: none;
+}
+
+.notice-card--inline {
+  max-width: none;
+  padding: 0.55rem 0.7rem 0.65rem;
+}
+
+.notice-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.notice-card__dismiss {
+  margin: 0;
+  padding: 0 0.15rem;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.notice-card__dismiss:hover,
+.notice-card__dismiss:focus-visible {
+  color: var(--ink);
+}
+
+.notice-card__title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.notice-card__body {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.notice-card--inline .notice-card__body {
+  font-size: 0.72rem;
+}
+
+.notice-card__action {
+  align-self: start;
+  margin-top: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.notice-card__action:hover,
+.notice-card__action:focus-visible {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice-card {
+    animation: none;
+  }
+}

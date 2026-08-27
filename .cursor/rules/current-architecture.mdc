@@ -1,0 +1,29 @@
+---
+description: Host-agent is the live architecture; leftover Planner/Battalion docs are not
+alwaysApply: true
+---
+
+# Current architecture
+
+The product is **host-agent**. The editor's agent owns interpretation. The
+server owns deterministic graph ops, certification, and publication.
+
+Do not treat as current architecture:
+
+- `planner.py`, `squad.py`, `company.py`, `agent_graph.py` (restore / tests)
+- Untracked `design [new]/`, `design [old]/`, untracked `docs/FINDINGS_*.md`
+- Any LangGraph FSM diagram (Planner → Squad → Company → Battalion)
+- `construction/`, `graph_builder/`, `graph_generator/`
+- `mcp_server/construction_surface.py`, `benchmarks/construction_oracle/`
+
+Do treat as current:
+
+- `mcp_server/retrieve.py` — lookup / expand / path / search / operation
+- `mcp_server/ask.py` — Ask / MCP `discover` (four ops, then one claim)
+- `source_pipeline/` and `scripts/workbook.py` — workbook construction boundary
+- `docs/MCP_SETUP.md`, `CLAUDE.md` architecture section
+
+`plan_retrieval` and `what_governs(adjudicate='engine')` are opt-in leftovers.
+Ask is not routed through them. Search returns `CANDIDATES`, never closed-world
+empty. Adjudication is the host's. `what_governs` binds the construction
+envelope (`operation_id`); it does not omit it.

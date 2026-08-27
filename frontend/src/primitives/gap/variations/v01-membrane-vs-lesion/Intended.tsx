@@ -1,0 +1,21 @@
+import type { NodeProps } from "@xyflow/react";
+import type { GapFlowNode } from "../../types";
+import { GapShell } from "../../shared/GapShell";
+import "./v01.css";
+
+/** Sealed membrane — decided void. */
+export function Intended(_props: NodeProps<GapFlowNode>) {
+  return (
+    <GapShell>
+      <rect
+        x="16"
+        y="18"
+        width="80"
+        height="52"
+        fill="none"
+        stroke="var(--gap-stroke)"
+        strokeWidth="2"
+      />
+    </GapShell>
+  );
+}

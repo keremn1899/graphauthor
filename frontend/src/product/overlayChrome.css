@@ -1,0 +1,148 @@
+/* Chrome recession — see `overlayChrome.tsx` for why this is CSS and not state.
+
+   A chrome cluster rests quietly and comes to full presence when the pointer
+   approaches it or something inside it takes focus. It is a state transition
+   between "at rest" and "engaged", which is what the motion test asks for: the
+   operator notices that the controls are available, not that something
+   animated.
+
+   Approach, not contact. Each cluster carries an invisible margin of reach
+   (`::before`), so the chrome is already up by the time the pointer arrives
+   rather than lighting under the cursor like a rollover.
+
+   ---------------------------------------------------------------------------
+
+   **What recedes is the box, not the ink.**
+
+   This used to be one `opacity: 0.34` on the whole cluster, and it was the
+   wrong mechanism for two reasons. It dimmed the *type* and the *container* at
+   the same rate, when only one of them is in the way — the label "Structure" is
+   the control; the slab behind it is furniture. And 34% ink fails contrast
+   outright, so the resting state of every control on the map was text nobody
+   could actually read; the operator had to hover a thing to find out what it
+   was, which is the defect a resting state exists to avoid.
+
+   So there are two knobs now, and clusters spend them differently:
+
+     `--chrome-box`      the *box* — background fills and rules. Goes to 0 at
+                         rest, so a control at rest is lettering on the map
+                         rather than a panel sitting on it.
+
+                         Separate from `--chrome-opacity`, which the Graph DNA
+                         workbench pins inline on the shell root. That one is an
+                         authored ceiling — how present chrome is allowed to get
+                         on this design — and an inline style would win over any
+                         rule here. So clusters multiply the two: the workbench
+                         still sets the ceiling, and approach still moves between
+                         rest and that ceiling rather than fighting it.
+
+     `--chrome-ink`      the *type*. Rests at 0.72, which is quiet and still
+                         legible, and goes to 1 on approach.
+
+   A cluster that paints a border must mix it through both, the same way it
+   mixes its background, or the box will not actually leave. */
+
+.product-shell {
+  /* How present the *box* is when nobody is reaching for it. Zero: the rules
+     and fills go, and what stays is the lettering. */
+  --chrome-box: 0;
+  /* How present the *type* is at rest. Not 1 — chrome should not compete with
+     a node — but well above the contrast floor, because a control you cannot
+     read is a control you have to already know about. */
+  --chrome-ink: 0.72;
+  /* How far from a cluster the pointer counts as approaching it. */
+  --chrome-reach: 26px;
+}
+
+.chrome {
+  position: relative;
+  opacity: var(--chrome-ink);
+  visibility: visible;
+  /* Absorb on the way down: attention leaving is a capture back to rest. Both
+     knobs ride the one law, so the box and the ink recede as one movement
+     rather than as two things that happen to overlap. */
+  transition:
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    --chrome-box var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s;
+}
+
+/* `--chrome-box` only animates if it is registered as a typed property; an
+   unregistered custom property snaps between values. Declared here rather than
+   in a stylesheet nobody would think to look in. */
+@property --chrome-box {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.chrome::before {
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--chrome-reach));
+  content: "";
+}
+
+/* One system, not four independent flickers: approaching any cluster brings all
+   of them up, so the chrome appears and recedes as a single object. */
+.product-shell:has(.chrome:hover),
+.product-shell:has(.chrome:focus-within) {
+  --chrome-box: 1;
+}
+
+.product-shell:has(.chrome:hover) .chrome,
+.product-shell:has(.chrome:focus-within) .chrome,
+.chrome:hover,
+.chrome:focus-within,
+.chrome.is-engaged {
+  --chrome-box: 1;
+  opacity: 1;
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+/* Taken away outright. `visibility` as well as opacity so nothing here is
+   focusable while it is gone — chrome you cannot see must not be reachable by
+   Tab, or focus disappears into a bar nobody can find. */
+.product-shell.is-chrome-hidden .chrome {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    --chrome-box var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s linear var(--motion-absorb-duration, 240ms);
+}
+
+/* A layer is content, not chrome: it is dismissed, never dimmed. Hiding the
+   chrome while a layer is open would hide the thing the operator is reading.
+
+   The node reader is not named here any more — it is an `.ov__body` now, like
+   the library, which is the point of there being one dock. */
+.product-shell.is-chrome-hidden .ov__body,
+.product-shell.is-chrome-hidden .ask-spotlight,
+.product-shell.is-chrome-hidden .traversal-modal__backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chrome {
+    transition-duration: 1ms;
+  }
+}
+
+/* A pointer that cannot hover cannot approach. There is no resting state worth
+   having on a touch screen: the controls are either there or they are hidden
+   by the key, and there is no key. */
+@media (hover: none) {
+  .product-shell {
+    --chrome-box: 1;
+    --chrome-ink: 1;
+  }
+}

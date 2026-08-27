@@ -1,0 +1,26 @@
+.v02-stub-top {
+  transform-origin: 16px 18px;
+  animation: v02-reach-fail 2.4s ease-in-out infinite;
+}
+
+.v02-stub-bottom {
+  transform-origin: 16px 70px;
+  animation: v02-reach-fail 2.4s ease-in-out infinite reverse;
+}
+
+@keyframes v02-reach-fail {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v02-stub-top,
+  .v02-stub-bottom {
+    animation: none;
+  }
+}

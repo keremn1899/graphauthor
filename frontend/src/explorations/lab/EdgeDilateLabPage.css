@@ -1,0 +1,125 @@
+.edge-dilate {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 2.5rem;
+}
+
+.edge-dilate__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 40rem;
+}
+
+.edge-dilate__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.edge-dilate__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.edge-dilate__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.edge-dilate__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.7rem;
+}
+
+.edge-dilate__preset-btn {
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.edge-dilate__preset-btn--active {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--panel);
+}
+
+.edge-dilate__nav {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.edge-dilate__nav a {
+  color: var(--ink);
+}
+
+.edge-dilate__row {
+  padding: 0.85rem 1.4rem 0.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.edge-dilate__row-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.edge-dilate__row-head h2 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.edge-dilate__row-head button {
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.edge-dilate__phase {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.edge-dilate__stage {
+  display: block;
+  max-width: 640px;
+  background: var(--canvas);
+  border: 1px solid var(--rule);
+}
+
+.edge-dilate__disc {
+  fill: var(--node-fill);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.edge-dilate__label {
+  fill: var(--node-ink);
+  font-size: 11px;
+  font-weight: 500;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edge-dilate__row-head button {
+    /* timing handled in JS — reduced motion could skip via future flag */
+  }
+}

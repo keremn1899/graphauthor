@@ -1,0 +1,57 @@
+.field-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--canvas);
+}
+
+.field-page__flow {
+  width: 100%;
+  height: 100%;
+}
+
+.field-page__chrome {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 20;
+  max-width: min(280px, 70vw);
+  pointer-events: none;
+}
+
+.field-page__eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--ink-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.field-page__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.field-page__hint {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.field-page__picker-host {
+  position: absolute;
+  z-index: 30;
+  transform: translate(-50%, -110%);
+}
+
+.field-page .react-flow__node.concept-node-highlighted > * {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.field-reach-tether {
+  /* positioned by component */
+}

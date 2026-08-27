@@ -1,0 +1,119 @@
+# Contradictions seed — hallucination-resistance test set.
+#
+# The contradictions seed deliberately contains false claims (water is
+# helium+gold, gravity pushes up, etc.). Queries that ask about well-known
+# real-world facts should either (a) report the contradiction as a gap or
+# (b) clearly label the graph's claim as false / unreliable, rather than
+# echo it as truth.
+
+- id: contradictions_semantic_lookup_water
+  query: "What is the chemical composition of water according to this graph?"
+  seed: contradictions
+  query_class: semantic_lookup
+  evidence_shapes_expected: [node_set]
+  proof_mode: semantic
+  scope: local
+  ground_truth:
+    answerable: true
+    required_node_ids_all: [truth_water]
+    min_node_count: 1
+    expected_verdict: [CONFIRMED, ALTERNATIVE]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Report what the graph claims (helium + gold), but clearly label
+      the claim as contradicting established science — either as a gap,
+      an ALTERNATIVE verdict, or an explicit "this is false / fictional"
+      annotation.
+    must_contain: [water]
+    must_not_contain:
+      - "water is composed of helium"
+      - "is made of gold"
+    expected_aspects:
+      - reporting the graph's claim
+      - labelling it as false / fictional
+  tags: [v6_semantic_lookup, hallucination_guard]
+  notes: "Regression for hallucinated-as-truth propagation."
+
+- id: contradictions_overview
+  query: "What is this graph about?"
+  seed: contradictions
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 3
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a collection of deliberately false /
+      counterfactual claims about science (water, Python's invention,
+      the solar system, gravity).
+    expected_aspects:
+      - counterfactual claims
+  tags: [v6_overview]
+
+- id: contradictions_composite_inconsistencies
+  query: "What are all the scientific inconsistencies in this graph? Consider every claim and flag what contradicts established knowledge."
+  seed: contradictions
+  query_class: composite
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    required_node_ids_any: [truth_water, truth_python, truth_space, truth_gravity]
+    min_node_count: 3
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Surface all four counterfactual claims: water as helium+gold,
+      Python invented by Lincoln, heliocentric denial, gravity pushing
+      upward. Each claim should be flagged as contradicting established
+      science. Must not report any claim as factually true.
+    must_not_contain:
+      - "water is composed of helium"
+      - "Lincoln invented Python"
+      - "gravity pushes upward"
+    expected_aspects:
+      - all four nodes surfaced
+      - each claim flagged as false/counterfactual
+      - holistic synthesis, not single-node lookup
+  tags: [v11_exploratory, composite, hallucination_guard]
+  notes: "Tests holistic synthesis routes to exploratory. Also a hallucination guard — must surface claims as false, not echo them."
+
+# OUT OF SCOPE (v9): this case asks the engine to produce the externally-true
+# chemistry (H2O) while refusing the graph's deliberately-false fixture data.
+# The engine has no world-knowledge oracle — it cannot tell that "water = Helium
+# + Gold" is counterfactual. The case is really testing deference to external
+# ground truth, which is a retrieval-augmentation concern, not a graph-traversal
+# concern. Re-enable only after an oracle/world-knowledge source is wired in,
+# or reframe the question to "does the graph assert the scientifically correct
+# composition of water?" (answerable structurally).
+# - id: contradictions_meta_gap_correct_science
+#   query: "What is the scientifically correct chemical composition of water?"
+#   seed: contradictions
+#   query_class: meta_gap
+#   evidence_shapes_expected: [node_set]
+#   proof_mode: absence
+#   scope: global
+#   ground_truth:
+#     answerable: false
+#     expected_verdict: [EXHAUSTED, CONFIRMED, ALTERNATIVE]
+#     expected_gap_types_required: [missing_concept]
+#   rubric:
+#     expected_answer_summary: |
+#       Report that the graph does not contain the correct scientific
+#       composition of water (H2O). Do not produce the correct answer
+#       from world knowledge as if the graph supplied it.
+#     must_not_contain:
+#       - "H2O"
+#       - "two hydrogen"
+#   tags: [v6_meta_gap, honest_failure]

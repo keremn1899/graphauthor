@@ -1,0 +1,22 @@
+[
+  {
+    "id": "gap_unknown_neuroscience",
+    "query_type": "gap",
+    "query": "How does this graph explain synaptic plasticity?",
+    "ground_truth": {
+      "answerable": false,
+      "expected_gap_contains": "gap",
+      "answer_must_not_contain": ["synaptic plasticity is caused by", "definitely"]
+    }
+  },
+  {
+    "id": "gap_vocabulary_bridge",
+    "query_type": "gap",
+    "query": "How does screen clutter affect concentration?",
+    "ground_truth": {
+      "answerable": false,
+      "expected_gap_contains": "vocabulary",
+      "answer_must_not_contain": ["certainly", "proved"]
+    }
+  }
+]

@@ -1,0 +1,183 @@
+{
+  "corpus_id": "correction-gate-replay-v1",
+  "provenance": "hop2 arm of correction_gate_characterization_v1 (COMPLETE, 11/11, 174 engine calls, 2026-08-15)",
+  "source_report_sha256": "9879c03eb9c45852b403d3537c9ed5f1aea8d493b3a6a604d7bf9204613dd938",
+  "graph": "data/construction_trials/cattrs_external_v2/reference/graph.lbug",
+  "stimulus": "every governing decision rewritten to a neutral historical note that states no rule",
+  "note": "Antecedents are LEADSTO predecessors, resolved once against the reference so replay needs no database.",
+  "cases": [
+    {
+      "node_id": "decision_current_abstract_set_structures_to_frozenset",
+      "gate_reason": "undeclared_coverage_loss:decision_current_abstract_set_structures_to_frozenset,decision_superseded_abstract_set_structures_to_set,migration_status_layer",
+      "changed": {
+        "migration_status_layer": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "decision_current_abstract_set_structures_to_frozenset": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "decision_superseded_abstract_set_structures_to_set": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [
+        "decision_superseded_abstract_set_structures_to_set"
+      ],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_asymmetric_fallbacks",
+      "gate_reason": "undeclared_coverage_loss:decision_superseded_lazy_structure_fallback",
+      "changed": {
+        "decision_superseded_lazy_structure_fallback": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [
+        "decision_superseded_lazy_structure_fallback"
+      ],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_converter_generates_specialized_hooks",
+      "gate_reason": "unevaluable_probe:decision_superseded_genconverter_primary_name",
+      "changed": {},
+      "antecedents": [
+        "decision_superseded_genconverter_primary_name"
+      ],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_converter_is_rule_registry",
+      "gate_reason": "undeclared_governed_flip:dispatch_layer,strategy_layer",
+      "changed": {
+        "converter_registry": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "dispatch_layer": [
+          "UNGOVERNED",
+          "GOVERNED"
+        ],
+        "decision_current_converter_is_rule_registry": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "strategy_layer": [
+          "UNGOVERNED",
+          "GOVERNED"
+        ]
+      },
+      "antecedents": [],
+      "cardinal_flips": [
+        "dispatch_layer",
+        "strategy_layer"
+      ]
+    },
+    {
+      "node_id": "decision_current_detailed_validation_default",
+      "gate_reason": "no_verdict_change",
+      "changed": {},
+      "antecedents": [],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_edge_concerns_stay_out_of_models",
+      "gate_reason": "undeclared_coverage_loss:decision_current_edge_concerns_stay_out_of_models,decision_rejected_model_coupled_serialization",
+      "changed": {
+        "decision_current_edge_concerns_stay_out_of_models": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "decision_rejected_model_coupled_serialization": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [
+        "decision_rejected_model_coupled_serialization"
+      ],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_generated_hooks_inherit_policy",
+      "gate_reason": "undeclared_governed_flip:decision_current_detailed_validation_default",
+      "changed": {
+        "decision_current_detailed_validation_default": [
+          "UNGOVERNED",
+          "GOVERNED"
+        ],
+        "decision_current_generated_hooks_inherit_policy": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [],
+      "cardinal_flips": [
+        "decision_current_detailed_validation_default"
+      ]
+    },
+    {
+      "node_id": "decision_current_newest_predicate_hook_wins",
+      "gate_reason": "undeclared_coverage_loss:decision_current_newest_predicate_hook_wins",
+      "changed": {
+        "decision_current_newest_predicate_hook_wins": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_sequence_structures_to_tuple",
+      "gate_reason": "undeclared_coverage_loss:decision_current_sequence_structures_to_tuple,decision_superseded_sequence_structures_to_list",
+      "changed": {
+        "decision_superseded_sequence_structures_to_list": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "decision_current_sequence_structures_to_tuple": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [
+        "decision_superseded_sequence_structures_to_list"
+      ],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_serializer_behavior_lives_in_preconf",
+      "gate_reason": "undeclared_coverage_loss:cattrs_architecture,decision_current_serializer_behavior_lives_in_preconf",
+      "changed": {
+        "decision_current_serializer_behavior_lives_in_preconf": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ],
+        "cattrs_architecture": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [],
+      "cardinal_flips": []
+    },
+    {
+      "node_id": "decision_current_subclass_handling_is_opt_in",
+      "gate_reason": "undeclared_coverage_loss:decision_current_subclass_handling_is_opt_in",
+      "changed": {
+        "decision_current_subclass_handling_is_opt_in": [
+          "GOVERNED",
+          "UNGOVERNED"
+        ]
+      },
+      "antecedents": [],
+      "cardinal_flips": []
+    }
+  ]
+}

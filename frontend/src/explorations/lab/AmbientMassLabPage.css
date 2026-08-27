@@ -1,0 +1,269 @@
+.ambient-mass {
+  /* Radix gray — match canvas linkage / ledger chrome. */
+  --am-bg: #f0f0f0; /* gray3 */
+  --am-surface: #f9f9f9; /* gray2 */
+  --am-ink: #202020; /* gray12 */
+  --am-muted: #646464; /* gray11 */
+  --am-rule: #e0e0e0; /* gray5 */
+  min-height: 100vh;
+  padding-bottom: 2rem;
+  background: var(--am-bg);
+  color: var(--am-ink);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.ambient-mass__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+  gap: 2rem;
+  align-items: end;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 1.1rem;
+}
+
+.ambient-mass__eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--am-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ambient-mass__header h1 {
+  margin: 0;
+  font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.ambient-mass__lede {
+  max-width: 42rem;
+  margin: 0.9rem 0 0;
+  color: var(--am-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.ambient-mass__nav {
+  margin: 0.75rem 0 0;
+  font-size: 0.76rem;
+}
+
+.ambient-mass__nav a {
+  color: var(--am-ink);
+}
+
+.ambient-mass__note {
+  padding: 1rem 1.1rem;
+  border-left: 2px solid var(--am-ink);
+  background: color-mix(in srgb, var(--am-surface) 70%, transparent);
+}
+
+.ambient-mass__note span,
+.ambient-mass__note strong {
+  display: block;
+}
+
+.ambient-mass__note span {
+  margin-bottom: 0.3rem;
+  color: var(--am-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ambient-mass__note strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ambient-mass__note p {
+  margin: 0.4rem 0 0;
+  color: var(--am-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.ambient-mass__note code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+}
+
+.ambient-mass__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 76rem;
+  margin: 0 auto 0.75rem;
+  padding: 0 1.5rem;
+}
+
+.ambient-mass__status {
+  margin: 0;
+  color: var(--am-muted);
+  font-size: 0.78rem;
+}
+
+.ambient-mass__perf {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.ambient-mass__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ambient-mass__ab-group {
+  display: inline-flex;
+  border: 1px solid var(--am-rule);
+}
+
+.ambient-mass__ab-group button {
+  border: 0;
+  border-right: 1px solid var(--am-rule);
+}
+
+.ambient-mass__ab-group button:last-child {
+  border-right: 0;
+}
+
+.ambient-mass__actions button {
+  appearance: none;
+  border: 1px solid var(--am-rule);
+  background: var(--am-surface);
+  color: var(--am-ink);
+  font: inherit;
+  font-size: 0.76rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.ambient-mass__actions button.is-active {
+  background: var(--am-ink);
+  color: var(--am-surface);
+  border-color: var(--am-ink);
+}
+
+.ambient-mass__ab-group button.is-active {
+  border-color: transparent;
+}
+
+.ambient-mass__actions button:hover:not(:disabled):not(.is-active) {
+  border-color: var(--am-ink);
+}
+
+.ambient-mass__actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ambient-mass__bench {
+  color: var(--am-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.ambient-mass__lod {
+  max-width: 76rem;
+  margin: 0 auto 0.9rem;
+  padding: 0.75rem 1.5rem 0.35rem;
+}
+
+.ambient-mass__lod-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+  color: var(--am-muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ambient-mass__lod-head button {
+  appearance: none;
+  border: 1px solid var(--am-rule);
+  background: var(--am-surface);
+  color: var(--am-ink);
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+
+.ambient-mass__lod-head button:hover {
+  border-color: var(--am-ink);
+}
+
+.ambient-mass__lod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+  gap: 0.55rem 1rem;
+}
+
+.ambient-mass__lod-field {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--am-muted);
+  font-size: 0.72rem;
+}
+
+.ambient-mass__lod-field span {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ambient-mass__lod-field strong {
+  color: var(--am-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ambient-mass__lod-field input[type="range"] {
+  width: 100%;
+  accent-color: var(--am-ink);
+}
+
+.ambient-mass__status strong {
+  color: var(--am-ink);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ambient-mass__stage-shell {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.ambient-mass__stage {
+  height: min(72vh, 820px);
+  border: 1px solid var(--am-rule);
+  background: var(--am-surface);
+}
+
+@media (max-width: 820px) {
+  .ambient-mass__header {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .ambient-mass__stage {
+    height: 62vh;
+  }
+}

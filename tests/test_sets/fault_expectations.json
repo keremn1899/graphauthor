@@ -1,0 +1,20 @@
+[
+  {
+    "id": "fault_provider_timeout",
+    "query_type": "fault",
+    "query": "Simulate provider timeout at planner stage",
+    "ground_truth": {
+      "answerable": false,
+      "expected_fault": "timeout"
+    }
+  },
+  {
+    "id": "fault_tool_failure",
+    "query_type": "fault",
+    "query": "Simulate backend tool failure and safe fallback",
+    "ground_truth": {
+      "answerable": false,
+      "expected_fault": "tool_failure"
+    }
+  }
+]

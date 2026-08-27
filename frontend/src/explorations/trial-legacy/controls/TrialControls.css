@@ -1,0 +1,74 @@
+.trial-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.25rem 1.75rem;
+}
+
+.trial-controls__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.trial-controls__label {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.trial-controls__lenses,
+.trial-controls__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.trial-controls__chip,
+.trial-controls__actions button {
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.trial-controls__chip--active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--panel);
+}
+
+.trial-controls__chip--deferred {
+  opacity: 0.55;
+}
+
+.trial-controls__actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.trial-controls__actions button:hover:not(:disabled),
+.trial-controls__chip:hover:not(.trial-controls__chip--active) {
+  border-color: var(--ink);
+}
+
+.trial-controls__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.trial-controls__toggle input {
+  margin: 0;
+  accent-color: var(--ink);
+}

@@ -1,0 +1,107 @@
+.g6-motion-lab {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 2.5rem;
+}
+
+.g6-motion-lab__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 46rem;
+}
+
+.g6-motion-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.g6-motion-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.g6-motion-lab__lede {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.g6-motion-lab__lede code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.83em;
+  color: var(--ink);
+}
+
+.g6-motion-lab__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 0.7rem;
+  flex-wrap: wrap;
+}
+
+.g6-motion-lab__actions button {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.g6-motion-lab__actions button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--panel);
+}
+
+.g6-motion-lab__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0 0 0.7rem;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+}
+
+.g6-motion-lab__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.g6-motion-lab__legend-swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.g6-motion-lab__nav {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.g6-motion-lab__nav a {
+  color: var(--ink);
+}
+
+.g6-motion-lab__note {
+  margin: 0.9rem 1.4rem 0.5rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.g6-motion-lab__stage {
+  width: calc(100% - 2.8rem);
+  height: 560px;
+  margin: 0 1.4rem;
+  border: 1px solid var(--rule);
+  background: #fff;
+}

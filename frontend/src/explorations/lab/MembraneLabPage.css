@@ -1,0 +1,372 @@
+.membrane-lab {
+  min-height: 100vh;
+  background: var(--panel);
+}
+
+.membrane-lab__chrome {
+  max-width: 58rem;
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.membrane-lab__eyebrow,
+.membrane-lab__title,
+.membrane-lab__lede,
+.membrane-lab__nav {
+  margin-top: 0;
+}
+
+.membrane-lab__eyebrow {
+  margin-bottom: 0.3rem;
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.membrane-lab__title {
+  margin-bottom: 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.membrane-lab__lede {
+  max-width: 42rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+}
+
+.membrane-lab__nav {
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.membrane-lab__nav a {
+  color: var(--ink);
+}
+
+.membrane-lab__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+}
+
+.membrane-lab__group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.membrane-lab__group legend,
+.membrane-lab__range > span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--ink-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.membrane-lab__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.membrane-lab__choices button {
+  min-height: 40px;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.membrane-lab__choices button:hover,
+.membrane-lab__choices button.is-active {
+  border-color: var(--ink);
+}
+
+.membrane-lab__choices button.is-active {
+  background: var(--ink);
+  color: var(--panel);
+}
+
+.membrane-lab__range {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) 2.5rem;
+  column-gap: 0.5rem;
+  align-items: center;
+}
+
+.membrane-lab__range > span {
+  grid-column: 1 / -1;
+}
+
+.membrane-lab__range input {
+  width: 100%;
+  accent-color: var(--ink);
+}
+
+.membrane-lab__range output {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.membrane-lab__temp-note {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  align-self: center;
+}
+
+.membrane-lab__tuners {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.85rem 1.25rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.membrane-lab__tuners .membrane-lab__range {
+  grid-template-columns: minmax(120px, 180px) 2.75rem;
+}
+
+.membrane-lab__reset {
+  min-height: 40px;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.membrane-lab__reset:hover {
+  border-color: var(--ink);
+}
+
+.membrane-lab__values {
+  margin: 0.75rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: all;
+}
+
+.membrane-lab__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.membrane-lab__toggle input {
+  accent-color: var(--ink);
+}
+
+.membrane-lab__stage {
+  display: grid;
+  grid-template-columns: minmax(260px, 460px) minmax(220px, 340px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 8vw, 8rem);
+  min-height: 580px;
+  padding: 3rem 2rem;
+  background: var(--canvas);
+}
+
+.membrane-lab__specimen {
+  position: relative;
+  width: 340px;
+  height: 340px;
+}
+
+.membrane-lab__node-svg,
+.membrane-lab__core,
+.membrane-lab__membrane,
+.membrane-lab__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.membrane-lab__node-svg {
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.membrane-lab__noise--provisional,
+.membrane-lab__noise--unresolved {
+  fill: var(--node-fill);
+  stroke: none;
+}
+
+.membrane-lab__core {
+  z-index: 1;
+  border-radius: 50%;
+  background: var(--node-fill);
+  box-sizing: border-box;
+}
+
+.membrane-lab__core--settled {
+  border: 2px solid var(--ink);
+}
+
+.membrane-lab__label {
+  z-index: 3;
+  color: var(--node-ink);
+  font-size: 0.76rem;
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.membrane-lab__reading {
+  max-width: 21rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--ink);
+}
+
+.membrane-lab__reading p {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+}
+
+.membrane-lab__reading .membrane-lab__status {
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.membrane-lab__reading .membrane-lab__instruction {
+  margin-top: 1.5rem;
+  font-size: 0.76rem;
+}
+
+.membrane-lab__orbiter-stage {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(260px, 420px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 6vw, 5rem);
+  padding: 2rem 2rem 3.5rem;
+  border-top: 1px solid var(--rule);
+  background: var(--canvas);
+}
+
+.membrane-lab__orbiter-copy {
+  max-width: 21rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--ink);
+}
+
+.membrane-lab__orbiter-copy p {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+}
+
+.membrane-lab__orbiter-copy .membrane-lab__status {
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.membrane-lab__orbiter-copy .membrane-lab__range {
+  margin-top: 1rem;
+}
+
+.membrane-lab__orbit-demo {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+}
+
+.membrane-lab__orbit-mass {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.68rem;
+  font-weight: 500;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.membrane-lab__orbit-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -22px;
+  margin-top: -22px;
+  z-index: 3;
+  will-change: transform;
+}
+
+.membrane-lab__orbit-demo .orbiter-body__wobbly {
+  width: var(--orbiter-demo-size, 20px);
+  height: var(--orbiter-demo-size, 20px);
+}
+
+@media (max-width: 760px) {
+  .membrane-lab__stage {
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-height: 0;
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .membrane-lab__specimen {
+    width: min(340px, 100%);
+    margin: 0 auto;
+  }
+
+  .membrane-lab__reading {
+    width: min(340px, 100%);
+    margin: 0 auto;
+  }
+
+  .membrane-lab__orbiter-stage {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .membrane-lab__orbiter-copy {
+    width: min(340px, 100%);
+    margin: 0 auto;
+  }
+}

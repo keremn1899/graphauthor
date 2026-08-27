@@ -1,0 +1,13 @@
+# Conda environment for the closed knowledge engine (SST graph internally)
+# Create:   conda env create -f environment.yml
+# Activate: conda activate agentic-graphrag   # legacy env name; see NAME_AUDIT.md
+# Update:   conda env update -f environment.yml --prune
+
+name: agentic-graphrag
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11,<3.14
+  - pip
+  - pip:
+      - -r requirements.txt

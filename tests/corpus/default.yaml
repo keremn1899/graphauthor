@@ -1,0 +1,124 @@
+# Default (AI history) seed corpus cases.
+#
+# Node ids reference `seeds.get_ai_history_data()` (the "default" seed profile).
+
+- id: default_enum_contains
+  query: "What nodes are connected via a 'contains' relationship?"
+  seed: default
+  query_class: enumeration
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: global
+  ground_truth:
+    answerable: true
+    required_edge_types: [contains]
+    required_node_ids_any: [ai, machine_learning, deep_learning, transformer]
+    min_edge_count: 2
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate CONTAINS edges: ML is_subfield_of AI; deep learning
+      is_subfield_of ML; transformer is_architecture_of deep learning.
+    must_not_contain:
+      - "no contains"
+      - "no hierarchy"
+    expected_aspects:
+      - hierarchy of fields
+  tags: [v6_enumeration]
+
+- id: default_relation_proof_dl_ml
+  query: "Is deep learning a subfield of machine learning?"
+  seed: default
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [contains]
+    required_node_ids_all: [deep_learning, machine_learning]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm via the CONTAINS edge deep_learning -> machine_learning
+      labelled 'is_subfield_of'.
+    must_contain: [deep learning, machine learning]
+  tags: [v6_relation_proof]
+
+- id: default_fanout_from_ai
+  query: "What builds upon or manifests AI?"
+  seed: default
+  query_class: fanout
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: regional
+  ground_truth:
+    answerable: true
+    required_node_ids_all: [ai]
+    required_node_ids_any: [machine_learning, llm, turing_test]
+    min_edge_count: 2
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate inbound edges to AI: ML is_subfield_of AI (CONTAINS),
+      Turing Test is_milestone_of AI (LEADSTO), LLMs are a manifestation
+      of AI (EXPRESSES).
+    must_contain: [AI]
+    expected_aspects:
+      - subfield relation
+      - manifestation relation
+  tags: [v6_fanout]
+
+- id: default_overview
+  query: "What topics does this graph cover?"
+  seed: default
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 4
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as an AI-history concept map: AI, the Turing
+      Test, machine learning, deep learning, transformers, LLMs.
+    expected_aspects:
+      - history of AI
+      - nested subfields
+  tags: [v6_overview]
+
+- id: default_meta_gap_reinforcement_learning
+  query: "How is reinforcement learning represented in this graph?"
+  seed: default
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: global
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+  rubric:
+    expected_answer_summary: |
+      Acknowledge that the graph has no reinforcement-learning node or
+      adjacent concept (no policy/reward/environment). Report as a
+      graph-coverage gap rather than inventing content.
+    must_not_contain:
+      - Q-learning
+      - policy gradient
+    expected_aspects:
+      - explicit gap acknowledgement
+  tags: [v6_meta_gap, honest_failure]

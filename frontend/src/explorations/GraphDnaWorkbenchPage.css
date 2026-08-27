@@ -1,0 +1,1231 @@
+/* Graph DNA mirror — product shell + param rail; motion lives elsewhere. */
+
+/* The rail's width, needed in two places that cannot see each other: the grid
+   track below, and the shell's floating nav, which is chrome *outside* this
+   grid and has to start after the rail rather than on top of it. Declared on
+   the root because a custom property only flows downward. */
+:root {
+  --gdna-rail: min(300px, 36vw);
+}
+
+.gdna-mirror {
+  display: grid;
+  grid-template-columns: var(--gdna-rail) minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  /* Graph-matter surface when DNA is driving; otherwise product chrome panel. */
+  background: var(--matter-surface, var(--panel, #e8e8e8));
+  color: var(--ink, #242424);
+}
+
+.gdna-mirror__graph {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gdna-mirror__panel {
+  --gdna-ink: var(--ink, #242424);
+  --gdna-muted: var(--ink-muted, #858585);
+  --gdna-surface: var(--matter-surface, var(--panel, #e8e8e8));
+  --gdna-canvas: var(--matter-canvas, var(--canvas, #f0f0f0));
+  --gdna-duration: 0ms;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  border-right: 1px solid var(--rule, #d9d9d9);
+  background: var(--matter-surface, var(--panel, #e8e8e8));
+}
+
+.gdna-mirror__panel-head {
+  flex: 0 0 auto;
+  z-index: 1;
+  padding: 0.85rem 0.9rem 0.75rem;
+  border-bottom: 1px solid var(--rule, #d9d9d9);
+  background: var(--matter-surface, var(--panel, #e8e8e8));
+}
+
+.gdna-mirror__panel-head h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.gdna-mirror__panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.gdna-mirror__panel-actions button {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 26%, transparent);
+  border-radius: 0;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.gdna-mirror__panel-actions button:hover {
+  border-color: var(--gdna-ink);
+}
+
+/* Scroll lives on an inner body so the panel height stays grid-bounded. */
+.gdna-mirror__panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1.5rem;
+  scrollbar-color:
+    color-mix(in srgb, var(--gdna-ink) 34%, transparent)
+    transparent;
+  scrollbar-width: thin;
+}
+
+.gdna-mirror .gdna__controls {
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  border: 0;
+  background: transparent;
+  grid-template-columns: none !important;
+}
+
+.gdna-mirror .gdna__controls > section,
+.gdna-mirror .gdna__control-group {
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  /* Stacked, so the rail no longer owns the left edge and the nav can have it
+     back. */
+  :root {
+    --gdna-rail: 0px;
+  }
+
+  .gdna-mirror {
+    grid-template-columns: 1fr;
+    grid-template-rows: min(42vh, 360px) minmax(0, 1fr);
+  }
+
+  .gdna-mirror__panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule, #d9d9d9);
+  }
+
+  /* Stacked puts the rail under the floating nav vertically instead of beside
+     it, so the head starts below the shell's 50px band. */
+  .gdna-mirror__panel-head {
+    padding-top: calc(50px + 0.85rem);
+  }
+}
+
+/* Shared control chrome (also used by motion lab class names). */
+.gdna {
+  --gdna-canvas: #f0f0f0;
+  --gdna-surface: #e8e8e8;
+  --gdna-ink: #202020;
+  --gdna-muted: #8d8d8d;
+  --gdna-focus-field: #181818;
+  --gdna-focus-lit: #f5f5f5;
+  --gdna-duration: 300ms;
+  min-height: 100vh;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  font-family: var(--font-sans, Jost, sans-serif);
+}
+
+.gdna button,
+.gdna input,
+.gdna select {
+  font: inherit;
+}
+
+.gdna__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.25rem 1.4rem 1.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+}
+
+.gdna__nav {
+  margin: 0 0 0.45rem;
+  color: var(--gdna-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gdna__nav a {
+  color: inherit;
+}
+
+.gdna__header h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.45rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+}
+
+.gdna__header p:last-child {
+  max-width: 46rem;
+  margin: 0.45rem 0 0;
+  color: var(--gdna-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.gdna__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.gdna__header-actions span {
+  margin-right: 0.4rem;
+  color: var(--gdna-muted);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.gdna__header-actions button,
+.gdna__scenarios button {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 26%, transparent);
+  border-radius: 0;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition:
+    background var(--gdna-duration) ease,
+    color var(--gdna-duration) ease,
+    border-color var(--gdna-duration) ease;
+}
+
+.gdna__header-actions button:hover,
+.gdna__scenarios button:hover {
+  border-color: var(--gdna-ink);
+}
+
+.gdna__workbench {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  height: calc(100dvh - 118px);
+  min-height: 640px;
+  border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+}
+
+.gdna__controls {
+  min-height: 0;
+  padding: 0 1rem 1.4rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+  background: var(--gdna-surface);
+  scrollbar-color:
+    color-mix(in srgb, var(--gdna-ink) 34%, transparent)
+    transparent;
+  scrollbar-width: thin;
+}
+
+.gdna__controls section {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 0 1.05rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 14%, transparent);
+}
+
+.gdna__controls h2 {
+  margin: 0 0 0.1rem;
+  color: var(--gdna-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gdna__controls h2 a,
+.gdna__inline-link,
+.gdna__header-actions a.gdna__header-link,
+.gdna__header p a {
+  color: var(--gdna-ink);
+  text-underline-offset: 0.15em;
+}
+
+.gdna__header-actions a.gdna__header-link {
+  display: inline-grid;
+  place-items: center;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 26%, transparent);
+  text-decoration: none;
+  font-size: 0.7rem;
+}
+
+.gdna__header-actions a.gdna__header-link:hover {
+  border-color: var(--gdna-ink);
+}
+
+.gdna__hint {
+  margin: 0;
+  color: var(--gdna-muted);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.gdna__control-copy {
+  margin: -0.05rem 0 0.2rem;
+  color: var(--gdna-muted);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.gdna__field-reading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin: 0.15rem 0 0;
+  color: var(--gdna-muted);
+  font-size: 0.63rem;
+}
+
+.gdna__field-reading output {
+  color: var(--gdna-ink);
+}
+
+.gdna__range,
+.gdna__radix {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+}
+
+.gdna__range > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.gdna__range output {
+  color: var(--gdna-muted);
+  font-size: 0.63rem;
+}
+
+.gdna__range input {
+  width: 100%;
+  height: 1px;
+  margin: 0.38rem 0;
+  appearance: none;
+  background: color-mix(in srgb, var(--gdna-ink) 34%, transparent);
+  accent-color: var(--gdna-ink);
+}
+
+.gdna__range input::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  appearance: none;
+  border: 1px solid var(--gdna-ink);
+  border-radius: 50%;
+  background: var(--gdna-surface);
+  cursor: ew-resize;
+}
+
+.gdna__radix {
+  grid-template-columns: minmax(4.8rem, 1fr) 1rem minmax(5.4rem, 1fr) 2.7rem;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.gdna__radix > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gdna__radix i {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 34%, transparent);
+  border-radius: 50%;
+}
+
+.gdna__radix select {
+  min-width: 0;
+  padding: 0.24rem 0.28rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 22%, transparent);
+  border-radius: 0;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  font-size: 0.63rem;
+}
+
+.gdna__switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.gdna__switch button {
+  padding: 0.35rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 24%, transparent);
+  border-radius: 0;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  cursor: pointer;
+}
+
+.gdna__switch button.is-active {
+  border-color: var(--gdna-ink);
+  background: var(--gdna-ink);
+  color: var(--gdna-surface);
+}
+
+.gdna__font-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0 0 0.85rem;
+}
+
+.gdna__font-chips button {
+  padding: 0.32rem 0.48rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 24%, transparent);
+  border-radius: 0;
+  background: var(--gdna-surface);
+  color: var(--gdna-ink);
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+
+.gdna__font-chips button.is-active {
+  border-color: var(--gdna-ink);
+  background: var(--gdna-ink);
+  color: var(--gdna-surface);
+}
+
+.gdna__control-group {
+  border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 14%, transparent);
+}
+
+.gdna__control-group > summary {
+  padding: 1rem 0;
+  color: var(--gdna-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.gdna__control-group section {
+  padding-top: 0;
+}
+
+.gdna__specimen {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--gdna-canvas);
+  transition: background var(--gdna-duration) ease;
+}
+
+.gdna__specimen.is-inverted {
+  background: var(--gdna-focus-field);
+}
+
+.gdna__scenarios {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+  background: color-mix(in srgb, var(--gdna-surface) 92%, transparent);
+}
+
+.gdna__specimen.is-inverted .gdna__scenarios {
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--gdna-focus-lit) 24%,
+    transparent
+  );
+  background: var(--gdna-focus-field);
+}
+
+.gdna__specimen.is-inverted .gdna__scenarios button {
+  border-color: color-mix(
+    in srgb,
+    var(--gdna-focus-lit) 30%,
+    transparent
+  );
+  background: var(--gdna-focus-field);
+  color: var(--gdna-focus-lit);
+}
+
+.gdna__scenarios button.is-active {
+  border-color: var(--gdna-ink);
+  background: var(--gdna-ink);
+  color: var(--gdna-surface);
+}
+
+.gdna__specimen.is-inverted .gdna__scenarios button.is-active {
+  border-color: var(--gdna-focus-lit);
+  background: var(--gdna-focus-lit);
+  color: var(--gdna-focus-field);
+}
+
+.gdna__stage-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 224px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.gdna__graph-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.gdna__stage {
+  position: absolute;
+  inset: 0;
+}
+
+.gdna__ant-ring {
+  position: absolute;
+  z-index: 5;
+  overflow: visible;
+  opacity: 1;
+  transform: scale(1);
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.gdna__ant-ring circle {
+  animation: gdna-ant-march var(--gdna-ant-cycle) linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.gdna__ant-ring.is-held circle {
+  animation-play-state: paused;
+}
+
+.gdna__ant-ring.is-still circle,
+.gdna__ant-ring[data-pattern="solid"] circle {
+  animation: none;
+}
+
+@keyframes gdna-ant-march {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.gdna__motion-parity {
+  --parity-ink: var(--gdna-ink);
+  --parity-surface: var(--gdna-surface);
+  display: flex;
+  min-height: 0;
+  padding: 0.9rem 0.8rem;
+  overflow-y: auto;
+  flex-direction: column;
+  border-left: 1px solid color-mix(in srgb, var(--parity-ink) 22%, transparent);
+  background: color-mix(in srgb, var(--parity-surface) 96%, transparent);
+  color: var(--parity-ink);
+  scrollbar-width: thin;
+}
+
+.gdna__motion-parity > header {
+  display: grid;
+  gap: 0.14rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.gdna__motion-parity > header strong {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gdna__motion-parity > header span,
+.gdna__parity-node-area p {
+  margin: 0;
+  opacity: 0.62;
+  font-size: 0.61rem;
+  line-height: 1.35;
+}
+
+.gdna__parity-node-area {
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0 0.9rem;
+}
+
+.gdna__parity-mass {
+  position: relative;
+  display: grid;
+  width: 92px;
+  height: 92px;
+  place-items: center;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.gdna__parity-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.gdna__parity-ring circle {
+  animation: gdna-ant-march 6s var(--motion-flow-curve) infinite;
+}
+
+.gdna__parity-node {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  padding: 0.6rem;
+  place-items: center;
+  border: 1px solid var(--parity-ink);
+  border-radius: 50%;
+  background: var(--parity-ink);
+  color: var(--parity-surface);
+  font-size: 0.65rem;
+  line-height: 1.1;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.gdna__parity-node:active {
+  cursor: grabbing;
+}
+
+.gdna__parity-row {
+  display: grid;
+  grid-template-columns: 2px minmax(0, 1fr);
+  gap: 0.65rem;
+  padding: 0.65rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  background: var(--parity-surface);
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.gdna__parity-row i {
+  background: currentColor;
+}
+
+.gdna__parity-row span,
+.gdna__parity-row strong,
+.gdna__parity-row small {
+  display: block;
+  min-width: 0;
+}
+
+.gdna__parity-row strong {
+  font-size: 0.66rem;
+  font-weight: 520;
+  line-height: 1.25;
+}
+
+.gdna__parity-row small {
+  margin-top: 0.2rem;
+  opacity: 0.6;
+  font-size: 0.58rem;
+  line-height: 1.3;
+}
+
+.gdna__parity-replay {
+  margin-top: 0.45rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+
+.gdna__motion-parity dl {
+  display: grid;
+  gap: 0.2rem;
+  margin: auto 0 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  font-size: 0.58rem;
+}
+
+.gdna__motion-parity dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.gdna__motion-parity dt {
+  opacity: 0.58;
+}
+
+.gdna__motion-parity dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.gdna__note {
+  position: absolute;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  max-width: min(34rem, calc(100% - 1.6rem));
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--gdna-ink) 22%, transparent);
+  background: color-mix(in srgb, var(--gdna-surface) 93%, transparent);
+  color: var(--gdna-muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.gdna__specimen.is-inverted .gdna__note {
+  border-color: color-mix(
+    in srgb,
+    var(--gdna-focus-lit) 24%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--gdna-focus-field) 92%,
+    transparent
+  );
+  color: color-mix(in srgb, var(--gdna-focus-lit) 64%, transparent);
+}
+
+.gdna__key {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: 0 0 auto;
+  border-top: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+  background: var(--gdna-surface);
+}
+
+.gdna__specimen.is-inverted .gdna__key {
+  border-top-color: color-mix(
+    in srgb,
+    var(--gdna-focus-lit) 24%,
+    transparent
+  );
+  background: var(--gdna-focus-field);
+  color: var(--gdna-focus-lit);
+}
+
+.gdna__specimen.is-inverted .gdna__key div {
+  border-right-color: color-mix(
+    in srgb,
+    var(--gdna-focus-lit) 18%,
+    transparent
+  );
+}
+
+.gdna__specimen.is-inverted .gdna__key span {
+  color: color-mix(in srgb, var(--gdna-focus-lit) 58%, transparent);
+}
+
+.gdna__key div {
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  border-right: 1px solid color-mix(in srgb, var(--gdna-ink) 14%, transparent);
+}
+
+.gdna__key div:last-child {
+  border-right: 0;
+}
+
+.gdna__key strong,
+.gdna__key span {
+  display: block;
+}
+
+.gdna__key strong {
+  margin-bottom: 0.2rem;
+  font-size: 0.68rem;
+}
+
+.gdna__key span {
+  color: var(--gdna-muted);
+  font-size: 0.65rem;
+  line-height: 1.45;
+}
+
+.gdna__grammar {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.6fr) 2fr;
+  gap: 2rem;
+  padding: 2rem 1.4rem;
+  background: var(--gdna-ink);
+  color: var(--gdna-surface);
+}
+
+.gdna__grammar header p {
+  margin: 0 0 0.35rem;
+  opacity: 0.58;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gdna__grammar header h2 {
+  max-width: 13rem;
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 520;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.gdna__grammar > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.gdna__grammar article {
+  padding: 0.2rem 1rem 0.4rem;
+  border-left: 1px solid color-mix(in srgb, var(--gdna-surface) 24%, transparent);
+}
+
+.gdna__grammar h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.gdna__grammar article p,
+.gdna__grammar article span {
+  display: block;
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.gdna__grammar article p {
+  margin-bottom: 0.55rem;
+}
+
+.gdna__grammar article span {
+  opacity: 0.58;
+}
+
+.gdna__json {
+  padding: 1rem 1.4rem 2rem;
+  background: var(--gdna-surface);
+  font-size: 0.72rem;
+}
+
+.gdna__json summary {
+  cursor: pointer;
+}
+
+.gdna__json pre {
+  max-width: 42rem;
+  padding: 0.8rem;
+  overflow-x: auto;
+  background: var(--gdna-canvas);
+  font-family: inherit;
+  font-size: 0.67rem;
+}
+
+.gdna-lod {
+  --lod-canvas: #fff;
+  --lod-surface: #f7f7f7;
+  --lod-ink: #242424;
+  --lod-muted: #858585;
+  --lod-filament: #b5b5b5;
+  border-bottom: 1px solid color-mix(in srgb, var(--lod-ink) 20%, transparent);
+  background: var(--lod-surface);
+  color: var(--lod-ink);
+}
+
+.gdna-lod__header {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(20rem, 1fr);
+  gap: 2rem;
+  align-items: end;
+  padding: 1.3rem 1.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--lod-ink) 18%, transparent);
+}
+
+.gdna-lod__header p {
+  margin: 0;
+  color: var(--lod-muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.gdna-lod__header > div > p {
+  margin-bottom: 0.3rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gdna-lod__header h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.65rem);
+  font-weight: 520;
+  letter-spacing: -0.03em;
+}
+
+.gdna-lod__body {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  height: 720px;
+  min-height: 620px;
+}
+
+.gdna-lod__controls {
+  min-height: 0;
+  padding: 0 1rem 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid color-mix(in srgb, var(--lod-ink) 18%, transparent);
+  scrollbar-color:
+    color-mix(in srgb, var(--lod-ink) 34%, transparent)
+    transparent;
+  scrollbar-width: thin;
+}
+
+.gdna-lod__controls section {
+  display: grid;
+  gap: 0.72rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--lod-ink) 13%, transparent);
+}
+
+.gdna-lod__controls h3 {
+  margin: 0;
+  color: var(--lod-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gdna-lod__controls p {
+  margin: 0;
+  color: var(--lod-muted);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.gdna-lod__controls select {
+  width: 100%;
+  padding: 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--lod-ink) 24%, transparent);
+  border-radius: 0;
+  background: var(--lod-surface);
+  color: var(--lod-ink);
+  font-size: 0.68rem;
+}
+
+.gdna-lod__controls label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--lod-ink);
+  font-size: 0.68rem;
+}
+
+.gdna-lod__controls label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.gdna-lod__controls output {
+  color: var(--lod-muted);
+  font-size: 0.62rem;
+}
+
+.gdna-lod__controls input[type="range"] {
+  width: 100%;
+  height: 1px;
+  margin: 0.4rem 0;
+  appearance: none;
+  background: color-mix(in srgb, var(--lod-ink) 34%, transparent);
+}
+
+.gdna-lod__controls input[type="range"]::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  appearance: none;
+  border: 1px solid var(--lod-ink);
+  border-radius: 50%;
+  background: var(--lod-surface);
+}
+
+.gdna-lod__check {
+  display: flex !important;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.gdna-lod__quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.gdna-lod__quick button {
+  padding: 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--lod-ink) 24%, transparent);
+  border-radius: 0;
+  background: var(--lod-surface);
+  color: var(--lod-ink);
+  font-size: 0.66rem;
+  cursor: pointer;
+}
+
+.gdna-lod__legend {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.gdna-lod__legend i {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lod-filament) 24%, transparent);
+}
+
+.gdna-lod__legend i::after {
+  position: absolute;
+  inset: 0.85rem;
+  border-radius: 50%;
+  background: var(--lod-ink);
+  content: "";
+}
+
+.gdna-lod__legend span {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.08rem 0.4rem;
+  color: var(--lod-muted);
+  font-size: 0.6rem;
+}
+
+.gdna-lod__legend strong {
+  color: var(--lod-ink);
+  font-weight: 520;
+}
+
+.gdna-lod__controls dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.gdna-lod__controls dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.gdna-lod__controls dt,
+.gdna-lod__controls dd {
+  margin: 0;
+  font-size: 0.64rem;
+}
+
+.gdna-lod__controls dt {
+  color: var(--lod-muted);
+}
+
+.gdna-lod__stage-shell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--lod-canvas);
+}
+
+.gdna-lod__stage {
+  width: 100%;
+  height: 100%;
+}
+
+.gdna-lod__state {
+  position: absolute;
+  z-index: 5;
+  top: 0.8rem;
+  left: 0.8rem;
+  max-width: min(34rem, calc(100% - 1.6rem));
+  margin: 0;
+  padding: 0.5rem 0.65rem;
+  background: color-mix(in srgb, var(--lod-surface) 90%, transparent);
+  color: var(--lod-muted);
+  font-size: 0.66rem;
+}
+
+.gdna-lod__state--error {
+  color: var(--lod-ink);
+}
+
+.gdna-lod__scale {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.8rem;
+  left: 1rem;
+  display: grid;
+  grid-template-columns: auto minmax(3rem, 11rem) auto;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: end;
+  pointer-events: none;
+  color: var(--lod-muted);
+  font-size: 0.58rem;
+}
+
+.gdna-lod__scale i {
+  height: 1px;
+  background: linear-gradient(90deg, var(--lod-ink), var(--lod-filament));
+}
+
+@media (max-width: 900px) {
+  .gdna__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gdna__header-actions {
+    justify-content: flex-start;
+  }
+
+  .gdna__workbench {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+  }
+
+  .gdna__controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 52dvh;
+    gap: 0 1.2rem;
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--gdna-ink) 20%, transparent);
+  }
+
+  .gdna__stage-shell {
+    min-height: 580px;
+  }
+
+  .gdna__key,
+  .gdna__grammar > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gdna-lod__header {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .gdna-lod__body {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gdna__ant-ring,
+  .gdna__ant-ring circle,
+  .gdna__parity-ring circle {
+    animation: none;
+    transition-duration: 1ms;
+  }
+}
+
+@media (max-width: 620px) {
+  .gdna__controls,
+  .gdna__key,
+  .gdna__grammar,
+  .gdna__grammar > div {
+    grid-template-columns: 1fr;
+  }
+
+  .gdna__key div,
+  .gdna__grammar article {
+    border-right: 0;
+    border-left: 0;
+    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  }
+
+  .gdna__stage-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(460px, 1fr) auto;
+  }
+
+  .gdna-lod__body {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .gdna-lod__controls {
+    max-height: 54dvh;
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--lod-ink) 18%, transparent);
+  }
+
+  .gdna-lod__stage-shell {
+    height: 560px;
+  }
+
+  .gdna__motion-parity {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.7fr) minmax(160px, 1fr);
+    gap: 0.7rem;
+    border-top: 1px solid color-mix(in srgb, var(--parity-ink) 22%, transparent);
+    border-left: 0;
+  }
+}

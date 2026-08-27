@@ -1,0 +1,468 @@
+/* Graph workspace — monochrome, per executable-design-constraints §1.5 / §2.1.
+   No colour anywhere: geometry and weight carry meaning. Tokens from base.css. */
+
+.gm {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  /* DNA surface (when provided) is page chrome behind the map field; the field
+     itself is painted by ProductGraphCanvas from graph-matter canvas. */
+  background: var(--matter-surface, var(--canvas, #f0f0f0));
+  color: var(--ink, #1c1c1c);
+  font-family: var(--font-sans, Jost, Helvetica, sans-serif);
+  overflow: hidden;
+}
+
+.gm.gm--product {
+  position: relative;
+  inset: auto;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.gm__main {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gm__stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The wait layer already paints the field over the previous scene. Do not
+   `visibility: hidden` the canvas — G6's first draw is what lifts the veil,
+   and a hidden WebGL surface may never report it. */
+.gm__stage.is-waiting .product-graph-canvas {
+  pointer-events: none;
+}
+
+.gm__stage-wait {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: var(--matter-canvas, var(--canvas));
+  color: var(--ink-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------- docked panels
+   The library is a floating `OverlayPanel` — see `OverlayPanel.css`. Ask is a
+   separate Spotlight chat (`AskChat`). Canvas size is stable either way. */
+
+.gm__picker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--panel);
+}
+
+.gm__picker-shelves {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 30%, transparent) transparent;
+}
+
+.gm__shelf + .gm__shelf {
+  border-top: 1px solid var(--rule, #c8c8c8);
+}
+
+.gm__shelf h2 {
+  margin: 0;
+  padding: 0.85rem 0.9rem 0.35rem;
+  color: var(--ink-muted, #5a5a5a);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gm__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.45rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.gm__list button {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  border: 0;
+  background: none;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--rule) 70%, transparent);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gm__list li:last-child button {
+  box-shadow: none;
+}
+
+.gm__list button:hover {
+  background: color-mix(in srgb, var(--ink) 5%, var(--panel));
+}
+
+.gm__list button.is-selected {
+  background: color-mix(in srgb, var(--ink) 8%, var(--panel));
+  box-shadow: inset 2px 0 0 var(--ink, #1c1c1c);
+}
+
+.gm__list li:last-child button.is-selected {
+  box-shadow: inset 2px 0 0 var(--ink, #1c1c1c);
+}
+
+/* The construction shelf is quieter than the published one — same provisional
+   panel tone the construction map wears, so the two shelves do not read as one
+   list. The selected inset bar stays: that is where the choice lives. */
+.gm__list--provisional button {
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+}
+
+.gm__list--provisional .gm__list-name {
+  color: var(--ink-muted, #5a5a5a);
+}
+
+.gm__list--provisional button:hover {
+  background: color-mix(in srgb, var(--ink) 4%, var(--panel));
+}
+
+.gm__list--provisional button.is-selected {
+  background: color-mix(in srgb, var(--ink) 7%, var(--panel));
+  box-shadow: inset 2px 0 0 var(--ink, #1c1c1c);
+}
+
+.gm__list--provisional button.is-selected .gm__list-name {
+  color: var(--ink);
+}
+
+.gm__list-name {
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.gm__list-name em {
+  font-style: normal;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted, #5a5a5a);
+  margin-left: 0.4rem;
+}
+
+.gm__list-meta {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: var(--ink-muted, #5a5a5a);
+}
+
+.gm__list-error {
+  max-height: 2.7em;
+  overflow: hidden;
+  color: var(--ink-muted, #5a5a5a);
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+.gm__empty {
+  margin: 0;
+  padding: 0.15rem 0.9rem 0.85rem;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--ink-muted, #5a5a5a);
+}
+
+/* The footer carries one publish verb in the product: the identity bar's. What
+   is left here is a reading of the state, not a second place to change it. */
+.gm__picker-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.85rem;
+  flex: 0 0 auto;
+  padding: 0.7rem 0.9rem;
+  border-top: 1px solid var(--rule, #c8c8c8);
+}
+
+.gm__picker-foot p {
+  margin: 0;
+  flex: 1 1 12rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--ink-muted, #5a5a5a);
+}
+
+.gm__picker-offline {
+  padding: 0.85rem 0.9rem;
+}
+
+.gm__hint {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--ink-muted, #5a5a5a);
+}
+
+.gm__hint code {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+}
+
+/* -------------------------------------------------------------- small guide */
+
+.gm__guide {
+  margin-top: auto;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--rule, #c8c8c8);
+}
+
+.gm__guide summary {
+  color: var(--ink-muted, #5a5a5a);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.gm__guide p {
+  margin: 0.45rem 0 0;
+  color: var(--ink-muted, #5a5a5a);
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+/* Kept for any CSS that still keys off open drawers; map chrome no longer
+   reads them for layout. */
+.gm.is-picker-open {
+  --dock-left: min(var(--ov-preferred-width, 320px), 86vw);
+}
+
+.gm.is-reader-open {
+  --dock-right: min(var(--ov-preferred-width, 420px), calc(100% - 8rem));
+}
+
+/* The map bar is gone. Find, Ask, the lenses, the nudges and the status
+   strings are instrument now and live at the foot of the window, drawn by
+   `.instrument__group` / `.instrument__readings` in `ProductShell.css`. What
+   is left here is the one thing the map must say in place — that it could
+   not be read.
+
+   `.gm__reading` is lettering only: a fact, not a verb. Inside an
+   `instrument__group` it borrows the cell box so isolated counts and
+   traversal outcomes match Traverse / Structure, without becoming controls. */
+
+.gm__reading {
+  color: var(--ink-muted);
+  cursor: default;
+  font-size: 0.72rem;
+  /* Wide enough for "Neighbourhood · 4 nodes · <a node title>" without cutting
+     the title, which is the part that identifies what you are looking at. */
+  max-width: 46ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.instrument__group > .gm__reading {
+  cursor: default;
+}
+
+/* The finder is a cell, so its own box is redundant: the strip draws the edge. */
+.instrument__group .nodefind {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.instrument__group .nodefind__input {
+  height: 100%;
+  width: 13ch;
+  padding: 0 0.65rem;
+  border: 0;
+  background: transparent;
+  font-size: 0.75rem;
+}
+
+.instrument__group .nodefind__input:focus {
+  width: 20ch;
+  border: 0;
+}
+
+/* The finder's result list hangs *upward* now: the instrument is at the foot of
+   the window, so a list growing downward would open off-screen. */
+.instrument__group .nodefind__list {
+  top: auto;
+  bottom: calc(100% + 0.4rem);
+}
+
+/* ------------------------------------------------------------- focus reading
+   When the canvas enters focus it inverts its field to the `--focus-*` palette
+   — one dark palette, deliberately not a second theme. Focus is a *reading
+   state*, not an appearance: it means "one subject is lit and the rest of the
+   graph is context", and that claim is the same claim whether the operator
+   keeps the product in light or dark. A focus that came in two colourways would
+   be saying something about the theme instead.
+
+   So the panels standing on that field follow it. Before this the map went dark
+   and the drawers on top of it stayed in the page theme, which put one reading
+   state on screen in two palettes at once. Ask was already right, and only
+   because it was the single surface anybody had wired to these tokens.
+
+   Rebinding the chrome tokens rather than restyling each panel: everything
+   below already paints from `--panel` / `--ink` / `--rule`, so the focus state
+   is a change of what those *mean*, not a parallel set of rules that has to be
+   kept in step with the ordinary ones. */
+/* The token rebinding itself lives in `ProductShell.tsx`, not here: the chrome
+   tokens are written as an inline style on the shell root, and an inline style
+   beats a stylesheet. A rule in this file would look right and do nothing.
+
+   `.product-shell.is-focus` is still the class that marks the state; what it
+   drives is the cross-fade below and anything else that is genuinely CSS. */
+
+/* ---------------------------------------------------------- focus is minimal
+
+   In focus the product gets out of the way.
+
+   One subject is lit and everything else on the map is context; the only
+   controls that still make sense are the ones that act on *that subject* — what
+   is lit and how to stop lighting it, and the hand-moves you make while reading
+   it. Find, the lenses and the appearance controls all choose a *different*
+   subject, so offering them here is offering to leave the thing you just asked
+   to look at. Ask stays when the subject *is* an answer: it is the way back to
+   the question, not a new one. Identity goes for the same reason as Find:
+   navigating away is the largest version of that offer.
+
+   What remains: Ask (when the subject is an answer, and the spotlight is
+   gone), the node reader, the group naming what is lit (with its Clear), and
+   undo/redo/reset. While Ask is open the bar sits under the fog with the map
+   — blurred, not a control. Empty fog is the way out. The chrome comes back
+   the moment focus is cleared, and `Clear` is inside what survives, so the
+   state is never a trap. */
+
+/* The library drawer goes too. Its handle is an offer to open a *different
+   graph*, which is the largest version of "choose another subject" on this
+   surface — larger than the lens buttons that already go. The node reader is
+   the one dock that stays, because it is showing the subject. */
+.product-shell.is-focus .product-shell__top,
+.product-shell.is-focus .ov--left {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Absorb on the way out, emit on the way back — the same two laws the drawers
+   ride, so the product receding and the field inverting are one movement. */
+.product-shell__top {
+  transition:
+    opacity var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    visibility 0s;
+}
+
+.product-shell.is-focus .product-shell__top {
+  transition:
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s linear var(--motion-absorb-duration, 240ms);
+}
+
+/* The drawer needs its `transform` named here too.
+   `transition` is a shorthand, so a rule that mentions only opacity *replaces*
+   the one `.ov` declares and the drawer would stop sliding — the same defect
+   the handle hit, and the reason §1.13 is a hard forbidden. Scoped under `.gm`
+   so it beats `.ov` on specificity rather than on file order, which is the
+   other half of the same lesson. */
+.gm .ov--left {
+  transition:
+    transform var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s;
+}
+
+.gm .ov--left.is-open {
+  transition-duration: var(--motion-emit-duration, 280ms);
+  transition-timing-function: var(--motion-emit-curve, ease-out);
+}
+
+.product-shell.is-focus .gm .ov--left {
+  transition:
+    transform var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    opacity var(--motion-absorb-duration, 240ms)
+      var(--motion-absorb-curve, ease-in),
+    visibility 0s linear var(--motion-absorb-duration, 240ms);
+}
+
+.gm__choosing {
+  display: contents;
+}
+
+/* `display: contents` means this wrapper has no box. Opacity / visibility on
+   it do not take the clusters out of the instrument flex — they leave holes,
+   and a present-gated group with `.is-in` (Traversal) even stays painted.
+   Collapse the choosing set in focus so what remains can sit in the centre.
+   Traversal itself sits *outside* this wrapper: a traversal result is a focus,
+   and the control that made it must stay. */
+.product-shell.is-focus .gm__choosing {
+  display: none;
+}
+
+/* The drawers cross-fade into the focus palette rather than cutting to it: the
+   map's own inversion is animated, and a panel that snapped while the field
+   under it eased would read as two events. */
+.gm .ov__body,
+.gm .ov__handle,
+.gm .node-reader {
+  transition:
+    background var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    border-color var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out),
+    color var(--motion-emit-duration, 280ms)
+      var(--motion-emit-curve, ease-out);
+}
+
+/* ── Construction surface ────────────────────────────────────────────────
+   The same map over graphs nobody has published. Two things have to be true
+   at once: it must be legible enough to judge — that is the entire purpose of
+   the surface — and it must never be mistaken for a published graph.
+
+   The mute is small. A heavy wash would make the thing you came here to
+   inspect harder to inspect, and the design language here is that geometry
+   states truth rather than colour, so the honest signal is a quieter field
+   plus the act that changes the state, not a tint and not a caption. */
+/* Below the shell band / version badge, same right edge as the version. */
+.gm__publish-fault {
+  position: absolute;
+  z-index: 4;
+  top: calc(var(--shell-band, 60px) + 0.4rem);
+  right: calc(var(--ov-float, 10px) + var(--ov-handle, 34px) + 0.45rem);
+  max-width: 18rem;
+  pointer-events: auto;
+}
+
+@media (pointer: coarse) {
+  .gm__list button {
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,382 @@
+/* Traversal palette — a fixed two-column sheet in a spotlight.
+
+   The field darkens; the menu has no outer border. Separation is the dim,
+   not a frame. Inside, the same paper and rules as the node reader. */
+
+.traversal-modal__backdrop {
+  position: absolute;
+  /* Above identity, instrument, and drawer handles (those sit at 30–40).
+     Settings stays at 60. */
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* A dimmer, not a fill. Black in both rooms so light and dark both recede. */
+  background: rgb(0 0 0 / 0.48);
+}
+
+.traversal-modal {
+  --reader-size: 0.88rem;
+  --reader-leading: 1.62;
+  --reader-inset: 1.15rem;
+  --reader-block: 0.85rem;
+  --reader-menu-size: 0.72rem;
+  --reader-menu-row: 2rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: 16.5rem 1fr;
+  width: min(44rem, 100%);
+  height: min(28rem, 100%);
+  min-width: 0;
+  overflow: visible;
+  border: 0;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.traversal-modal__kind {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  box-sizing: border-box;
+  height: calc(1.25 * var(--reader-size));
+  padding: 0 0.34rem;
+  border: 1px solid var(--rule);
+  color: var(--ink-muted);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
+/* Left — catalogue. Full height of the sheet; the pane is the cap. */
+
+.traversal-modal__menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--rule);
+}
+
+.traversal-modal__list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--reader-block) 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  list-style: none;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 30%, transparent) transparent;
+}
+
+.traversal-modal__list li {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.traversal-modal__row,
+.traversal-modal__bind {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: var(--reader-menu-row);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 var(--reader-inset);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--reader-menu-size);
+  line-height: 1.3;
+  text-align: left;
+}
+
+.traversal-modal__row {
+  cursor: pointer;
+  transition: background var(--motion-hold-duration, 90ms)
+    var(--motion-hold-curve, linear);
+}
+
+.traversal-modal__row:focus {
+  outline: none;
+}
+
+.traversal-modal__row.is-current {
+  background: var(--canvas);
+  transition: background var(--motion-hold-duration, 90ms)
+    var(--motion-hold-curve, linear);
+}
+
+.traversal-modal__row-index {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  line-height: inherit;
+}
+
+.traversal-modal__row-name,
+.traversal-modal__bind-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traversal-modal__row-rel {
+  flex: 0 0 auto;
+  max-width: 42%;
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: inherit;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+/* Right — the reader: name, then body, then the verb. */
+
+.traversal-modal__inspector {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  background: var(--canvas);
+}
+
+.traversal-modal__header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  min-width: 0;
+  max-height: calc(
+    var(--reader-block) * 2 + 2 * 1.25 * var(--reader-size) + 0.35rem
+  );
+  padding: var(--reader-block) var(--reader-inset);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--rule);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink) 30%, transparent) transparent;
+}
+
+.traversal-modal__header h2 {
+  flex: 0 1 auto;
+  margin: 0;
+  font-size: var(--reader-size);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.traversal-modal__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--reader-block) 0;
+  overflow: visible;
+}
+
+.traversal-modal__purpose {
+  margin: 0;
+  padding: 0 var(--reader-inset);
+  font-size: var(--reader-size);
+  line-height: var(--reader-leading);
+}
+
+.traversal-modal__purpose + .traversal-modal__bind,
+.traversal-modal__purpose + .traversal-modal__status {
+  margin-top: var(--reader-block);
+}
+
+button.traversal-modal__bind {
+  cursor: pointer;
+}
+
+/* The bind row is page-padded; this is the search bar itself. Role sits
+   inside the rule, as a suffix, not as a neighbour to the right of it. */
+.traversal-modal__field {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.traversal-modal__field:focus-within,
+button.traversal-modal__bind:hover .traversal-modal__field,
+button.traversal-modal__bind:focus-visible .traversal-modal__field {
+  border-color: var(--ink-muted);
+}
+
+.traversal-modal__field .traversal-modal__row-rel {
+  flex: 0 0 auto;
+  max-width: none;
+  margin-left: auto;
+}
+
+.traversal-modal__finder {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.traversal-modal__finder .nodefind {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.traversal-modal__finder .nodefind__input,
+.traversal-modal__finder .nodefind__input:focus {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: inherit;
+  transition: none;
+}
+
+.traversal-modal__finder .nodefind__input:focus {
+  outline: none;
+}
+
+button.traversal-modal__bind .traversal-modal__bind-name {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+}
+
+.traversal-modal__finder .nodefind__list {
+  z-index: 52;
+}
+
+.traversal-modal__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+.traversal-modal__status {
+  margin: 0;
+  padding: 0 var(--reader-inset);
+  color: var(--ink-muted);
+  font-size: var(--reader-size);
+}
+
+.traversal-modal__body .notice-card {
+  margin: var(--reader-block) var(--reader-inset) 0;
+}
+
+.traversal-modal__foot {
+  flex: 0 0 auto;
+  padding: var(--reader-block) var(--reader-inset);
+  border-top: 1px solid var(--rule);
+}
+
+.traversal-modal__run {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.traversal-modal__run:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 9%, var(--panel));
+}
+
+.traversal-modal__run:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.traversal-modal__run:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .traversal-modal {
+    grid-template-columns: 1fr;
+    height: min(34rem, 100%);
+  }
+
+  .traversal-modal__menu {
+    max-height: 10rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+}
+
+@media (pointer: coarse) {
+  .traversal-modal {
+    --reader-menu-row: 44px;
+  }
+
+  .traversal-modal__field {
+    height: 44px;
+  }
+
+  .traversal-modal__finder .nodefind__input {
+    font-size: 16px;
+  }
+
+  .traversal-modal__input {
+    font-size: 16px;
+  }
+
+  .traversal-modal__run {
+    min-height: 44px;
+    padding: 0 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traversal-modal__backdrop,
+  .traversal-modal {
+    animation: none;
+    transition-duration: 1ms;
+  }
+}

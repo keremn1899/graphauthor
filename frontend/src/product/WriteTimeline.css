@@ -1,0 +1,89 @@
+/* Version identity on the map — top-right of `.gm__main`, vertically aligned
+   with the identity bar. Lettering only: the box never arrives. The hash is a
+   reading, not a verb; only the step arrows are interactive. */
+
+.write-timeline {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  right: calc(var(--ov-float, 10px) + var(--ov-handle, 34px) + 0.45rem);
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  height: var(--shell-band, 60px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.write-timeline__hash,
+.write-timeline__step {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.write-timeline__hash {
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* The provisional state of the open graph, lettered beside its version. Same
+   ink as the hash so it reads as one fact about the graph, not a badge. */
+.write-timeline__state {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  cursor: default;
+}
+
+.write-timeline__step {
+  width: 1.15rem;
+  cursor: pointer;
+  transition: color var(--motion-emit-duration, 280ms)
+    var(--motion-emit-curve, ease-out);
+}
+
+.write-timeline__step:hover:not(:disabled),
+.write-timeline__step:focus-visible {
+  color: var(--ink);
+}
+
+.write-timeline__step:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.write-timeline__step:focus-visible {
+  outline: 1px solid var(--ink-muted);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .write-timeline__step {
+    transition-duration: 1ms;
+  }
+}

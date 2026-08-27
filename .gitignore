@@ -1,0 +1,48 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# --- Secrets ---
+.env
+.byok.enc
+.byok.secret
+.cke/
+.aporta/
+.graphauthor/
+account.json
+
+# --- Editor / OS ---
+.DS_Store
+*.swp
+.claude/
+
+# --- Frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/data/
+
+# --- Generated graphs and run state ---
+*.lbug
+*.lbug.idx
+*.lbug.owner.lock
+*.lbug.sources.json
+*.lbug.published.json
+*.lbug.snapshots/
+*.sqlite
+data/
+runtime/
+
+# --- Lab-only paths; never copy back from the private checkout ---
+experiments/
+benchmarks/
+examples/
+archive/
+results/

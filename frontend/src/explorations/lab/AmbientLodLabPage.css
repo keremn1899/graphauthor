@@ -1,0 +1,166 @@
+.ambient-lod {
+  /* Radix gray — match canvas linkage / ledger chrome. */
+  --al-bg: #f0f0f0; /* gray3 */
+  --al-surface: #f9f9f9; /* gray2 */
+  --al-ink: #202020; /* gray12 */
+  --al-muted: #646464; /* gray11 */
+  --al-rule: #e0e0e0; /* gray5 */
+  min-height: 100vh;
+  padding-bottom: 2rem;
+  background: var(--al-bg);
+  color: var(--al-ink);
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.ambient-lod__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+  gap: 2rem;
+  align-items: end;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 1.1rem;
+}
+
+.ambient-lod__eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--al-muted);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ambient-lod__header h1 {
+  margin: 0;
+  font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.ambient-lod__lede {
+  max-width: 42rem;
+  margin: 0.9rem 0 0;
+  color: var(--al-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.ambient-lod__nav {
+  margin: 0.75rem 0 0;
+  font-size: 0.76rem;
+}
+
+.ambient-lod__nav a {
+  color: var(--al-ink);
+}
+
+.ambient-lod__note {
+  padding: 1rem 1.1rem;
+  border-left: 2px solid var(--al-ink);
+  background: color-mix(in srgb, var(--al-surface) 70%, transparent);
+}
+
+.ambient-lod__note span,
+.ambient-lod__note strong {
+  display: block;
+}
+
+.ambient-lod__note span {
+  margin-bottom: 0.3rem;
+  color: var(--al-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ambient-lod__note strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ambient-lod__note p {
+  margin: 0.4rem 0 0;
+  color: var(--al-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.ambient-lod__note code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+}
+
+.ambient-lod__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 76rem;
+  margin: 0 auto 0.75rem;
+  padding: 0 1.5rem;
+}
+
+.ambient-lod__status {
+  margin: 0;
+  color: var(--al-muted);
+  font-size: 0.78rem;
+}
+
+.ambient-lod__zoom-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ambient-lod__zoom-actions button {
+  appearance: none;
+  border: 1px solid var(--al-rule);
+  background: var(--al-surface);
+  color: var(--al-ink);
+  font: inherit;
+  font-size: 0.76rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.ambient-lod__zoom-actions button:hover:not(:disabled) {
+  border-color: var(--al-ink);
+}
+
+.ambient-lod__zoom-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.ambient-lod__status strong {
+  color: var(--al-ink);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ambient-lod__stage-shell {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.ambient-lod__stage {
+  height: min(72vh, 820px);
+  border: 1px solid var(--al-rule);
+  background: var(--al-surface);
+}
+
+@media (max-width: 820px) {
+  .ambient-lod__header {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .ambient-lod__stage {
+    height: 62vh;
+  }
+}

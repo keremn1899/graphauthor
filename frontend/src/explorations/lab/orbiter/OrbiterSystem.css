@@ -1,0 +1,141 @@
+.orbiter-system {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  margin: 0 auto;
+}
+
+.orbiter-system__defs {
+  position: absolute;
+}
+
+.orbiter-system__mass {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  background: var(--node-fill);
+  color: var(--node-ink);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.orbiter-system__mass--settled {
+  border-radius: 50%;
+}
+
+.orbiter-system__mass--wobbly {
+  border-radius: 45% 55% 48% 52% / 54% 46% 55% 45%;
+  animation: mass-wobble 1.9s ease-in-out infinite alternate;
+}
+
+.reduced-motion .orbiter-system__mass--wobbly {
+  animation: none;
+}
+
+@keyframes mass-wobble {
+  from {
+    border-radius: 48% 52% 50% 50% / 51% 48% 52% 49%;
+  }
+  to {
+    border-radius: 44% 56% 47% 53% / 55% 45% 56% 44%;
+  }
+}
+
+.orbiter-system__mass-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0.5rem;
+  line-height: 1.2;
+}
+
+.orbiter-system__orbiters {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 3;
+}
+
+.orbiter-system__slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin-left: -22px;
+  margin-top: -22px;
+  will-change: transform;
+}
+
+/* Aggregate cue is a physical circle — never a rectangular badge */
+.orbiter-system__aggregate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.orbiter-system__aggregate-mark {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-sizing: border-box;
+}
+
+.orbiter-system__aggregate-count {
+  position: relative;
+  z-index: 1;
+  color: var(--node-ink);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.orbiter-system__collapse {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 5;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.orbiter-system__caption {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.75rem);
+  transform: translateX(-50%);
+  width: min(300px, 90vw);
+  margin: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  line-height: 1.35;
+}
+
+.orbiter-system__caption strong {
+  color: var(--ink);
+  font-weight: 500;
+}

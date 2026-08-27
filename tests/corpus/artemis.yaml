@@ -1,0 +1,100 @@
+# Artemis II mission seed corpus cases.
+#
+# Node ids reference `seeds.get_artemis_data()`.
+
+- id: artemis_enum_expresses
+  query: "What roles and responsibilities do the crew members hold?"
+  seed: artemis
+  query_class: enumeration
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: regional
+  ground_truth:
+    answerable: true
+    required_edge_types: [expresses]
+    required_node_ids_any: [char_wiseman, char_glover, char_hansen]
+    min_edge_count: 3
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate EXPRESSES edges between crew members and what they
+      command / navigate / specialise in. Commander Wiseman commands
+      Glover and is responsible for Orion; Glover navigates Orion;
+      Hansen is specialist in the ESM.
+    must_not_contain:
+      - "no roles"
+    expected_aspects:
+      - crew responsibilities
+  tags: [v6_enumeration]
+
+- id: artemis_relation_proof_lg2
+  query: "Did Victor Glover execute the L-G2 recovery maneuver?"
+  seed: artemis
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [leadsto]
+    required_node_ids_all: [char_glover, event_lg2]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm the LEADSTO edge char_glover -> event_lg2 labelled
+      'executed'. Name Glover and the L-G2 event.
+    must_contain: [Glover, L-G2]
+  tags: [v6_relation_proof]
+
+- id: artemis_overview
+  query: "What is this graph about?"
+  seed: artemis
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 6
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the Artemis II mission graph: crew (Wiseman, Glover,
+      Koch, Hansen), hardware (SLS, Orion, ESM-4), phases (TLI,
+      Flyby) and the L-G2 recovery event.
+    expected_aspects:
+      - crew
+      - hardware
+      - mission phases
+  tags: [v6_overview]
+
+- id: artemis_meta_gap_mission_budget
+  query: "What is the total budget allocated to Artemis II?"
+  seed: artemis
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: global
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Report that the graph does not contain budget or cost information.
+      This is a graph-coverage gap — do not invent numbers.
+    must_not_contain:
+      - "billion"
+      - "$"
+  tags: [v6_meta_gap, honest_failure]

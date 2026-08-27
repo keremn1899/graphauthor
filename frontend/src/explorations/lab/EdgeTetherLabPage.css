@@ -1,0 +1,168 @@
+.tether-lab {
+  min-height: 100vh;
+  background: var(--panel);
+}
+
+.tether-lab__chrome {
+  max-width: 58rem;
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tether-lab__eyebrow,
+.tether-lab__title,
+.tether-lab__lede,
+.tether-lab__nav {
+  margin-top: 0;
+}
+
+.tether-lab__eyebrow {
+  margin-bottom: 0.3rem;
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tether-lab__title {
+  margin-bottom: 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.tether-lab__lede {
+  max-width: 42rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+}
+
+.tether-lab__nav {
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.tether-lab__nav a {
+  color: var(--ink);
+}
+
+.tether-lab__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.25rem;
+}
+
+.tether-lab__range {
+  display: grid;
+  grid-template-columns: minmax(140px, 210px) 2.5rem;
+  column-gap: 0.45rem;
+  align-items: center;
+}
+
+.tether-lab__range > span {
+  grid-column: 1 / -1;
+  margin-bottom: 0.3rem;
+  color: var(--ink-muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tether-lab__range input {
+  width: 100%;
+  accent-color: var(--ink);
+}
+
+.tether-lab__range output {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tether-lab__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tether-lab__choices button {
+  min-height: 40px;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+
+.tether-lab__choices button.is-active,
+.tether-lab__choices button:hover {
+  border-color: var(--ink);
+}
+
+.tether-lab__choices button.is-active {
+  background: var(--ink);
+  color: var(--panel);
+}
+
+.tether-lab__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.tether-lab__stage-wrap {
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.tether-lab__stage {
+  position: relative;
+  margin: 0 auto;
+  background: var(--canvas);
+  border: 1px solid var(--rule);
+}
+
+.tether-lab__node {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--node-fill);
+  color: var(--node-ink);
+  font-size: 0.72rem;
+  font-weight: 500;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tether-lab__svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.tether-lab__status,
+.tether-lab__gap-caption {
+  margin: 1rem auto 0;
+  max-width: 36rem;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.tether-lab__gap-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: 90%;
+  margin: 0;
+}

@@ -1,0 +1,345 @@
+/* Settings sheet. Inherits the shell's --canvas/--ink/--rule variables, so it
+   follows the product theme without owning a second palette. */
+
+.settings-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  background: rgb(0 0 0 / 22%);
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: min(28rem, 100%);
+  padding: 1rem 1.15rem 2.5rem;
+  overflow-y: auto;
+  border-left: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  /* Presence owns transform; keep the sheet a containing block for sticky head. */
+  will-change: transform;
+}
+
+.settings__head {
+  position: sticky;
+  top: -1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -1rem -1.15rem 0;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--canvas);
+}
+
+.settings__head h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.settings__head button {
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.settings__head button:hover {
+  color: var(--ink);
+}
+
+.settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.settings__section h3 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.settings__note {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.settings__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  margin: 0;
+}
+
+.settings__facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.settings__facts dt {
+  color: var(--ink-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.settings__facts dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
+
+/* The tracemalloc top: one size beside one frame, lettering only. */
+.settings__mem {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+}
+
+.settings__mem td {
+  padding: 0.15rem 0;
+  color: var(--ink-muted);
+}
+
+.settings__mem td:first-child {
+  width: 6.5rem;
+  font-family: var(--font-mono);
+  color: var(--ink);
+}
+
+.settings__mem code {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+}
+
+.settings__field > span {
+  color: var(--ink);
+}
+
+.settings__field > em {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.settings__field input,
+.settings__field select,
+.settings__field textarea {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.settings__field textarea {
+  resize: vertical;
+}
+
+.settings__field input:focus-visible,
+.settings__field select:focus-visible,
+.settings__field textarea:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 1px;
+}
+
+/* A slider is its own control; the field's box and padding are for text inputs
+   and turn a range into a bordered strip with a track floating inside it. */
+.settings__field input[type="range"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  /* `accent-color` comes from the base reset — it belongs to every input, not
+     to whichever class remembered to ask. */
+}
+
+.settings__note--tight {
+  margin-top: -0.15rem;
+  font-size: 0.68rem;
+}
+
+/* A switch with its reason attached. `settings__check` is the smaller thing —
+   a modifier on the action beside it, not a preference that has to explain
+   what it does to a map you cannot see from here. */
+.settings__toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.settings__toggle input {
+  margin-top: 0.2rem;
+  /* Comfortable for a thumb; the label is a target too, being a <label>. */
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.settings__toggle > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.settings__toggle em {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.settings__check {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.settings__check input {
+  margin-top: 0.15rem;
+}
+
+.settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.settings__actions button {
+  padding: 0.38rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.settings__actions button:hover:not(:disabled) {
+  border-color: var(--ink-muted);
+}
+
+.settings__actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.settings__actions button.is-primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+.settings__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.5rem;
+  align-items: baseline;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+}
+
+.settings__status code {
+  font-family: var(--font-mono);
+}
+
+.settings__status span {
+  color: var(--ink-muted);
+}
+
+.settings__status--empty {
+  color: var(--ink-muted);
+}
+
+.settings__callout,
+.settings__failure,
+.settings__notice {
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.settings__failure {
+  border-left-color: var(--ink);
+  color: var(--ink);
+}
+
+.settings__notice {
+  border-left-color: var(--ink-muted);
+}
+
+@media (max-width: 680px) {
+  .settings {
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------- a thumb
+   The 16px checkboxes here are deliberately *not* in this block. Both sit
+   inside a `<label>`, so the target is the whole labelled row and already
+   clears 44px — the note on `.settings__toggle input` says so, and it was
+   right. Growing the box would have been a fix to a measurement (the input's
+   own rect) that was never what a finger has to hit.
+
+   What is genuinely small is everything that is a button or a field: the close
+   control at roughly 18px, the save/cancel row at 23px, and text fields at 28.
+   Fields carry a second problem the others do not — mobile Safari zooms the
+   page whenever a field under 16px takes focus, and a settings dialog that
+   moves the page while you type in it is worse than a small target. */
+@media (pointer: coarse) {
+  .settings__head button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+
+  .settings__field input,
+  .settings__field select,
+  .settings__field textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .settings__actions button {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+}

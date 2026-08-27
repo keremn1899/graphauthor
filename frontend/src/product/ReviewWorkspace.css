@@ -1,0 +1,615 @@
+/* Text stops short of the two floating bands. The *panel* does not.
+
+   Two attempts got this wrong in opposite directions. Padding the contents
+   only holds at the ends of a scroll — mid-scroll the text still passes under
+   the bars, and at rest those bars are lettering with no box
+   (`--chrome-box: 0`), so text crossed text and neither could be read. Padding
+   the whole surface fixed the text and broke the panel: the queue's background
+   began at the bar's lower edge instead of the window's, drawing a seam across
+   the top of every page and leaving the panel visibly short.
+
+   The answer is a transparent border on the scroll container itself. `overflow`
+   clips content at the *padding* box, so nothing can ever scroll into that
+   band; `background-clip` defaults to the *border* box, so the panel's own
+   surface paints the full height beneath it. One declaration, both facts, and
+   no wrapper element to keep in sync.
+
+   The map is the exception and stays one: a graph reads fine under a word, and
+   it is the surface that should use every pixel. */
+.review-workspace {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* The toolbar is gone: Review's verbs are instrument now and live in the
+   shell's band at the foot of the window, drawn by `.instrument__group` in
+   `ProductShell.css`. What is left here are the two cells that need shapes of
+   their own inside that strip. */
+
+.review-search input {
+  width: 16ch;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.72rem;
+  transition: width var(--motion-emit-duration, 280ms)
+    var(--motion-emit-curve, ease-out);
+}
+
+.review-search input:focus {
+  outline: none;
+  width: 24ch;
+}
+
+/* A count beside its own label, in the panel's own ink. Never a coloured pill:
+   this says *how many*, which is a fact, not an alert. */
+.review-count {
+  margin-left: 0.4rem;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+/* A fact sitting between two verbs inside a bordered strip. The strip owns the
+   box and the dividers; the reading keeps none of that chrome or it reads as a
+   third, dead cell. No padding, no border — just lettering. */
+.review-reading {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  cursor: default;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.instrument__group > .review-reading {
+  /* Undo the cell treatment `.instrument__group > *` applies (padding, border
+     divider, cell padding) so the reading is text between two verbs. */
+  display: flex;
+  padding: 0;
+  border-left: 0;
+  cursor: default;
+}
+
+.review-handoff__note {
+  margin: 0 0 0.9rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.review-body {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns:
+    min(var(--review-queue-width, 420px), calc(100% - 429px))
+    9px
+    minmax(0, 1fr);
+  min-height: 0;
+}
+
+/* The transparent bands. See the note at the top of this file: content clips at
+   the padding box, background paints to the border box. */
+.review-queue, .review-inspector {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  border-top: var(--shell-band) solid transparent;
+  border-bottom: var(--instrument-band) solid transparent;
+}
+
+/* A column, so that something in it can be told to take the space that is
+   left. Everything keeps its own size — `0 0 auto` rather than the flex
+   default, because a scrolling column whose children may shrink is how a list
+   ends up compressed instead of scrolled. The empty state opts back in. */
+.review-queue > *, .review-inspector > * {
+  flex: 0 0 auto;
+}
+
+.review-queue {
+  background: var(--panel);
+}
+
+.review-row {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 0.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out),
+    box-shadow var(--motion-emit-duration, 280ms) var(--motion-emit-curve, ease-out);
+}
+
+.review-row:hover { background: color-mix(in srgb, var(--ink) 3%, transparent); }
+.review-row.is-selected { background: var(--canvas); box-shadow: inset 2px 0 var(--ink); }
+
+.review-row__mark {
+  width: 0.42rem;
+  height: 0.42rem;
+  border: 1px solid var(--ink-muted);
+  border-radius: 50%;
+}
+
+/* Colour, and deliberately — see `STATUS_COLOUR` in `tests/test_design_rules.py`
+   for the argument and the pinned values. The monochrome rule is about the
+   *map*, where geometry and weight carry meaning and colour would be
+   decoration. Review is not a map; it is a queue of decisions, and which ones
+   are on fire is the first thing an operator needs to know.
+
+   Four values, pinned by value in that test so this stays a set of states
+   rather than becoming a palette. A fifth is a design decision and has to be
+   made there, deliberately, not by adding a line here. */
+.review-row__mark--actionable { border-color: var(--attention); background: var(--attention); }
+.review-row__mark--incident { border-color: var(--alarm); background: var(--alarm); }
+.review-row__mark--settled { border-color: var(--settled); }
+.review-row__mark--committed { border-color: var(--settled); background: var(--settled); }
+.review-row__mark--reverted { border-color: var(--ink-muted); }
+
+.review-row__main { min-width: 0; }
+.review-row__summary { display: block; overflow: hidden; font-size: 0.78rem; text-overflow: ellipsis; white-space: nowrap; }
+.review-row__meta { display: block; margin-top: 0.35rem; color: var(--ink-muted); font-size: 0.63rem; }
+.review-row__waiting {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  white-space: nowrap;
+}
+
+.review-inspector {
+  padding: 1.65rem clamp(1.25rem, 3vw, 2.5rem) 4rem;
+  background: var(--canvas);
+}
+
+/* A pane holding an empty state is not holding a document.
+   ---------------------------------------------------------------------------
+   That padding is deliberately lopsided — 1.65rem above and 4rem below — which
+   is right for a record you scroll to the end of, and wrong for a single
+   centred sentence: it is the padding box that gets centred in, so the words
+   land 19px above the middle of the pane. Measured, not guessed; it is small
+   enough to read as "slightly off" rather than as a mistake, which is exactly
+   how it survived.
+
+   The document keeps its margins. The message declines them. */
+.review-inspector:has(.review-empty) {
+  padding-block: 0;
+}
+
+.review-inspector__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+}
+
+/* Who and when, under the name — the activity id moved into the record, where
+   an identifier is useful, rather than heading the panel. */
+.review-inspector__who {
+  margin: 0.35rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+}
+
+.review-inspector__header h2 { margin: 0; max-width: 38rem; font-size: 1.3rem; font-weight: 450; line-height: 1.25; }
+
+.review-state,
+.review-status {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.42rem;
+  border: 1px solid var(--rule);
+  color: var(--ink-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.review-state--open,
+.review-status--pending { border-color: var(--attention); color: var(--attention); }
+.review-state--settled,
+.review-status--committed { border-color: var(--settled); color: var(--settled); }
+.review-status--gate_failed,
+.review-status--grain_failed,
+.review-status--encode_failed { border-color: var(--alarm); color: var(--alarm); }
+
+.review-preflight > p {
+  max-width: 58ch;
+  margin: 0.6rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.review-preflight__act {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.85rem;
+}
+
+.review-preflight button {
+  padding: 0.57rem 0.78rem;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.review-preflight button:hover:not(:disabled) { border-color: var(--ink); }
+.review-preflight button:disabled {
+  color: var(--ink-muted);
+  cursor: default;
+}
+
+.review-exceptions {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-exceptions li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.review-exceptions strong {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.review-exceptions span {
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.review-inspector__links { display: flex; gap: 1rem; padding-bottom: 1rem; }
+.review-inspector__links a { color: var(--ink); font-size: 0.69rem; text-underline-offset: 0.2em; }
+
+/* ---------------------------------------------------------------- inline focus */
+
+.review-focus {
+  padding: 0 0 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.review-focus__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0 0 0.55rem;
+}
+
+.review-focus__header h3 {
+  margin: 0;
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.review-focus__count {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.review-focus__stage {
+  position: relative;
+  height: clamp(240px, 36vh, 440px);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.review-focus__inspect {
+  position: relative;
+  margin-top: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.review-focus__close {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.35rem;
+  border: none;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.review-focus__inspect strong { display: block; padding-right: 1rem; font-weight: 500; }
+.review-focus__inspect code { color: var(--ink-muted); font-family: var(--font-mono); font-size: 0.62rem; }
+.review-focus__anchor { margin: 0.3rem 0 0; color: var(--ink-muted); font-size: 0.7rem; max-height: 5rem; overflow-y: auto; }
+
+.review-focus__facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.1rem 0.6rem;
+  margin: 0.4rem 0 0;
+}
+
+.review-focus__facts div { display: contents; }
+.review-focus__facts dt { color: var(--ink-muted); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.review-focus__facts dd { margin: 0; font-family: var(--font-mono); font-size: 0.66rem; }
+
+.review-inspector__section,
+.review-decision {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+.review-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.review-inspector h3,
+.review-decision h3 { margin: 0 0 0.85rem; font-size: 0.73rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+.review-section-heading h3 { margin: 0; }
+
+.review-facts,
+.review-diff dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+.review-facts div,
+.review-diff dl div { min-width: 0; padding: 0.55rem; background: var(--panel); }
+.review-facts dt,
+.review-diff dt { color: var(--ink-muted); font-size: 0.57rem; text-transform: uppercase; }
+.review-facts dd,
+.review-diff dd { overflow: hidden; margin: 0.25rem 0 0; font-family: var(--font-mono); font-size: 0.64rem; text-overflow: ellipsis; }
+
+.review-change-list { margin-top: 1.1rem; }
+.review-change-list h4 { margin: 0 0 0.45rem; color: var(--ink-muted); font-size: 0.62rem; font-weight: 500; text-transform: uppercase; }
+.review-change-list > div { position: relative; padding: 0.65rem 5.5rem 0.65rem 0; border-top: 1px solid var(--rule); }
+.review-change-list strong { display: block; font-size: 0.72rem; font-weight: 500; }
+.review-change-list code { position: absolute; top: 0.65rem; right: 0; color: var(--ink-muted); font-size: 0.58rem; }
+.review-change-list p { margin: 0.35rem 0 0; color: var(--ink-muted); font-size: 0.68rem; line-height: 1.45; }
+
+.review-construction-audit > p { color: var(--ink-muted); font-size: 0.68rem; line-height: 1.45; }
+.review-evidence-group { border-top: 1px solid var(--rule); padding: 0.65rem 0; }
+.review-evidence-group summary,
+.review-evidence-receipt summary { cursor: pointer; font-size: 0.7rem; font-weight: 500; }
+.review-evidence-reason { color: var(--ink-muted); font-size: 0.68rem; line-height: 1.45; }
+.review-evidence-reason strong { color: var(--ink); }
+.review-evidence-span { margin-top: 0.65rem; }
+.review-evidence-span blockquote { margin: 0; padding-left: 0.7rem; border-left: 2px solid var(--rule-strong); color: var(--ink); font-size: 0.68rem; line-height: 1.5; white-space: pre-wrap; }
+.review-evidence-span code { display: block; margin-top: 0.3rem; color: var(--ink-muted); font-size: 0.58rem; overflow-wrap: anywhere; }
+.review-edge-evidence { margin-bottom: 0.8rem; }
+.review-evidence-receipt { border-top: 1px solid var(--rule); padding-top: 0.65rem; }
+.review-evidence-receipt dl { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.6rem; margin: 0.6rem 0 0; font-size: 0.6rem; }
+.review-evidence-receipt dt { color: var(--ink-muted); }
+.review-evidence-receipt dd { margin: 0; font-family: var(--font-mono); overflow-wrap: anywhere; }
+.review-change-body { margin-top: 0.4rem; }
+.review-change-body summary {
+  cursor: pointer;
+  color: var(--ink-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.review-change-body p { max-height: 12rem; overflow: auto; }
+
+.review-decision { display: grid; gap: 0.8rem; }
+.review-decision > p { margin: 0; color: var(--ink-muted); font-size: 0.72rem; }
+.review-decision label { display: grid; gap: 0.35rem; color: var(--ink); font-size: 0.67rem; }
+.review-decision label span { color: var(--ink-muted); font-size: 0.58rem; }
+.review-decision input,
+.review-decision textarea { width: 100%; box-sizing: border-box; padding: 0.6rem 0.65rem; resize: vertical; font-size: 0.72rem; }
+.review-decision__actions { display: flex; gap: 0.5rem; }
+
+/* Explicit background and border, because a button with neither is painted by
+   the *browser*: Chrome's dark-mode ButtonFace is rgb(107,107,107), so every
+   secondary decision on this pane — Reject, Requeue, Acknowledge, Dismiss —
+   was a mid-grey slab the product never chose. Invisible to
+   `test_colour_is_spent_only_on_status_and_only_there` for the same reason the
+   native checkbox was: a UA default is never declared in a stylesheet, so
+   there is nothing there to find. */
+.review-decision button {
+  justify-self: start;
+  padding: 0.57rem 0.78rem;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.review-decision button:hover:not(:disabled) { border-color: var(--ink); }
+.review-decision button.is-primary { border-color: var(--ink); background: var(--ink); color: var(--canvas); }
+
+/* Was `.review-decision button:disabled,` with a blank line under it, which
+   made it the first selector of the callout rule below — so a disabled button
+   was drawn as an amber alert. The second dangling-selector bug in this file;
+   the first joined `.review-health button,` onto its neighbour the same way. */
+.review-decision button:disabled {
+  border-color: var(--rule);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: default;
+}
+
+.review-callout,
+.review-error { padding: 0.65rem 0.75rem; border-left: 2px solid var(--attention); background: color-mix(in srgb, var(--attention) 8%, var(--panel)); color: var(--ink-muted); font-size: 0.68rem; }
+.review-error { margin: 0; border-color: var(--alarm); background: color-mix(in srgb, var(--alarm) 8%, var(--panel)); color: var(--ink); }
+
+.review-diff > span { color: var(--ink-muted); font-size: 0.68rem; }
+.review-diff dl { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.review-versions { display: flex; align-items: center; gap: 0.55rem; color: var(--ink-muted); font-size: 0.63rem; }
+.review-versions code { overflow: hidden; max-width: 12rem; text-overflow: ellipsis; }
+
+.review-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.review-chips code { padding: 0.32rem 0.45rem; border: 1px solid var(--rule); color: var(--ink-muted); font-size: 0.62rem; }
+
+.review-events { margin: 0; padding: 0; list-style: none; }
+.review-events li { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.75rem; padding: 0.7rem 0; border-top: 1px solid var(--rule); }
+.review-events li > span { width: 0.35rem; height: 0.35rem; margin-top: 0.25rem; border: 1px solid var(--ink-muted); border-radius: 50%; }
+.review-events strong { font-size: 0.7rem; font-weight: 500; }
+.review-events p { margin: 0.22rem 0; color: var(--ink-muted); font-size: 0.61rem; }
+.review-events code,
+.review-technical code { color: var(--ink-muted); font-size: 0.58rem; }
+
+.review-technical { margin-top: 0.9rem; color: var(--ink-muted); font-size: 0.64rem; }
+.review-technical summary { cursor: pointer; }
+.review-technical pre { max-height: 18rem; overflow: auto; padding: 0.75rem; background: var(--panel); font-family: var(--font-mono); font-size: 0.58rem; white-space: pre-wrap; }
+
+/* An empty state is centred in the pane it replaces, not in a box of its own.
+   ---------------------------------------------------------------------------
+   `min-height: 11rem` with `place-items: center` centres the words inside 176
+   pixels that sit at the top of a 900-pixel column — which is neither of the
+   two things a reader can recognise. It is not top-aligned, because there is a
+   band of empty space above the text; and it is not centred, because there are
+   six hundred pixels below it. It reads as a layout that was aimed and missed.
+
+   So the box takes the pane. `min-height: 100%` resolves against the pane's
+   *content* box, and the bands are transparent borders rather than padding
+   (see the note above), so 100% is already the space between them — the words
+   land optically centred between the header and the instrument, not centred in
+   a column that is partly covered at both ends.
+
+   `align-content`, not `align-items`. The rows here are content-sized and the
+   grid is taller than they are, so `align-items` centres each line within its
+   own stretched row and pulls the title and the sentence apart; what needs
+   centring is the pair, which is what `align-content` moves. */
+.review-empty {
+  display: grid;
+  flex: 1 1 auto;
+  align-content: center;
+  justify-items: center;
+  gap: 0.35rem;
+  min-height: 100%;
+  padding: 2rem;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  text-align: center;
+}
+.review-empty strong { color: var(--ink); font-size: 0.76rem; font-weight: 500; }
+
+/* The action slot, when there is no action. Said plainly so a settled row does
+   not read as one whose controls failed to render. */
+.review-settled {
+  margin: 0;
+  padding: 0.7rem 0.75rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+}
+
+/* Why a gate refused, in words. */
+.review-gate__findings { margin: 0 0 0.75rem; padding: 0; list-style: none; }
+.review-gate__findings li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--rule);
+}
+.review-gate__findings li > span { flex: 1 1 14rem; font-size: 0.72rem; }
+.review-gate__findings code { color: var(--ink-muted); font-size: 0.6rem; }
+.review-gate__findings em { color: var(--alarm); font-size: 0.6rem; font-style: normal; }
+.review-gate__clean,
+.review-gate__closure { margin: 0 0 0.5rem; color: var(--ink-muted); font-size: 0.68rem; line-height: 1.45; }
+
+/* The audit trail — available, not competing with the decision. */
+.review-record {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--rule);
+}
+.review-record > summary {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+.review-record > summary:hover { color: var(--ink); }
+.review-record .review-events,
+.review-record .review-chips { margin-top: 0.9rem; }
+
+@media (max-width: 820px) {
+  .review-toolbar { flex-wrap: wrap; }
+  .review-toolbar > label { order: 4; width: 100%; margin-left: 0; }
+  .review-toolbar input { width: 100%; box-sizing: border-box; }
+  .review-body { display: block; }
+  .review-divider { display: none; }
+  .review-queue { max-height: 42vh; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .review-inspector { overflow: visible; }
+}
+
+@media (max-width: 520px) {
+  .review-toolbar { gap: 0.5rem; }
+  .review-toolbar h1 { width: 100%; }
+  .review-toolbar nav { overflow-x: auto; }
+  .review-toolbar nav button { flex: 0 0 auto; }
+  .review-facts,
+  .review-diff dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .review-row { padding-inline: 0.8rem; }
+  .review-inspector { padding-inline: 1rem; }
+}
+
+/* The question an agent could not answer, set as the subject of the pane —
+   it is the reason this row is in the queue. */
+.review-escalation__question {
+  margin: 0 0 0.6rem;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------- a thumb
+   Review's queue rows are already generous — 1rem of padding around two lines
+   of text clears 44px without help. Its *decisions* are not: Confirm, Reject,
+   Requeue, Acknowledge and Dismiss all sat at roughly 29px, which is the
+   smallest any control should be allowed to get and the largest consequence
+   any control on this surface carries.
+
+   This is the one place in the product where an accidental tap is not an
+   inconvenience: these buttons answer a demand on the record. A target under
+   a fingertip is how a neighbouring verb gets pressed. */
+@media (pointer: coarse) {
+  .review-decision button {
+    min-height: 44px;
+    padding-inline: 1rem;
+  }
+
+  /* Decisions stop sharing a line once they are finger-sized: five 44px
+     buttons in a row is a horizontal scroll on a tablet in portrait. */
+  .review-decision__actions {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+}

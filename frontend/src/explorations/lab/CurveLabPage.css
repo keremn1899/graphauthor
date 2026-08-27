@@ -1,0 +1,270 @@
+.curve-lab {
+  min-height: 100vh;
+  background: var(--panel);
+  padding-bottom: 2.5rem;
+}
+
+.curve-lab__chrome {
+  padding: 1.1rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  max-width: 52rem;
+}
+
+.curve-lab__eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.curve-lab__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.curve-lab__lede {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.curve-lab__lede strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.curve-lab__nav {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.curve-lab__nav a {
+  color: var(--ink);
+}
+
+.curve-lab__body {
+  display: grid;
+  grid-template-columns: 17rem 1fr;
+  gap: 1.2rem;
+  padding: 1.1rem 1.4rem;
+  align-items: start;
+}
+
+.curve-lab__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  position: sticky;
+  top: 1.1rem;
+}
+
+.curve-lab__control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.curve-lab__control-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.curve-lab__preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.curve-lab__preset-btn {
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.curve-lab__preset-btn--active {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--panel);
+}
+
+.curve-lab__hint {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.curve-lab__slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+
+.curve-lab__slider span {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-muted);
+}
+
+.curve-lab__slider em {
+  font-style: normal;
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.74rem;
+}
+
+.curve-lab__slider input[type="range"] {
+  width: 100%;
+}
+
+.curve-lab__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid var(--rule);
+}
+
+.curve-lab__buttons button {
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.curve-lab__buttons button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.curve-lab__loop {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.curve-lab__previews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.curve-lab__panel {
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+  padding: 0.7rem 0.8rem 0.85rem;
+}
+
+.curve-lab__panel--graph {
+  grid-column: 1 / -1;
+}
+
+.curve-lab__panel h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.curve-lab__grid {
+  stroke: var(--rule);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.curve-lab__ref-path {
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.curve-lab__curve-path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.curve-lab__dot {
+  fill: var(--ink);
+}
+
+.curve-lab__readout {
+  margin: 0.35rem 0 0;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.curve-lab__overshoot {
+  color: var(--ink);
+}
+
+.curve-lab__iris {
+  fill: var(--panel);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.curve-lab__pupil-disc {
+  fill: var(--ink);
+}
+
+.curve-lab__stroke-line {
+  stroke: var(--ink);
+  stroke-linecap: square;
+}
+
+.curve-lab__reveal-box,
+.curve-lab__shiver-box {
+  display: grid;
+  place-items: center;
+  height: 100px;
+}
+
+.curve-lab__reveal-disc {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.curve-lab__shiver-chip {
+  width: 60px;
+  height: 30px;
+  border: 2px solid var(--ink);
+  background: var(--node-fill);
+}
+
+@media (max-width: 780px) {
+  .curve-lab__body {
+    grid-template-columns: 1fr;
+  }
+
+  .curve-lab__controls {
+    position: static;
+  }
+
+  .curve-lab__previews {
+    grid-template-columns: 1fr;
+  }
+}

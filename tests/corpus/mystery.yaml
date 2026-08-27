@@ -1,0 +1,144 @@
+# Mystery (murder) seed corpus cases.
+#
+# Node ids reference `seeds.get_mystery_data()`.
+
+- id: mystery_relation_proof_bob_poison
+  query: "Did Bob obtain the cyanide vial?"
+  seed: mystery
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs, path]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_edge_types: [leadsto]
+    required_node_ids_all: [person_bob, item_poison]
+    min_edge_count: 1
+    expected_verdict: [CONFIRMED]
+    expected_gap_types_forbidden: [missing_relationship]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Confirm via the LEADSTO edge person_bob -> item_poison labelled
+      'obtained'. Name Bob and the cyanide vial explicitly.
+    must_contain: [Bob, cyanide]
+  tags: [v6_relation_proof]
+
+- id: mystery_fanout_bob
+  query: "What is Bob associated with in this graph?"
+  seed: mystery
+  query_class: fanout
+  evidence_shapes_expected: [node_set, edge_pairs]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: true
+    required_node_ids_all: [person_bob]
+    required_node_ids_any: [item_poison, loc_conservatory]
+    min_edge_count: 2
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Enumerate outbound edges from Bob: obtained the cyanide vial
+      (LEADSTO), frequents the Conservatory (EXPRESSES).
+    must_contain: [Bob]
+  tags: [v6_fanout]
+
+- id: mystery_overview
+  query: "What is this graph about?"
+  seed: mystery
+  query_class: overview
+  evidence_shapes_expected: [node_set, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    min_node_count: 5
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: compass_derivation
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Describe the graph as a murder-mystery evidence map: a victim
+      (Mr Boddy), suspects (Alice/Bob/Charlie), locations and physical
+      evidence (cyanide vial, missing knife), and motives.
+    expected_aspects:
+      - suspects
+      - evidence
+      - motives
+  tags: [v6_overview]
+
+- id: mystery_ill_posed_inspector
+  query: "Did Inspector Lestrade examine the cyanide vial and reach a conclusion?"
+  seed: mystery
+  query_class: relation_proof
+  evidence_shapes_expected: [edge_pairs]
+  proof_mode: relational
+  scope: local
+  ground_truth:
+    answerable: false
+    expected_verdict: [ILL_POSED, EXHAUSTED]
+    expected_retrieval_strategy: contract_driven
+    strategy_is_hard_expectation: false
+  rubric:
+    expected_answer_summary: |
+      Report that Inspector Lestrade does not exist as a node in this graph.
+      The answer must not invent investigative conclusions.
+    must_not_contain:
+      - "Lestrade concluded"
+      - "the inspector found"
+      - "examination revealed"
+  tags: [v11_plan_validation, ill_posed, honest_failure]
+  notes: "ILL_POSED: named entity (Lestrade) absent from graph. EXHAUSTED also acceptable if routes exploratory."
+
+- id: mystery_composite_motives
+  query: "Why might each suspect have wanted to kill Mr. Boddy? Trace the full evidence for each person."
+  seed: mystery
+  query_class: composite
+  evidence_shapes_expected: [path, subgraph]
+  proof_mode: semantic
+  scope: global
+  ground_truth:
+    answerable: true
+    required_node_ids_any: [person_alice, person_bob, person_charlie, motive_money]
+    min_node_count: 4
+    expected_verdict: [CONFIRMED]
+    expected_retrieval_strategy: exploratory
+    strategy_is_hard_expectation: true
+  rubric:
+    expected_answer_summary: |
+      Synthesise a motive analysis for all three suspects (Alice, Bob,
+      Charlie). Each should be grounded in graph edges: Alice (heiress,
+      motive_money), Bob (obtained poison, frequents conservatory),
+      Charlie (has alibi conflicts or missing knife). Must not confine
+      itself to a single suspect.
+    must_contain: [Alice, Bob, Charlie]
+    expected_aspects:
+      - per-suspect motive
+      - edge-grounded evidence
+      - all three suspects addressed
+  tags: [v11_exploratory, composite, synthesis]
+  notes: "Tests that holistic multi-entity synthesis routes to exploratory, not fanout/contract_driven."
+
+- id: mystery_meta_gap_surveillance
+  query: "What do the security-camera recordings show?"
+  seed: mystery
+  query_class: meta_gap
+  evidence_shapes_expected: [node_set]
+  proof_mode: absence
+  scope: local
+  ground_truth:
+    answerable: false
+    expected_verdict: [EXHAUSTED, CONFIRMED]
+    expected_gap_types_required: [missing_concept]
+  rubric:
+    expected_answer_summary: |
+      Report that the graph has no surveillance / camera evidence nodes.
+      This is a graph-coverage gap — do not invent footage.
+    must_not_contain:
+      - "the footage shows"
+      - "cameras captured"
+  tags: [v6_meta_gap, honest_failure]

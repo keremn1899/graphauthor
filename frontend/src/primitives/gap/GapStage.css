@@ -1,0 +1,13 @@
+.gap-stage {
+  width: 100%;
+  height: 220px;
+  background: var(--canvas);
+  border: 1px solid var(--rule);
+}
+
+.gap-stage .react-flow__node {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
