@@ -6,17 +6,7 @@ existing ``retrieval-v1`` executor.
 lookup is exact and terminal on a miss — it never widens to search.
 search results are candidates, never a closed-world empty and never a verdict.
 
-This is the single implementation. Both doors — the product Ask loop
-(`mcp_server/ask.py`) and the MCP stdio tools (`mcp_server/stdio.py`, via
-`HostRetrievalSurface`) — run this class, because when they were two copies a
-repair reached one of them: `search` had been moved to semantic on the host
-copy while Ask kept ranking on the lexical token filter. An AST comparison of
-the copies found nine of thirteen shared methods byte-identical and all four
-public operations among them, so the duplication bought nothing and cost that.
-
-Extending it is deliberate, not incidental: `_after_execute` is the one seam,
-and an affordance built for an agent host reaches Ask only if someone puts it
-in this class.
+The MCP stdio tools run this class. There is one implementation.
 """
 
 from __future__ import annotations

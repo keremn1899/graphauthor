@@ -1,18 +1,7 @@
-"""Operator BFF HTTP transport (B1) — `/operator` beside `/mcp`, same process.
+"""Operator HTTP transport — `/operator` beside `/mcp`, same process.
 
-Thin JSON transport over `OperatorSurface`. Adds NOTHING to the surface: every
-route is a direct call, auth mirrors the MCP bearer pattern (`http._authorized`),
-and no filesystem paths or gate modules are ever exposed to the browser.
-
-v1 scope (locked): reads (health, proposals, escalations, activities, inbox,
-events, history, audit) + the operator write loop (confirm / reject / requeue).
-Deferred: transcript/trace query, long-running gate progress streaming, revert.
-
-Single-owner-DB note: confirm mutates the graph exclusively. When mounted in the
-same process as the MCP `Surface` (`build_asgi_app(surface, operator=...)`), the
-server wires `OperatorSurface.reload_hook` to the surface's reload and serializes
-writes against MCP invokes. The standalone `build_operator_app` (operator plane
-only) has no co-held engine and is what the HTTP battery drives end to end.
+Reads only: health, memory, proposals, events, history, settings.
+Propose auto-commits on the agent plane; revert stays on the history CLI.
 """
 
 from __future__ import annotations
@@ -62,19 +51,6 @@ def operator_routes(operator: OperatorSurface) -> list:
     async def audit(request):
         return json_result(operator.audit(request.path_params["pid"]))
 
-    async def lineage(request):
-        return json_result(operator.lineage(request.path_params["node_id"]))
-
-    async def absence_classify(request):
-        return JSONResponse(operator.classify_absence(request.query_params.get("predicate", "")))
-
-    async def absence_dispose(request):
-        body = await _json_body(request)
-        r = operator.dispose_absence(
-            predicate=str(body.get("predicate", "")), category=str(body.get("category", "")),
-            primary_source=str(body.get("primary_source", "")), reasoning=str(body.get("reasoning", "")))
-        return json_result(r)
-
     async def escalations(request):
         return JSONResponse(operator.list_escalations())
 
@@ -85,8 +61,6 @@ def operator_routes(operator: OperatorSurface) -> list:
         return JSONResponse(operator.inbox())
 
     async def events(request):
-        # `?since=<event_id>` returns only the events after that one, so a
-        # polling surface pulls an increment instead of the whole log.
         since = request.query_params.get("since") or ""
         rows = operator.events()
         if since:
@@ -98,8 +72,7 @@ def operator_routes(operator: OperatorSurface) -> list:
         return JSONResponse(rows)
 
     async def history(request):
-        r = operator.history()
-        return json_result(r)
+        return json_result(operator.history())
 
     async def diff(request):
         r = operator.diff(
@@ -108,46 +81,6 @@ def operator_routes(operator: OperatorSurface) -> list:
         )
         return json_result(r)
 
-    async def confirm(request):
-        body = await _json_body(request)
-        ack = body.get("correction_acknowledgement")
-        if ack is not None and not isinstance(ack, dict):
-            return json_result(
-                operator_fault(
-                    "invalid", "correction_acknowledgement must be an object"
-                )
-            )
-        r = operator.confirm(
-            request.path_params["pid"],
-            primary_source=str(body.get("primary_source", "")),
-            correction_acknowledgement=ack,
-        )
-        return json_result(r)
-
-    async def reject(request):
-        body = await _json_body(request)
-        r = operator.reject(request.path_params["pid"], reason=str(body.get("reason", "")))
-        return json_result(r)
-
-    async def requeue(request):
-        r = operator.requeue(request.path_params["pid"])
-        return json_result(r)
-
-    async def acknowledge_incident(request):
-        body = await _json_body(request)
-        r = operator.acknowledge_incident(
-            request.path_params["subject_id"], note=str(body.get("note", "")))
-        return json_result(r)
-
-    async def dispose_escalation(request):
-        body = await _json_body(request)
-        r = operator.dispose_escalation(
-            request.path_params["handoff_id"],
-            disposition=str(body.get("disposition", "")),
-        )
-        return json_result(r)
-
-    # --- account / settings / BYO-key (the settings-UI backend) ---
     async def settings(request):
         return JSONResponse(operator.settings())
 
@@ -183,15 +116,7 @@ def operator_routes(operator: OperatorSurface) -> list:
         Route("/proposals", proposals, methods=["GET"]),
         Route("/proposals/{pid}", proposal, methods=["GET"]),
         Route("/proposals/{pid}/audit", audit, methods=["GET"]),
-        Route("/lineage/{node_id}", lineage, methods=["GET"]),
-        Route("/absence/classify", absence_classify, methods=["GET"]),
-        Route("/absence/dispose", absence_dispose, methods=["POST"]),
-        Route("/proposals/{pid}/confirm", confirm, methods=["POST"]),
-        Route("/proposals/{pid}/reject", reject, methods=["POST"]),
-        Route("/proposals/{pid}/requeue", requeue, methods=["POST"]),
         Route("/escalations", escalations, methods=["GET"]),
-        Route("/escalations/{handoff_id}/dispose", dispose_escalation, methods=["POST"]),
-        Route("/incidents/{subject_id}/acknowledge", acknowledge_incident, methods=["POST"]),
         Route("/activities", activities, methods=["GET"]),
         Route("/inbox", inbox, methods=["GET"]),
         Route("/events", events, methods=["GET"]),
@@ -206,11 +131,10 @@ def operator_routes(operator: OperatorSurface) -> list:
         Route("/settings/posture", posture, methods=["GET"]),
         Route("/settings/posture", set_posture, methods=["POST"]),
     ]
+
+
 def build_operator_app(operator: OperatorSurface, *, token: str | None):
-    """Standalone operator plane: bearer gate → `/operator` routes. Used by the
-    HTTP battery and by deployments that want only the human plane. The combined
-    same-process server is `mcp_server.http.build_asgi_app(surface, operator=...)`.
-    """
+    """Standalone operator plane: bearer gate → `/operator` routes."""
     from starlette.applications import Starlette
     from starlette.responses import Response
     from starlette.routing import Mount

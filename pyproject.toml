@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11,<3.14"
 license = { file = "LICENSE" }
 authors = [{ name = "Kerem" }]
-keywords = ["knowledge-graph", "governance", "conformance", "SST"]
+keywords = ["knowledge-graph", "traversal", "agents", "provenance"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -21,23 +21,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-# What it takes to OPEN A GRAPH AND READ IT, and nothing else.
-#
-# Everything below used to be a base dependency, so `pip install` of a
-# graph-reading MCP server pulled langgraph, langchain, Flask and pyvis. That
-# was always weight; it becomes the whole distribution story once a host agent
-# owns the reasoning, because then the server's job is exactly this list.
-#
-# Verified from a clean venv, not reasoned about: `real_ladybug`, `pydantic`
-# and `requests` are sufficient to import the surface, build the structural
-# index, and answer `orient`, `coverage` and `classify_absence` over a real
-# 500-node graph. `python-dotenv` and `httpx` are kept because the CLI and
-# embedding paths read them and they are small.
-#
-# `requests` was imported at module scope by `engine.py` and declared NOWHERE.
-# It resolved only because langchain-openai happened to pull it in, so the base
-# install was relying on an extra it did not name — the kind of thing that
-# breaks on somebody else's machine, months later, for no visible reason.
 dependencies = [
     "real_ladybug>=0.15.0,<0.16",
     "pydantic>=2.0",
@@ -48,95 +31,41 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# `<2` is not caution, it is a measured incompatibility: mcp 2.0.0 removed
-# `Server.list_tools`, so the stdio server raises AttributeError on startup
-# before serving a single request. `mcp>=1.0` would have handed every new
-# installer a server that dies immediately. Verified working on 1.29.0.
 mcp = ["mcp>=1.0,<2"]
 http = ["mcp>=1.0,<2", "starlette>=0.37,<1", "uvicorn>=0.29"]
-# The in-process multi-agent pipeline (Planner/Squad/Company/Battalion). Only
-# `discover` and `retrieve` need it; without it they report
-# `engine_fault:...:ModuleNotFoundError` with `engine_degraded: true` and an
-# empty claim, rather than answering from nothing.
-engine = ["langgraph>=0.2.0", "langchain-openai>=0.2.0", "langchain-core>=0.3.0"]
-# Optional HTML parser used by workbook programs.
 construct = ["beautifulsoup4>=4.12.0"]
-# `tools/viz_sst.py` only.
-viz = ["pyvis>=0.3.2"]
-# `demo/app.py` only.
-demo = ["flask>=3.0.0"]
 dev = ["pytest>=8.0.0"]
-regional = ["igraph>=0.11,<0.12", "leidenalg>=0.10,<0.11"]
 all = [
     "mcp>=1.0,<2", "starlette>=0.37,<1", "uvicorn>=0.29",
-    "langgraph>=0.2.0", "langchain-openai>=0.2.0", "langchain-core>=0.3.0",
-    "beautifulsoup4>=4.12.0", "pyvis>=0.3.2", "flask>=3.0.0",
-    "igraph>=0.11,<0.12", "leidenalg>=0.10,<0.11",
+    "beautifulsoup4>=4.12.0",
 ]
 
 [project.scripts]
-graphauthor = "closed_knowledge_engine.cli:main"
-# The MCP stdio server, as a command. Claude Code, Cursor and every other MCP
-# client are configured with a *binary plus args*, so `python -m
-# mcp_server.stdio` made the integrator name an interpreter and know a module
-# path — and pick the right interpreter, which on a conda install is not the
-# one on PATH. Needs the `mcp` extra: `pip install ".[mcp]"`.
+graphauthor = "mcp_server.bootstrap:main"
 graphauthor-mcp = "mcp_server.stdio:main"
-# Legacy aliases — prefer ``graphauthor`` / ``graphauthor-mcp``.
-aporta = "closed_knowledge_engine.cli:main"
-aporta-mcp = "mcp_server.stdio:main"
-cke = "closed_knowledge_engine.cli:main"
 
 [project.urls]
 
 [tool.setuptools]
-# Flat layout — behavior-preserving: existing import paths stay identical.
 include-package-data = true
 py-modules = [
     "backend_tools",
-    "battalion",
-    "claim",
-    "component_applicability",
-    "conformance_verdict",
     "contract",
-    "corpus_eval",
-    "correction_loops",
-    "empty_packet_recovery",
     "engine",
-    "engine_state",
-    "gap_hinter",
-    "governance_dispatch",
-    "governance_scope",
-    "grammar_guard",
     "graph_overlay",
     "graph_read",
-    "judgment_view",
-    "llm_lazy",
-    "mis_governance_rubric",
-    "model_roles",
     "models",
     "normative",
-    "pipeline_a",
-    "pipeline_b",
-    "prompt_loader",
-    "reporting",
     "retrieval_program",
-    "seeds",
-    "spine",
-    "sst_debug",
-    "sst_degradation",
     "tools",
-    "verdict_computation",
 ]
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = [
-    "closed_knowledge_engine*",
-    "conformance_check*",
     "graph_storage*",
+    "graph_layout*",
     "interaction*",
-    "prompts*",
     "mcp_server*",
     "source_pipeline*",
     "write_path*",
@@ -155,8 +84,3 @@ exclude = [
 
 [tool.setuptools.package-data]
 "*" = ["*.md", "*.txt", "*.yml", "*.yaml", "*.json"]
-# Nested, so the per-package "*.md" glob above does not reach them.
-"prompts" = ["**/*.md"]
-# Prompt templates stay at repo root (prompt_loader resolves relative to itself).
-# Editable / in-tree installs keep that layout. Non-editable installs should use
-# ``pip install -e`` or ship from a source checkout so prompts/ sits beside the modules.

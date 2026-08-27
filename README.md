@@ -152,6 +152,23 @@ conda run --no-capture-output -n agentic-graphrag   python scripts/run_local_pro
 One process owns one graph file at a time. See [CLAUDE.md](CLAUDE.md) for
 repository rules and [product/](product/) for the small product contract.
 
+## Discover
+
+Clone the public repository and add Graphauthor as an MCP server in Cursor
+(or another MCP client) using [`.cursor/mcp.json.example`](.cursor/mcp.json.example).
+Point `SST_DB_PATH` at a materialized `graph.lbug`. After that, `orient` is
+the first tool: it reports the graph profile, named traversals, and the
+operations the host will actually run.
+
+A graph is discoverable the same way. Publication writes `graph.lbug` plus
+source and traversal sidecars. An agent finds what the graph is for by
+calling `orient` and `contract`, then running a named traversal when the
+workbook declared one.
+
+GitHub topics and the first paragraph of this README are how a stranger finds
+the project. There is no marketplace listing yet. A later `pip install graphauthor`
+would use the same package name.
+
 ## Repository layout
 
 | Path | Role |

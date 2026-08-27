@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -19,8 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture()
 def db(tmp_path):
-    dst = tmp_path / "owned.lbug"
-    shutil.copy2(ensure_fixture("runtime/hexagonal_orders.lbug"), dst)
+    dst = ensure_fixture(tmp_path / "owned.lbug")
     yield dst
     reset_connection()
 

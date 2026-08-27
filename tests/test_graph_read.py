@@ -25,9 +25,7 @@ AUTH = {"Authorization": f"Bearer {TOKEN}"}
 def _fixture_db(tmp_path: Path, name: str = "current.lbug") -> Path:
     from mcp_server.fixture import ensure_fixture
 
-    db = tmp_path / name
-    shutil.copy2(ensure_fixture("runtime/hexagonal_orders.lbug"), db)
-    return db
+    return ensure_fixture(tmp_path / name)
 
 
 # ------------------------------------------------------------------ projection
@@ -183,25 +181,31 @@ def test_adding_a_node_does_not_move_the_rest_of_the_map(tmp_path):
     """The map is a place the operator learns. A commit inserts material next to
     where it belongs; it does not renumber everything else. Before the ordering
     ledger persisted slots, one added node moved the average node 184 units."""
+    import gc
+
     import real_ladybug as lb
 
     import graph_read
 
     db = _fixture_db(tmp_path)
     before = {n["id"]: (n["x"], n["y"]) for n in graph_read.read_map(db)["nodes"]}
+    gc.collect()
 
-    busiest = max(before)  # any existing node; the parent it attaches to
-    conn = lb.Connection(lb.Database(str(db)))
+    busiest = max(before)
+    database = lb.Database(str(db))
+    conn = lb.Connection(database)
     conn.execute(
         "CREATE (c:Concept {id: 'zz_new_rule', label: 'New rule', "
-        "text_content: '', semantic_anchor: '', token_count: 0, "
-        "centrality_score: 0.0, is_metanode: false, linked_graph_id: ''})"
+        "text_content: '', semantic_anchor: '', embedding: $e, token_count: 0, "
+        "centrality_score: 0.0, is_metanode: false, linked_graph_id: ''})",
+        {"e": [0.0] * 3072},
     )
     conn.execute(
         "MATCH (a:Concept {id: $p}), (b:Concept {id: 'zz_new_rule'}) "
         "CREATE (a)-[:CONTAINS]->(b)", {"p": busiest}
     )
-    conn.close()
+    del conn, database
+    gc.collect()
 
     after_map = graph_read.read_map(db)
     after = {n["id"]: (n["x"], n["y"]) for n in after_map["nodes"]}
@@ -217,22 +221,27 @@ def test_adding_a_node_does_not_move_the_rest_of_the_map(tmp_path):
 def test_lenses_are_offered_and_keep_separate_ledgers(tmp_path):
     """Slots mean different things in a containment tree and a causal layering,
     so a shared ledger would make switching lenses and back reshuffle the map."""
+    import gc
+
     import graph_read
 
     db = _fixture_db(tmp_path)
     canonical = graph_read.read_map(db)
     assert canonical["lens"] == "canonical"
     assert "causal" in canonical["available_lenses"]
+    gc.collect()
 
     causal = graph_read.read_map(db, "causal")
     assert causal["lens"] == "causal"
     causal_pos = {n["id"]: (n["x"], n["y"]) for n in causal["nodes"]}
     assert causal_pos != {n["id"]: (n["x"], n["y"]) for n in canonical["nodes"]}
+    gc.collect()
 
     # Going back gets the operator the same map they left.
     again = graph_read.read_map(db)
     assert {n["id"]: (n["x"], n["y"]) for n in again["nodes"]} == \
            {n["id"]: (n["x"], n["y"]) for n in canonical["nodes"]}
+    gc.collect()
 
     # An unknown lens falls back rather than costing the operator their map.
     assert graph_read.read_map(db, "no-such-lens")["lens"] == "canonical"

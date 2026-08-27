@@ -16,15 +16,16 @@ _CARD = {
             "list": {"effect": "read"},
             "show": {"effect": "read"},
             "audit": {"effect": "read"},
-            "reject": {"effect": "proposal_disposition", "authority": "human"},
-            "requeue": {"effect": "proposal_disposition", "authority": "human"},
-            "confirm": {
-                "effect": "licensed_graph_commit",
-                "authority": "human",
-                "requires": ["graph_md_harness_or_gate_battery"],
-            },
         },
-        "cannot": ["propose", "escalate", "direct_encode", "revert"],
+        "cannot": [
+            "propose",
+            "confirm",
+            "reject",
+            "requeue",
+            "escalate",
+            "direct_encode",
+            "revert",
+        ],
     },
     "history_cli": {
         "commands": {
@@ -39,7 +40,6 @@ _CARD = {
         "cannot": ["propose", "confirm", "direct_encode"],
     },
     "invariants": [
-        "no_harness_or_gate_no_commit",
         "agents_propose_forward_operators_revert",
         "all_graph_mutations_append_causal_events",
     ],

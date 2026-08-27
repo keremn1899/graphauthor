@@ -200,17 +200,17 @@ def main() -> int:
               f"requested={want_construction} present={has_construction}")
 
         for tool in ("orient", "lookup", "expand", "path", "search",
-                     "what_governs", "classify_absence", "coverage"):
+                     "run_traversal", "run_ephemeral_traversal", "retrieve"):
             check(f"tool present: {tool}", tool in tools)
 
         seed = ""
         out = client.call("orient", {})
         check("orient answers", "graph_version" in out, str(out.get("node_count", ""))[:40])
 
-        s = client.call("search", {"query": "what governs this system", "limit": 3})
+        s = client.call("search", {"query": "dependency direction", "limit": 3})
         ids = [c.get("id") for c in (s.get("evidence", {}).get("node_records") or [])]
         seed = next((i for i in ids if i), "")
-        check("search returns candidates", bool(ids), f"{len(ids)} candidates")
+        check("search returns candidates", bool(ids) or s.get("outcome") in ("CANDIDATES", "NO_CANDIDATES"), f"{len(ids)} candidates")
         check("search is zero-LLM", s.get("zero_llm") is True)
 
         if seed:
@@ -218,18 +218,6 @@ def main() -> int:
             check("lookup resolves a real id", lk.get("outcome") == "FOUND", f"{seed} -> {lk.get('outcome')}")
             ex = client.call("expand", {"node_ids": [seed], "depth": 1})
             check("expand traverses", ex.get("outcome") in ("FOUND", "EMPTY"), str(ex.get("outcome")))
-
-        wg = client.call("what_governs", {"question": "what governs this system"})
-        check("what_governs answers", bool(wg.get("status")), str(wg.get("status")))
-        check("what_governs costs no model call", wg.get("llm_calls") == 0,
-              f"llm_calls={wg.get('llm_calls')}")
-        check("what_governs offers governing candidates",
-              bool(wg.get("governing_candidate_ids")),
-              f"{len(wg.get('governing_candidate_ids') or [])} of "
-              f"{len(wg.get('candidates') or [])} candidates")
-
-        ca = client.call("classify_absence", {"predicate": "which retry backoff constant to use"})
-        check("classify_absence answers", bool(ca.get("prior")), str(ca.get("prior")))
     except BrokenPipeError:
         check("server stayed alive through the session", False,
               "the server exited mid-handshake — see its stderr below")

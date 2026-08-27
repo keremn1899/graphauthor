@@ -4,8 +4,6 @@ when they pass mechanical checks. MCP has no confirm verb.
 
 from __future__ import annotations
 
-import shutil
-
 from interaction.event_log import EventStore
 from interaction.event_types import GRAPH_COMMITTED
 from mcp_server.fixture import ensure_fixture
@@ -70,9 +68,8 @@ def _battery(green: bool = True):
 
 
 def _world(tmp_path, *, gated: bool):
-    db = tmp_path / "g.lbug"
+    db = ensure_fixture(tmp_path / "g.lbug")
     store = tmp_path / "store.sqlite"
-    shutil.copy2(ensure_fixture("runtime/hexagonal_orders.lbug"), db)
     provider = GateProvider(_battery(True), db, store) if gated else None
     surface = Surface(
         db,

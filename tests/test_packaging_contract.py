@@ -51,12 +51,7 @@ ALLOWED_BASE = {
 #: Must never be base. Each is genuinely needed by something, and that
 #: something is never "read a graph".
 HEAVY = {
-    "langgraph": "the in-process multi-agent pipeline",
-    "langchain-openai": "the in-process multi-agent pipeline",
-    "langchain-core": "the in-process multi-agent pipeline",
     "beautifulsoup4": "the optional workbook HTML parser",
-    "pyvis": "tools/viz_sst.py",
-    "flask": "demo/app.py",
 }
 
 

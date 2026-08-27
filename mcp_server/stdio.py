@@ -25,7 +25,7 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 
 from engine import EmptyGraphError, GraphInUseError
-from mcp_server.host_retrieval import HostRetrievalSurface
+from mcp_server.retrieve import Retrieve
 from mcp_server.surface import Surface
 
 #: The agent surface. Retrieval is deterministic and zero-model; writes stop at
@@ -385,23 +385,15 @@ TOOLS: list[types.Tool] = [
     types.Tool(
         name="propose",
         description=(
-            "Queue a graph-contract change for human review; this tool never "
-            "writes the graph. With graph.md, concepts require its node kind and "
+            "Propose a graph-contract change. Valid proposals auto-commit; "
+            "this tool does not leave a human confirm queue. Revert is the "
+            "backward path. With graph.md, concepts require its node kind and "
             "edges use predicate/source_id/target_id; the harness validates "
-            "endpoints and derives SST. Legacy graphs may still supply type and "
-            "label. Bind expected_graph_version to the "
-            "context used for drafting and target_gap_id to the gap being filled. "
-            "Use provenance.decision_origin=recover_existing when sources already "
-            "state the decision, or propose_new for a new human-ratified decision. "
-            "A proposal remains L0/PENDING until an operator supplies a primary "
-            "source and the encode gate passes. If graph.md lists "
-            "required_traversals for the kinds you touch, attach a fresh "
-            "run_traversal receipt or propose refuses. Other format exceptions "
-            "(contradiction, supersession, oversized batch, missing source) still "
-            "queue for Review. Use dry_run=true to validate shape, "
-            "endpoints, collisions and grain without queueing. check_gate=true also "
-            "runs the real closure/distractor gate on a throwaway copy; without it, "
-            "gate_checked=false is not a green gate."
+            "endpoints and derives SST. Bind expected_graph_version to the "
+            "context used for drafting. If graph.md lists required_traversals "
+            "for the kinds you touch, attach a fresh run_traversal receipt or "
+            "propose refuses. Use dry_run=true to validate shape, endpoints, "
+            "collisions and grain without writing."
         ),
         inputSchema={
             "type": "object",
@@ -462,10 +454,10 @@ TOOLS: list[types.Tool] = [
     types.Tool(
         name="proposal_status",
         description=(
-            "Check the state of a submitted proposal: PENDING (awaiting human "
-            "review), COMMITTED (encoded; graph_version_after tells you what to "
-            "re-query), GATE_FAILED / ENCODE_FAILED (graph restored, see "
-            "gate_report), REJECTED. Zero LLM."
+            "Check the state of a submitted proposal: COMMITTED "
+            "(graph_version_after tells you what to re-query), GATE_FAILED / "
+            "ENCODE_FAILED (graph restored, see gate_report), or PENDING when "
+            "dry_run held the write. Zero LLM."
         ),
         inputSchema={
             "type": "object",
@@ -483,14 +475,9 @@ def build_server(
     surface: Surface | None,
     transcript_path: str | None = None,
     transcript_level: str | None = None,
-    host_retrieval_options: dict | None = None,
 ) -> Server:
     server = Server("graphauthor")
-    host_retrieval = (
-        HostRetrievalSurface(surface, **(host_retrieval_options or {}))
-        if surface is not None
-        else None
-    )
+    retrieve = Retrieve(surface) if surface is not None else None
     level = (transcript_level or os.environ.get("SST_MCP_TRANSCRIPT_LEVEL") or "slim").strip().lower()
 
     def _log(name: str, arguments: dict, out: dict) -> None:
@@ -590,14 +577,14 @@ def build_server(
                 include_markdown=bool(args.get("include_markdown", True))
             )
         elif name == "lookup":
-            out = host_retrieval.lookup(
+            out = retrieve.lookup(
                 args["references"],
                 include_content=bool(args.get("include_content", False)),
                 context_ref=args.get("context_ref", ""),
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "expand":
-            out = host_retrieval.expand(
+            out = retrieve.expand(
                 args["node_ids"],
                 edge_types=args.get("edge_types"),
                 direction=args.get("direction", "both"),
@@ -608,7 +595,7 @@ def build_server(
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "path":
-            out = host_retrieval.path(
+            out = retrieve.path(
                 args["source_ids"],
                 args["target_ids"],
                 edge_types=args.get("edge_types"),
@@ -618,7 +605,7 @@ def build_server(
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "search":
-            out = host_retrieval.search(
+            out = retrieve.search(
                 args["query"],
                 mode=args.get("mode", "semantic"),
                 limit=args.get("limit", 8),

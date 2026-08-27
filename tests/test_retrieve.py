@@ -208,54 +208,10 @@ def test_seed_resolution_distinguishes_unknown_from_known_empty(surface):
     }
 
 
-def test_both_retrieval_doors_run_one_implementation_of_the_four_ops():
-    """The defect this replaces: a repair that reached one of two copies.
+def test_mcp_stdio_exposes_the_four_retrieval_ops():
+    from mcp_server.stdio import TOOLS
 
-    `HostRetrievalSurface.search` was moved to semantic after lexical was
-    measured ranking four context paragraphs above the rule that answered the
-    question. `Retrieve.search` kept the old default for months, because it was
-    a separate copy — so product Ask went on ranking lexically. An AST
-    comparison then found nine of the thirteen shared methods byte-identical,
-    all four public ops among them.
-
-    A parity assertion on the defaults would not have been enough: it fixes the
-    one field that already broke and leaves the next one open. This asserts the
-    property instead — there is one implementation, and the host door reaches it
-    by inheritance rather than by copy. A third copy fails here.
-    """
-    from mcp_server.host_retrieval import HostRetrievalSurface
-    from mcp_server.retrieve import Retrieve
-
-    assert issubclass(HostRetrievalSurface, Retrieve)
-    for op in ("lookup", "expand", "path", "search"):
-        assert getattr(HostRetrievalSurface, op) is getattr(Retrieve, op), (
-            f"{op} was overridden on the host door; the two doors have forked again"
-        )
-    # The validation and program-building helpers are the ops' actual behaviour;
-    # forking one of these forks the contract just as effectively.
-    for helper in ("_strings", "_types", "_types_or_feedback", "_execute",
-                   "_expand_with_seed_resolution", "_path_with_endpoint_resolution"):
-        assert getattr(HostRetrievalSurface, helper) is getattr(Retrieve, helper), (
-            f"{helper} was overridden on the host door"
-        )
-
-
-def test_the_host_extension_seam_can_annotate_but_not_change_the_answer(surface):
-    """`_after_execute` is the one seam, and it is deliberately weak.
-
-    Regional navigation is the only thing on it today, and it is navigation,
-    not authority. If an extension could move `outcome` or `evidence`, the two
-    doors would be running different contracts again while still passing the
-    subclass check above.
-    """
-    from mcp_server.host_retrieval import HostRetrievalSurface
-
-    plain = HostRetrievalSurface(surface).lookup(["dependency_direction_rule"])
-    linked = HostRetrievalSurface(surface, linked_navigation=True).lookup(
-        ["dependency_direction_rule"]
-    )
-
-    assert "navigation" not in plain
-    assert linked["navigation"]["kind"] == "regional"
-    for field in ("outcome", "evidence_scope", "evidence", "operation", "zero_llm"):
-        assert linked[field] == plain[field], f"the seam moved {field}"
+    names = {tool.name for tool in TOOLS}
+    assert {"lookup", "expand", "path", "search"} <= names
+    assert "what_governs" not in names
+    assert "discover" not in names

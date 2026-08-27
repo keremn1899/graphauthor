@@ -1,34 +1,16 @@
-"""Interaction framework — sustained agent loop over the SST governance engine.
+"""Event log, proposal store, and escalation records used by the host."""
 
-Universal invariant core + configurable gap-resolution policy. See
-``design [new]/interaction-framework-design-handoff.md``.
-"""
-
-from interaction.escalation import EscalationLedger, EscalationHandoff
-from interaction.gap_policy import GapResolutionPolicy, TescoEscalatePolicy, RefuseAndFlagPolicy
-from interaction.loop import InteractionSession, CaseResult
-from interaction.models import (
-    GovernanceStatus,
-    GovernanceVerdict,
-    ResponseAction,
-    DecisionRecord,
-)
-from interaction.response_semantics import apply_response_semantics
-from interaction.tool_surface import GovernanceTool, WHAT_GOVERNS_TOOL_SCHEMA
+from interaction.escalation import EscalationHandoff, EscalationLedger
+from interaction.event_log import EventStore, emit_event
+from interaction.event_types import GRAPH_COMMITTED, GRAPH_REVERTED
+from interaction.write_path_store import WritePathStore
 
 __all__ = [
-    "GovernanceStatus",
-    "GovernanceVerdict",
-    "ResponseAction",
-    "DecisionRecord",
-    "GovernanceTool",
-    "WHAT_GOVERNS_TOOL_SCHEMA",
-    "apply_response_semantics",
-    "GapResolutionPolicy",
-    "TescoEscalatePolicy",
-    "RefuseAndFlagPolicy",
-    "EscalationLedger",
     "EscalationHandoff",
-    "InteractionSession",
-    "CaseResult",
+    "EscalationLedger",
+    "EventStore",
+    "GRAPH_COMMITTED",
+    "GRAPH_REVERTED",
+    "WritePathStore",
+    "emit_event",
 ]

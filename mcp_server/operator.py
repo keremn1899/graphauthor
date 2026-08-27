@@ -1,26 +1,8 @@
-"""Operator BFF surface (B1) — the trusted human plane over the engine.
+"""Operator surface — trusted human reads over the same process that owns the graph.
 
-Design (post-ladder-two backlog B1 + the six locked BFF decisions):
-
-- **Same process, second surface.** The BFF is not its own deployable; it is a
-  second door on the server that already owns the graph (`/operator` mounted
-  beside `/mcp`). One process = one owner of the `.lbug`.
-- **Zero new authority.** Every write calls the SAME function the CLI calls,
-  with the SAME license. `confirm` goes through `confirm_proposal`.
-  Governance graphs still need a declared gate battery. A graph with `graph.md`
-  confirms without that battery. The BFF adds no privileged path.
-- **Live-compute reads.** The activities feed folds the event log on every read
-  (`mcp_server.ledger.project_activities`). The event log is the only truth; the
-  projection is a rebuildable cache we deliberately do not persist yet.
-- **Displays and disposes, never invents.** No verdicts are produced here. The
-  BFF surfaces proposals, escalations, gate reports, activities, and history,
-  and routes confirm/reject/requeue back through the gated machinery.
-
-Single-owner-DB note: `confirm` mutates the graph exclusively (snapshot
-capture/restore). In-process the engine owner must release the connection for
-the duration and refresh afterwards; `reload_hook` is that seam. The battery
-exercises the path directly (no co-mounted engine), matching how the CLI and
-the events battery drive `confirm_proposal`.
+`/operator` is a second door on the server that already owns the `.lbug`.
+Propose auto-commits on the agent plane; revert stays on the history CLI.
+Reads fold the event log live. This surface does not confirm, reject, or requeue.
 """
 
 from __future__ import annotations
@@ -31,12 +13,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from mcp_server.fault import operator_fault
-from mcp_server.proposals import (
-    GateSpec,
-    confirm_proposal,
-    reject_proposal,
-    requeue_proposal,
-)
+from mcp_server.proposals import GateSpec
 
 
 def _serialize(obj: Any) -> dict[str, Any]:
@@ -51,13 +28,7 @@ def _serialize(obj: Any) -> dict[str, Any]:
 
 
 class OperatorSurface:
-    """Zero-new-authority composition over store / ledger / proposals / history.
-
-    The gate provider is configured on the SERVER (never supplied by a browser):
-    a callable mapping a proposal record → the ``GateSpec`` that proposal must
-    survive to commit. Without it, confirm still refuses on graphs that have no
-    ``graph.md``; a named-traversal contract is the other license to commit.
-    """
+    """Reads over store, ledger, and history. Propose auto-commits on Surface."""
 
     def __init__(
         self,
@@ -179,53 +150,6 @@ class OperatorSurface:
             "decided_at": rec.get("decided_at") or "",
         }
 
-    def lineage(self, node_id: str) -> dict[str, Any]:
-        """Why does this node exist? (B3/B4) — inferred provenance chain folded
-        from the event log + proposal store. The result is
-        labelled 'derived'; authority_type/primary_source are 'recorded'.
-
-        Existence is checked HERE, not in the assembler: `node_lineage` is a
-        pure projection that never opens the graph, so it cannot know whether
-        the id it was handed is real. Without this check it answered any id at
-        all. Fabricating a provenance record is the one failure this path exists
-        to prevent.
-        """
-        from mcp_server.crossing import _all_nodes, _connect
-        from mcp_server.lineage import node_lineage
-
-        conn = _connect(self._db)
-        try:
-            known = _all_nodes(conn)
-        finally:
-            conn.close()
-        if node_id not in known:
-            return operator_fault("not_found", "unknown node", node_id=node_id)
-        return node_lineage(node_id, store_path=self._store, db_path=self._db)
-
-    def classify_absence(self, predicate: str) -> dict[str, Any]:
-        """B8 — advisory, deterministic prior on an UNGOVERNED absence. Never
-        hides: the absence stays fully visible; this only labels it."""
-        from mcp_server.crossing import _all_nodes, _connect
-        from mcp_server.materiality import classify_absence
-
-        conn = _connect(self._db)
-        try:
-            nodes = _all_nodes(conn)
-        finally:
-            conn.close()
-        return classify_absence(predicate, nodes)
-
-    def dispose_absence(self, *, predicate: str, category: str,
-                        primary_source: str = "", reasoning: str = "") -> dict[str, Any]:
-        """B8 — record the operator's disposition of an absence. The operator is
-        a human authority; the false-benign cardinal (sourced, non-engine
-        dismissal) is enforced in the materiality layer."""
-        from mcp_server.materiality import dispose_absence
-
-        return dispose_absence(self._store, predicate=predicate, category=category,
-                               actor=self._current_actor(), primary_source=primary_source,
-                               reasoning=reasoning, db_path=self._db)
-
     def history(self) -> dict[str, Any]:
         """Snapshot inventory (read-only). Revert stays a CLI operator action."""
         if not self._history_enabled:
@@ -274,184 +198,7 @@ class OperatorSurface:
         }
 
     def _has_graph_contract(self) -> bool:
-        from mcp_server.graph_contract import resolve_graph_contract_path
-
-        return resolve_graph_contract_path(self._db).exists()
-
-    def _confirm_embedder(self):
-        if self._embedder is not None:
-            return self._embedder
-        if os.environ.get("OPENROUTER_API_KEY"):
-            return None
-        return lambda _text: [0.0] * 3072
-
-    # ------------------------------------------------------------------
-    # writes — thin transport; zero new authority
-    # ------------------------------------------------------------------
-
-    def confirm(
-        self,
-        proposal_id: str,
-        *,
-        primary_source: str = "",
-        correction_acknowledgement: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Human confirm → encode. License is a gate battery or a graph.md
-        harness. A typed source is optional audit copy; ``source_refs`` on the
-        proposal fill it when omitted. A declared-exclusion proposal (B8)
-        routes to the VERDICT-NEUTRALITY gate instead.
-
-        ``correction_acknowledgement`` is the same binding the host-agent write
-        surface uses: digest + moves + accepts. Who built it is audit
-        (``acknowledged_by``); this plane still cannot fabricate a governance
-        bypass on a graph that has no contract.
-        """
-        import contextlib
-
-        rec = self.get_proposal(proposal_id)
-        if rec is None:
-            return operator_fault("not_found", f"unknown proposal: {proposal_id}")
-        is_exclusion = str(rec.get("target_gap_id") or "").startswith("exclusion:")
-        harness = self._has_graph_contract()
-        if not is_exclusion and self._gate_provider is None and not harness:
-            return {
-                "error": "operator plane has no gate provider configured: the BFF "
-                "commits only through a graph.md harness or the same battery "
-                "the CLI requires (zero new authority)"
-            }
-        if not str(primary_source).strip():
-            try:
-                refs = json.loads(rec.get("source_refs_json") or "[]")
-            except (TypeError, ValueError):
-                refs = []
-            primary_source = next(
-                (str(ref).strip() for ref in refs if str(ref).strip()),
-                "",
-            )
-        # Single-owner DB (B13): the mutation + engine reload happen under the
-        # write side of the shared RW lock, excluding in-flight MCP invokes.
-        write_ctx = self._rw_lock.write() if self._rw_lock is not None else contextlib.nullcontext()
-        with write_ctx:
-            if is_exclusion:
-                from mcp_server.materiality import commit_exclusion
-
-                result = commit_exclusion(self._db, self._store, proposal_id,
-                                          primary_source=primary_source, embedder=self._embedder,
-                                          actor=self._current_actor())
-            else:
-                gate = self._gate_provider(rec) if self._gate_provider is not None else None
-                result = confirm_proposal(
-                    self._db, self._store, proposal_id,
-                    primary_source=primary_source, gate=gate,
-                    embedder=self._confirm_embedder(),
-                    actor=self._current_actor(),
-                    correction_acknowledgement=correction_acknowledgement,
-                )
-            if result.get("status") == "COMMITTED" and self._reload_hook is not None:
-                self._reload_hook()
-        return result
-
-    def reject(self, proposal_id: str, *, reason: str = "") -> dict[str, Any]:
-        return reject_proposal(
-            self._store, proposal_id, reason=reason, actor=self._current_actor())
-
-    def requeue(self, proposal_id: str) -> dict[str, Any]:
-        return requeue_proposal(
-            self._store, proposal_id, actor=self._current_actor())
-
-    def acknowledge_incident(self, subject_id: str, *, note: str = "") -> dict[str, Any]:
-        """Acknowledge an open incident by its domain subject or activity id."""
-        incident = next(
-            (
-                activity for activity in self.activities()
-                if activity.get("kind") == "incident"
-                and subject_id in {
-                    str(activity.get("mint_glue") or ""),
-                    str(activity.get("activity_id") or ""),
-                }
-            ),
-            None,
-        )
-        if incident is None:
-            return operator_fault("not_found", f"unknown incident: {subject_id}")
-        if not incident.get("incident"):
-            return operator_fault(
-                "conflict", f"incident is already acknowledged: {subject_id}"
-            )
-
-        rationalization = next(
-            (
-                event for event in incident.get("events", [])
-                if event.get("type") == "rationalization.flagged"
-            ),
-            None,
-        )
-        if rationalization is not None:
-            import json
-
-            try:
-                payload = json.loads(rationalization.get("payload") or "{}")
-            except (ValueError, TypeError):
-                payload = {}
-            from mcp_server.pr_gate import acknowledge_rationalization
-
-            result = acknowledge_rationalization(
-                self._store,
-                rule_id=str(payload.get("rule_id") or ""),
-                artifact_path=str(payload.get("artifact_path") or ""),
-                actor=self._current_actor(),
-                reasoning=note,
-            )
-            if "error" in result:
-                return result
-            return {"subject_id": str(incident["mint_glue"]), "status": "ACKNOWLEDGED"}
-
-        from interaction.event_log import record_acknowledgement
-
-        subject = str(incident["mint_glue"])
-        record_acknowledgement(
-            self._store, subject_id=subject, actor=self._current_actor(), note=note)
-        return {"subject_id": subject, "status": "ACKNOWLEDGED"}
-
-    def dispose_escalation(self, handoff_id: str, *, disposition: str) -> dict[str, Any]:
-        """Dismiss or defer an escalation; both are explicit human closures."""
-        if disposition not in {"dismissed", "deferred"}:
-            return operator_fault(
-                "invalid", "disposition must be dismissed or deferred"
-            )
-        if not any(
-            str(row.get("handoff_id") or "") == handoff_id
-            for row in self.list_escalations()
-        ):
-            return operator_fault("not_found", f"unknown escalation: {handoff_id}")
-        activity = next(
-            (
-                row for row in self.activities()
-                if any(
-                    str(event.get("handoff_id") or "") == handoff_id
-                    for event in row.get("events", [])
-                )
-            ),
-            None,
-        )
-        if activity is None or not any(
-            demand.get("on") == "escalation"
-            for demand in activity.get("open_actionable", [])
-        ):
-            return operator_fault(
-                "conflict",
-                f"escalation has already progressed or settled: {handoff_id}",
-            )
-
-        from interaction.event_log import record_escalation_disposition
-
-        record_escalation_disposition(
-            self._store, handoff_id, disposition, actor=self._current_actor())
-        return {"handoff_id": handoff_id, "status": disposition.upper()}
-
-    # ------------------------------------------------------------------
-    # account / settings / BYO-key (v1 bill-later plumbing)
-    # ------------------------------------------------------------------
+        return (self._db.parent / "graph.md").exists()
 
     def _acct(self):
         if self._account is None:

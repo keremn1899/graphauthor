@@ -6,7 +6,6 @@ These keep the guarantees in the pytest loop at unit granularity.
 
 from __future__ import annotations
 
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -19,9 +18,7 @@ from mcp_server.surface import Surface
 
 @pytest.fixture()
 def db(tmp_path) -> Path:
-    dst = tmp_path / "g.lbug"
-    shutil.copy2(ensure_fixture("runtime/hexagonal_orders.lbug"), dst)
-    return dst
+    return ensure_fixture(tmp_path / "g.lbug")
 
 
 def _add(db: Path, cid: str) -> None:
@@ -39,7 +36,7 @@ def _add(db: Path, cid: str) -> None:
 
 def test_manifest_shape_and_diff(db):
     m0 = extract_manifest(db)
-    assert len(m0["concepts"]) == 30 and len(m0["edges"]) == 54
+    assert len(m0["concepts"]) == 6 and len(m0["edges"]) == 6
     _add(db, "x1")
     m1 = extract_manifest(db)
     d = diff_manifests(m0, m1)

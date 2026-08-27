@@ -1,1 +1,1 @@
-"""MCP server over the closed knowledge engine (contract: mcp-contract-v0)."""
+"""MCP server over Graphauthor (retrieval, traversal, proposals, receipts)."""

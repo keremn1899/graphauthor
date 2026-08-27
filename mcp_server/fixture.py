@@ -1,21 +1,14 @@
 """Build a no-API fixture graph for deterministic MCP server testing.
 
-Uses the hexagonal-orders architecture corpus (30 Concepts) with orthogonal
-unit-vector embeddings so no OpenRouter key is needed. Vector search is not
-semantically meaningful on this fixture; exact/lexical lookup, typed traversal,
-structural index, and compass all behave normally — which is what the
-deterministic M2 tier exercises.
+A small architecture graph with exact lookup, typed expansion, and a path.
+Vector search is not semantically meaningful here; lexical search is.
 """
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import real_ladybug as lb
-
-_REPO_ROOT = Path(__file__).resolve().parent.parent
-_HEX_DIR = _REPO_ROOT / "examples" / "hexagonal-orders"
 
 _REL_MAP = {
     "leadsto": "LEADSTO",
@@ -64,35 +57,68 @@ def _unit_vector(i: int) -> list[float]:
     return v
 
 
-def build_fixture_from(corpus_dir: Path | str, getter: str, db_path: Path | str) -> Path:
-    """Build a .lbug from any corpus module exposing ``getter() -> (nodes, edges)``
-    (L2-4: the harness seed reuses the deterministic fixture machinery)."""
-    corpus_dir = Path(corpus_dir)
-    db_path = Path(db_path)
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-
-    import importlib.util
-
-    if str(corpus_dir) not in sys.path:
-        sys.path.insert(0, str(corpus_dir))
-    # corpus modules share the name graph_data across corpora — load by path
-    spec = importlib.util.spec_from_file_location(f"corpus_{corpus_dir.name}", corpus_dir / "graph_data.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    nodes, edges = getattr(mod, getter)()
-    return _write_graph(nodes, edges, db_path)
+def fixture_graph_data():
+    """Nodes and edges used by retrieve, history, and operator tests."""
+    nodes = [
+        (
+            "ports_module",
+            "Ports Module",
+            "Ports module owns inbound adapters for the order path.",
+            12,
+            "ports module",
+        ),
+        (
+            "intake_adapter",
+            "Intake Adapter",
+            "Inbound adapter that accepts new order commands.",
+            10,
+            "intake adapter",
+        ),
+        (
+            "order_controller",
+            "Order Controller",
+            "HTTP controller that accepts order commands.",
+            10,
+            "order controller",
+        ),
+        (
+            "order_service",
+            "Order Service",
+            "Domain service that fulfills orders.",
+            8,
+            "order service",
+        ),
+        (
+            "dependency_direction_rule",
+            "Dependency Direction Rule",
+            "Dependency direction: adapters depend inward; domain does not depend out.",
+            16,
+            "dependency direction",
+        ),
+        (
+            "retry_policy",
+            "Retry Policy",
+            "Retries require a project-approved policy.",
+            8,
+            "retry policy",
+        ),
+    ]
+    edges = [
+        ("ports_module", "order_controller", "contains", "owns"),
+        ("ports_module", "intake_adapter", "contains", "owns"),
+        ("intake_adapter", "order_controller", "leadsto", "forwards_to"),
+        ("order_controller", "order_service", "leadsto", "delegates_to"),
+        ("order_service", "dependency_direction_rule", "expresses", "obeys"),
+        ("order_service", "retry_policy", "contains", "declares"),
+    ]
+    return nodes, edges
 
 
 def build_fixture(db_path: Path | str) -> Path:
     """Create the fixture .lbug at ``db_path`` (idempotent: rebuilds if empty/missing)."""
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if str(_HEX_DIR) not in sys.path:
-        sys.path.insert(0, str(_HEX_DIR))
-    from graph_data import get_hexagonal_orders_data  # type: ignore
-
-    nodes, edges = get_hexagonal_orders_data()
+    nodes, edges = fixture_graph_data()
     return _write_graph(nodes, edges, db_path)
 
 

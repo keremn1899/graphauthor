@@ -1,4 +1,4 @@
-"""SST-remapped seed datasets for the Spreading Activation Engine.
+"""Seed datasets for tests and local fixtures.
 
 Node tuples: (id, label, text_content, token_count)
   Extended format: (id, label, text_content, token_count, semantic_anchor, is_metanode, linked_graph_id)
