@@ -19,7 +19,11 @@ from typing import Any, Iterable
 
 def _entry(db: Path) -> dict[str, Any]:
     return {
-        "command": str(Path(sys.executable).resolve()),
+        # Keep the interpreter path as reported by Python.  In a virtual
+        # environment this is commonly a ``bin/python`` symlink; resolving it
+        # turns it into the base interpreter and loses the environment's
+        # installed Graphauthor packages when an MCP client starts it.
+        "command": sys.executable,
         "args": ["-m", "mcp_server.stdio"],
         "env": {"SST_DB_PATH": str(db)},
     }
@@ -53,7 +57,7 @@ def _attach_codex(workspace: Path, db: Path) -> str:
     name = _codex_name(workspace)
     command = [
         codex, "mcp", "add", name, "--env", f"SST_DB_PATH={db}", "--",
-        str(Path(sys.executable).resolve()), "-m", "mcp_server.stdio",
+        sys.executable, "-m", "mcp_server.stdio",
     ]
     subprocess.run(command, check=True)
     return name
@@ -84,7 +88,7 @@ def attach_workspace(workspace: Path | str, clients: Iterable[str]) -> dict[str,
     if "codex" in selected:
         attached.append(_attach_codex(workspace, db))
 
-    command = f'"{Path(sys.executable).resolve()}" -m scripts.atoms'
+    command = f'"{sys.executable}" -m scripts.atoms'
     return {
         "workspace": str(workspace),
         "sidecar": str(sidecar),

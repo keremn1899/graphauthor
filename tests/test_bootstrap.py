@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -32,7 +31,7 @@ def test_attach_adds_only_a_sidecar_and_preserves_existing_cursor_servers(tmp_pa
         cursor_config["mcpServers"]["graphauthor"]
     )
     server = cursor_config["mcpServers"]["graphauthor"]
-    assert server["command"] == str(Path(sys.executable).resolve())
+    assert server["command"] == sys.executable
     assert server["env"]["SST_DB_PATH"] == str(sidecar / "graph.lbug")
     assert ".graphauthor/build.py" in result["agent_prompt"]
 
