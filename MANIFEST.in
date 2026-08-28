@@ -2,7 +2,6 @@ include README.md
 include LICENSE*
 include pyproject.toml
 include requirements.txt
-include environment.yml
 recursive-include prompts *
 recursive-include closed_knowledge_engine *
 graft conformance_check

@@ -5,6 +5,7 @@ python-dotenv>=1.0.0
 pytest>=8.0.0
 httpx>=0.27.0
 beautifulsoup4>=4.12.0
+pypdf>=5.0
 mcp>=1.0,<2  # MCP stdio transport (mcp_server/); 2.0 removed Server.list_tools
 starlette>=0.37,<1  # TestClient/ASGI compatibility; 1.x expects the httpx2 fork
 PyYAML>=6.0

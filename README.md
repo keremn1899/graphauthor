@@ -29,13 +29,20 @@ checks only what it can know mechanically: unique ids, real edge endpoints,
 valid structural types, and provenance to admitted source units.
 
 ```bash
-conda env create -f environment.yml
-conda activate agentic-graphrag
-pip install -e ".[mcp,http,construct]"
+uv tool install --editable '.[cursor]'
+graphauthor init my-graph-project
 
-python scripts/workbook.py prepare --workbook workbook --source sources/page.html
-python scripts/workbook.py validate --workbook workbook --encoding workbook/out/encoding.json
-python scripts/workbook.py materialize --workbook workbook --encoding workbook/out/encoding.json
+graphauthor-workbook prepare --workbook workbook --source sources/page.html
+graphauthor-workbook validate --workbook workbook --encoding workbook/out/encoding.json
+graphauthor-workbook materialize --workbook workbook --encoding workbook/out/encoding.json --out graph.lbug
+```
+
+This installs the current checkout for development and evaluation. The package
+is not published to PyPI yet. After the first PyPI release, users will instead
+install it by name:
+
+```bash
+uv tool install 'graphauthor[cursor]'
 ```
 
 ## Traversal
@@ -70,8 +77,10 @@ version.
 }
 ```
 
-Add the MCP server with [`.cursor/mcp.json.example`](.cursor/mcp.json.example).
-Point `SST_DB_PATH` at a materialized `graph.lbug`. Call `orient` first.
+For installation and setup across Cursor, Claude Code, and Codex, see the
+[agent-client guide](docs/AGENT_CLIENTS.md). The Cursor-specific workflow is in
+[the Cursor guide](docs/CURSOR_GUIDE.md). Point `SST_DB_PATH` at a materialized
+`graph.lbug`, and have the agent call `orient` first.
 
 ```bash
 SST_DB_PATH=/absolute/path/to/graph.lbug graphauthor-mcp

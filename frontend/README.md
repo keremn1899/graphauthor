@@ -12,7 +12,7 @@ commands.
 From the repository root:
 
 ~~~bash
-conda run --no-capture-output -n agentic-graphrag   python scripts/run_local_product.py
+uv run --extra all python scripts/run_local_product.py
 ~~~
 
 This starts whichever backend or frontend process is missing and opens the
@@ -21,7 +21,7 @@ Graph route. Use --no-browser to suppress opening a tab.
 Manual development:
 
 ~~~bash
-SST_DB_PATH=data/sst.lbug SST_MCP_TOKEN=devtoken   conda run --no-capture-output -n agentic-graphrag   python -m mcp_server.http --operator
+SST_DB_PATH=data/sst.lbug SST_MCP_TOKEN=devtoken uv run --extra all python -m mcp_server.http --operator
 
 cd frontend
 npm run dev

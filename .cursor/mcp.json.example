@@ -1,10 +1,13 @@
 {
   "mcpServers": {
     "graphauthor": {
-      "command": "graphauthor-mcp",
+      "command": "/ABSOLUTE/PATH/TO/python",
+      "args": [
+        "-m",
+        "mcp_server.stdio"
+      ],
       "env": {
-        "SST_DB_PATH": "ABS/PATH/TO/graph.lbug",
-        "PYTHONPATH": "ABS/PATH/TO/this/repo"
+        "SST_DB_PATH": "/ABSOLUTE/PATH/TO/workbook/out/graph.lbug"
       }
     }
   }

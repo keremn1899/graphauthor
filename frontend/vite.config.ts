@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Local operator plane. Run it with:
       //   SST_DB_PATH=... SST_MCP_TOKEN=... \
-      //   conda run -n agentic-graphrag python -m mcp_server.http --operator
+      //   uv run --extra all python -m mcp_server.http --operator
       // Proxying keeps the browser same-origin, so no CORS layer is needed on
       // a plane that should only ever listen on loopback.
       "/operator": {

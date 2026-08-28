@@ -5,7 +5,7 @@ Reads the real `mcp.json`, spawns exactly what Cursor or Claude Code would
 spawn, and speaks the protocol. Testing the server in-process would pass while
 the client still failed, because every failure seen so far has been in the
 seam: a console script missing from a stale editable install, a `command` that
-only resolves inside an activated conda shell, a graph that answers every
+only resolves inside an activated shell, a graph that answers every
 question with nothing governing.
 
     python scripts/smoke_mcp_client.py                      # ~/.cursor/mcp.json

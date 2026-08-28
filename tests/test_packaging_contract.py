@@ -52,6 +52,7 @@ ALLOWED_BASE = {
 #: something is never "read a graph".
 HEAVY = {
     "beautifulsoup4": "the optional workbook HTML parser",
+    "pypdf": "the optional workbook PDF parser",
 }
 
 
@@ -101,6 +102,19 @@ def test_the_all_extra_really_is_all():
     all_names = {_name(d) for d in extras["all"]}
     missing = sorted(set(HEAVY) - all_names)
     assert not missing, f"[all] does not include {missing}"
+
+
+def test_cursor_extra_installs_the_agent_surface_and_html_parser():
+    """The public ``uv tool install 'graphauthor[cursor]'`` path must work.
+
+    Keeping MCP optional makes the base library light, but the end-user tool
+    cannot be a partially installed server. This extra is the one documented
+    install target, so it must include both the stdio transport and the normal
+    HTML construction parser.
+    """
+    extras = _pyproject()["project"]["optional-dependencies"]
+    offered = {_name(item) for item in extras["cursor"]}
+    assert {"mcp", "beautifulsoup4", "pypdf"} <= offered
 
 
 def test_mcp_is_pinned_below_the_release_that_breaks_the_server():

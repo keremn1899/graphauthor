@@ -43,11 +43,11 @@ workbook boundary instead.
 
 ## Environment
 
-Use the agentic-graphrag conda environment:
+Use an isolated uv environment for local development:
 
 ~~~bash
-conda run --no-capture-output -n agentic-graphrag python scripts/run_local_product.py
-conda run --no-capture-output -n agentic-graphrag pytest tests/ -m "not integration"
+uv run --extra all python scripts/run_local_product.py
+uv run --extra all --extra dev pytest tests/ -m "not integration"
 ~~~
 
 Workbook commands:

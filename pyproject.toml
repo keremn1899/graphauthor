@@ -33,18 +33,23 @@ dependencies = [
 [project.optional-dependencies]
 mcp = ["mcp>=1.0,<2"]
 http = ["mcp>=1.0,<2", "starlette>=0.37,<1", "uvicorn>=0.29"]
-construct = ["beautifulsoup4>=4.12.0"]
+construct = ["beautifulsoup4>=4.12.0", "pypdf>=5.0"]
+cursor = ["mcp>=1.0,<2", "beautifulsoup4>=4.12.0", "pypdf>=5.0"]
 dev = ["pytest>=8.0.0"]
 all = [
     "mcp>=1.0,<2", "starlette>=0.37,<1", "uvicorn>=0.29",
-    "beautifulsoup4>=4.12.0",
+    "beautifulsoup4>=4.12.0", "pypdf>=5.0",
 ]
 
 [project.scripts]
 graphauthor = "mcp_server.bootstrap:main"
 graphauthor-mcp = "mcp_server.stdio:main"
+graphauthor-workbook = "scripts.atoms:main"
 
 [project.urls]
+Homepage = "https://github.com/keremn1899/graphauthor"
+Repository = "https://github.com/keremn1899/graphauthor"
+Issues = "https://github.com/keremn1899/graphauthor/issues"
 
 [tool.setuptools]
 include-package-data = true
@@ -69,13 +74,13 @@ include = [
     "mcp_server*",
     "source_pipeline*",
     "write_path*",
+    "scripts",
 ]
 exclude = [
     "tests*",
     "examples*",
     "demo*",
     "tools*",
-    "scripts*",
     "archive*",
     "data*",
     "scratch*",

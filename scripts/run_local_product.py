@@ -3,8 +3,7 @@
 
 Usage from the repository root:
 
-    conda run --no-capture-output -n agentic-graphrag \
-      python scripts/run_local_product.py
+    uv run --extra all python scripts/run_local_product.py
 
 The launcher reuses healthy processes already listening on the two development
 ports, starts whichever half is missing, opens Graph in the default browser,
