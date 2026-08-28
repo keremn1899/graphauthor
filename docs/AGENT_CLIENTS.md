@@ -16,35 +16,31 @@ uv tool install --editable '.[cursor]'
 `graphauthor` is not published to PyPI yet. After the first PyPI release, the
 same installation becomes `uv tool install 'graphauthor[cursor]'`.
 
-Create a project for one graph:
+Attach Graphauthor to any existing workspace:
 
 ```bash
-graphauthor init my-graph-project
-cd my-graph-project
+cd my-existing-project
+graphauthor attach --client cursor
 ```
 
-The initializer creates a `sources/` directory, an `AGENT_PROMPT.md` shared by
-all clients, and MCP configuration pointing at this project's future
-`graph.lbug`. Put source files in `sources/` and give the agent the shared
-prompt. The agent creates `workbook/build.py`, validates it, and materializes
-`graph.lbug`.
+Attach creates only `.graphauthor/` plus the selected MCP configuration. It
+does not create a second project, copy sources, or prescribe a source folder.
+The agent uses relevant files already in the workspace, keeps its construction
+program in `.graphauthor/build.py`, and materializes `.graphauthor/graph.lbug`.
 
 ## Cursor
 
-`graphauthor init` writes `.cursor/mcp.json`. Open the project in Cursor,
-enable **graphauthor** in the MCP tools list, and paste `AGENT_PROMPT.md` into
-an Agent chat. Reload Cursor after the graph is first materialized if the tool
-was previously unavailable.
+`graphauthor attach --client cursor` merges one entry into `.cursor/mcp.json`.
+Open the project in Cursor and enable **graphauthor** in the MCP tools list.
 
 Cursor uses the project-local configuration; no further terminal command is
 needed. [Cursor MCP documentation](https://docs.cursor.com/context/model-context-protocol)
 
 ## Claude Code
 
-`graphauthor init` also writes the project-local `.mcp.json` expected by Claude
-Code. Start Claude Code from the graph-project directory, approve the proposed
-**graphauthor** server if prompted, and paste `AGENT_PROMPT.md` into the
-session.
+Run `graphauthor attach --client claude`. It merges one entry into the
+project-local `.mcp.json` expected by Claude Code. Start Claude Code from that
+directory and approve the proposed **graphauthor** server if prompted.
 
 For an existing project without `.mcp.json`, run this from that project:
 
@@ -72,9 +68,9 @@ Use a distinct server name for each graph project. Confirm it with:
 codex mcp list
 ```
 
-Then start Codex in the project and paste `AGENT_PROMPT.md` into the session.
-Codex supports MCP tools; this registration gives it the same Graphauthor
-operations as the other clients. [OpenAI documentation](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)
+Then start Codex in the project and tell it to use Graphauthor for the current
+workspace. Codex supports MCP tools; this registration gives it the same
+Graphauthor operations as the other clients. [OpenAI documentation](https://developers.openai.com/api/reference/cli/resources/responses/methods/create)
 
 ## The shared server definition
 

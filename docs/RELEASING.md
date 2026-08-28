@@ -29,7 +29,8 @@ or long-lived upload token is stored in this repository. See the
 
    ```bash
    uv tool install 'graphauthor[cursor]'
-   graphauthor init smoke-project
+   mkdir smoke-project && cd smoke-project
+   graphauthor attach --client cursor
    ```
 
 The published wheel must include the `mcp_server`, `source_pipeline`, and

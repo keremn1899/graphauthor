@@ -6,30 +6,41 @@ from pathlib import Path
 
 import pytest
 
-from mcp_server.bootstrap import init_project
+from mcp_server.bootstrap import attach_workspace
 
 
-def test_init_creates_a_cursor_ready_agent_project(tmp_path):
-    project = tmp_path / "my-graph"
+def test_attach_adds_only_a_sidecar_and_preserves_existing_cursor_servers(tmp_path):
+    workspace = tmp_path / "existing-project"
+    workspace.mkdir()
+    (workspace / "README.md").write_text("existing work")
+    cursor = workspace / ".cursor"
+    cursor.mkdir()
+    (cursor / "mcp.json").write_text(json.dumps({
+        "mcpServers": {"other": {"command": "other-mcp"}}
+    }))
 
-    result = init_project(project)
+    result = attach_workspace(workspace, ["cursor", "claude"])
 
-    assert result["db_path"] == str(project / "graph.lbug")
-    config = json.loads((project / ".cursor" / "mcp.json").read_text())
-    assert json.loads((project / ".mcp.json").read_text()) == config
-    server = config["mcpServers"]["graphauthor"]
+    sidecar = workspace / ".graphauthor"
+    assert result["sidecar"] == str(sidecar)
+    assert sidecar.is_dir()
+    assert not (sidecar / "build.py").exists()
+    assert (workspace / "README.md").read_text() == "existing work"
+    cursor_config = json.loads((cursor / "mcp.json").read_text())
+    assert set(cursor_config["mcpServers"]) == {"other", "graphauthor"}
+    assert json.loads((workspace / ".mcp.json").read_text())["mcpServers"]["graphauthor"] == (
+        cursor_config["mcpServers"]["graphauthor"]
+    )
+    server = cursor_config["mcpServers"]["graphauthor"]
     assert server["command"] == str(Path(sys.executable).resolve())
-    assert server["args"] == ["-m", "mcp_server.stdio"]
-    assert server["env"]["SST_DB_PATH"] == str(project / "graph.lbug")
-    prompt = (project / "AGENT_PROMPT.md").read_text()
-    assert f'"{Path(sys.executable).resolve()}" -m scripts.atoms prepare' in prompt
-    assert f'"{Path(sys.executable).resolve()}" -m scripts.atoms materialize' in prompt
+    assert server["env"]["SST_DB_PATH"] == str(sidecar / "graph.lbug")
+    assert ".graphauthor/build.py" in result["agent_prompt"]
 
 
-def test_init_refuses_to_overwrite_a_nonempty_directory(tmp_path):
-    project = tmp_path / "existing"
-    project.mkdir()
-    (project / "notes.md").write_text("keep")
+def test_attach_refuses_to_overwrite_invalid_mcp_config(tmp_path):
+    (tmp_path / ".cursor").mkdir()
+    path = tmp_path / ".cursor" / "mcp.json"
+    path.write_text("not json")
 
-    with pytest.raises(FileExistsError, match="not empty"):
-        init_project(project)
+    with pytest.raises(ValueError, match="refusing to overwrite"):
+        attach_workspace(tmp_path, ["cursor"])

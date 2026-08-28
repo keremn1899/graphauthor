@@ -30,11 +30,12 @@ valid structural types, and provenance to admitted source units.
 
 ```bash
 uv tool install --editable '.[cursor]'
-graphauthor init my-graph-project
+cd /path/to/any-existing-project
+graphauthor attach --client cursor
 
-graphauthor-workbook prepare --workbook workbook --source sources/page.html
-graphauthor-workbook validate --workbook workbook --encoding workbook/out/encoding.json
-graphauthor-workbook materialize --workbook workbook --encoding workbook/out/encoding.json --out graph.lbug
+graphauthor-workbook prepare --workbook .graphauthor --source docs/page.html
+graphauthor-workbook validate --workbook .graphauthor --encoding .graphauthor/out/encoding.json
+graphauthor-workbook materialize --workbook .graphauthor --encoding .graphauthor/out/encoding.json --out .graphauthor/graph.lbug
 ```
 
 This installs the current checkout for development and evaluation. The package

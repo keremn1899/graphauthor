@@ -141,6 +141,18 @@ def test_an_empty_setting_withholds_nothing_extra(surface, monkeypatch):
     assert "retrieve" in _served(build_server(surface))
 
 
+def test_server_orients_an_unmaterialized_workspace(monkeypatch, tmp_path):
+    """Attach config is useful before the first agent-authored graph exists."""
+    monkeypatch.setenv("SST_DB_PATH", str(tmp_path / ".graphauthor" / "graph.lbug"))
+    from mcp_server.stdio import build_server
+
+    server = build_server(None)
+    assert "orient" in _served(server)
+    payload = _call(server, "orient")
+    assert payload["outcome"] == "NO_GRAPH_YET"
+    assert payload["graph_path"].endswith(".graphauthor/graph.lbug")
+
+
 # --- the vocabulary the contract now serves ----------------------------
 
 def test_the_contract_serves_the_ops_and_their_argument_keys(surface):

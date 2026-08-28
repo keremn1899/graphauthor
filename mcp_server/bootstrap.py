@@ -1,116 +1,127 @@
-"""Create a new local Graphauthor project for use from Cursor Agent.
+"""Attach Graphauthor to an existing agent workspace.
 
-The scaffold contains no graph and no construction code. The user supplies
-sources and tells their agent what the graph should help with; the agent owns
-``workbook/build.py``. The generated Cursor configuration uses the exact Python
-executable running this command, so a GUI-launched Cursor does not depend on an
-activated shell or a particular environment manager.
+``graphauthor attach`` never creates a second project. It adds an empty,
+hidden ``.graphauthor`` sidecar for the agent's construction program and merges
+one MCP entry into the selected client configuration. Source files stay exactly
+where the user already keeps them.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 
-def _mcp_config(db: Path) -> str:
-    return json.dumps({
-        "mcpServers": {
-            "graphauthor": {
-                "command": str(Path(sys.executable).resolve()),
-                "args": ["-m", "mcp_server.stdio"],
-                "env": {"SST_DB_PATH": str(db)},
-            }
-        }
-    }, indent=2) + "\n"
-
-
-def _agent_prompt() -> str:
-    command = f'"{Path(sys.executable).resolve()}" -m scripts.atoms'
-    return f"""# Build this graph
-
-The files in `sources/` are the user-provided evidence. Ask the user any
-essential question about their desired outcome, then:
-
-1. Inspect and prepare the sources with `{command} prepare`.
-2. Write and run `workbook/build.py`. You own its interpretation, graph grain,
-   node kinds, predicates, and source citations.
-3. Run `{command} validate` and repair any mechanical errors.
-4. Run `{command} materialize` with `--out graph.lbug`.
-5. Summarise what the graph represents, its limitations, and useful questions
-   it can answer.
-
-Do not claim that a search result proves a relationship. Once the graph is
-materialized, use the Graphauthor MCP tools: call `orient` before a multi-step
-graph task, use exact `lookup` for known names, and report uncertainty when the
-graph does not establish an answer.
-"""
-
-
-def _next_steps() -> str:
-    return """# Next steps
-
-1. Copy the files you want the agent to use into `sources/`.
-2. Open this folder in Cursor, Claude Code, or Codex and start an agent session.
-3. Paste the contents of `AGENT_PROMPT.md` into the session.
-4. After materialization, reload or reconnect the MCP server if Graphauthor
-   was previously unavailable, then ask the agent to call `orient`.
-
-The project contains `.cursor/mcp.json` for Cursor and `.mcp.json` for Claude
-Code. Codex uses the same command through `codex mcp add`; see the general
-installation guide. All configurations point at `graph.lbug`. Only one server
-process may own that graph file at a time.
-"""
-
-
-def init_project(project_dir: Path | str) -> dict[str, Any]:
-    """Create an empty, non-destructive agent project and return its manifest."""
-    project_dir = Path(project_dir).expanduser().resolve()
-    if project_dir.exists() and any(project_dir.iterdir()):
-        raise FileExistsError(
-            f"{project_dir} is not empty; choose a new directory so init cannot overwrite work"
-        )
-
-    project_dir.mkdir(parents=True, exist_ok=True)
-    (project_dir / "sources").mkdir()
-    (project_dir / "workbook").mkdir()
-    cursor_dir = project_dir / ".cursor"
-    cursor_dir.mkdir()
-    db = project_dir / "graph.lbug"
-    config = _mcp_config(db)
-    (cursor_dir / "mcp.json").write_text(config, encoding="utf-8")
-    (project_dir / ".mcp.json").write_text(config, encoding="utf-8")
-    (project_dir / "AGENT_PROMPT.md").write_text(_agent_prompt(), encoding="utf-8")
-    (project_dir / "NEXT_STEPS.md").write_text(_next_steps(), encoding="utf-8")
-
+def _entry(db: Path) -> dict[str, Any]:
     return {
-        "project_dir": str(project_dir),
+        "command": str(Path(sys.executable).resolve()),
+        "args": ["-m", "mcp_server.stdio"],
+        "env": {"SST_DB_PATH": str(db)},
+    }
+
+
+def _merge_mcp_config(path: Path, db: Path) -> None:
+    """Add only our server, preserving a user's other MCP connections."""
+    if path.exists():
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            raise ValueError(f"{path} is not valid JSON; refusing to overwrite it") from error
+        if not isinstance(payload, dict) or not isinstance(payload.get("mcpServers", {}), dict):
+            raise ValueError(f"{path} must contain an object named mcpServers")
+    else:
+        payload = {"mcpServers": {}}
+    payload.setdefault("mcpServers", {})["graphauthor"] = _entry(db)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def _codex_name(workspace: Path) -> str:
+    slug = "".join(char if char.isalnum() else "-" for char in workspace.name.lower())
+    return "graphauthor-" + (slug.strip("-") or "workspace")
+
+
+def _attach_codex(workspace: Path, db: Path) -> str:
+    codex = shutil.which("codex")
+    if not codex:
+        raise RuntimeError("Codex CLI is not on PATH; install it, then run attach --client codex")
+    name = _codex_name(workspace)
+    command = [
+        codex, "mcp", "add", name, "--env", f"SST_DB_PATH={db}", "--",
+        str(Path(sys.executable).resolve()), "-m", "mcp_server.stdio",
+    ]
+    subprocess.run(command, check=True)
+    return name
+
+
+def attach_workspace(workspace: Path | str, clients: Iterable[str]) -> dict[str, Any]:
+    """Attach selected MCP clients to an existing workspace without scaffolding it."""
+    workspace = Path(workspace).expanduser().resolve()
+    if not workspace.is_dir():
+        raise FileNotFoundError(f"{workspace} is not a directory")
+    selected = set(clients)
+    if "all" in selected:
+        selected = {"cursor", "claude", "codex"}
+    unknown = selected - {"cursor", "claude", "codex"}
+    if unknown:
+        raise ValueError(f"unknown client(s): {', '.join(sorted(unknown))}")
+
+    sidecar = workspace / ".graphauthor"
+    sidecar.mkdir(exist_ok=True)
+    db = sidecar / "graph.lbug"
+    attached: list[str] = []
+    if "cursor" in selected:
+        _merge_mcp_config(workspace / ".cursor" / "mcp.json", db)
+        attached.append("cursor")
+    if "claude" in selected:
+        _merge_mcp_config(workspace / ".mcp.json", db)
+        attached.append("claude")
+    if "codex" in selected:
+        attached.append(_attach_codex(workspace, db))
+
+    command = f'"{Path(sys.executable).resolve()}" -m scripts.atoms'
+    return {
+        "workspace": str(workspace),
+        "sidecar": str(sidecar),
         "db_path": str(db),
-        "created": [
-            "sources/", "workbook/", ".cursor/mcp.json", ".mcp.json",
-            "AGENT_PROMPT.md", "NEXT_STEPS.md",
-        ],
+        "attached": attached,
+        "agent_prompt": (
+            "Use Graphauthor for this workspace. Keep the construction program in "
+            "`.graphauthor/build.py`; use the relevant files already in this workspace "
+            f"as sources. Prepare with `{command} prepare --workbook .graphauthor "
+            "--source ...`, validate with `"
+            f"{command} validate --workbook .graphauthor --encoding "
+            ".graphauthor/out/encoding.json`, then materialize with `"
+            f"{command} materialize --workbook .graphauthor --encoding "
+            ".graphauthor/out/encoding.json --out .graphauthor/graph.lbug`. "
+            "Call `orient` before graph questions."
+        ),
     }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="graphauthor", description=__doc__)
     commands = parser.add_subparsers(dest="command")
-    init = commands.add_parser("init", help="create a Cursor-ready graph project")
-    init.add_argument("project_dir", help="a new or empty directory")
+    attach = commands.add_parser("attach", help="add Graphauthor to an existing workspace")
+    attach.add_argument("path", nargs="?", default=".", help="workspace directory (default: current)")
+    attach.add_argument(
+        "--client", action="append", choices=("cursor", "claude", "codex", "all"),
+        default=[], help="agent client to configure; repeat for more than one",
+    )
     args = parser.parse_args(argv)
-    if args.command != "init":
+    if args.command != "attach":
         parser.print_help()
         return 2
     try:
-        manifest = init_project(args.project_dir)
-    except FileExistsError as error:
+        result = attach_workspace(args.path, args.client or ("cursor",))
+    except (FileNotFoundError, RuntimeError, ValueError, subprocess.CalledProcessError) as error:
         parser.error(str(error))
-    print(json.dumps(manifest, indent=2))
-    print(f"\nOpen {manifest['project_dir']} in Cursor, then read NEXT_STEPS.md.")
+    print(json.dumps(result, indent=2))
     return 0
 
 

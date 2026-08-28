@@ -20,37 +20,35 @@ equivalent public command will be `uv tool install 'graphauthor[cursor]'`.
 projects, so it does not alter the system Python or require a separate
 environment manager.
 
-## Create a Cursor-ready graph project
+## Attach to an existing project
 
 ```bash
-graphauthor init my-graph-project
+cd my-existing-project
+graphauthor attach --client cursor
 ```
 
-The command refuses to overwrite a non-empty directory and creates:
+The command leaves the project structure alone. It creates only:
 
 ```text
-my-graph-project/
-  .cursor/mcp.json       Cursor's local Graphauthor connection
-  sources/               files the user wants the agent to use
-  workbook/              the agent's construction program and output
-  AGENT_PROMPT.md        ready-to-paste instruction for any supported agent
-  NEXT_STEPS.md          short local walkthrough
+my-existing-project/
+  .cursor/mcp.json       merged Cursor Graphauthor connection
+  .graphauthor/          agent construction program and graph output
 ```
 
-Copy source files into `sources/`, open `my-graph-project` in Cursor, and
-start an Agent chat. Paste the generated `AGENT_PROMPT.md`, then describe the
-outcome. For example:
+Open the existing project in Cursor and start an Agent chat. The agent uses
+the source files already in the workspace; no copying is required. For example:
 
-> Use `sources/` to build a Graphauthor workbook for answering questions about
+> Build a Graphauthor graph from the relevant files already in this workspace
+> for answering questions about
 > our architecture decisions. Inspect the sources first. Create and run
-> `workbook/build.py`, validate its output, materialize the graph, and report
+> `.graphauthor/build.py`, validate its output, materialize the graph, and report
 > what it captured and what remains ambiguous.
 
 The agent is expected to follow this lifecycle:
 
 ```text
-sources → workbook/atoms.jsonl → workbook/build.py
-        → workbook/out/encoding.json → validation → graph.lbug
+workspace files → .graphauthor/atoms.jsonl → .graphauthor/build.py
+                → .graphauthor/out/encoding.json → validation → graph.lbug
 ```
 
 The agent owns interpretation and `build.py`; Graphauthor mechanically
@@ -58,7 +56,7 @@ validates source provenance and graph integrity, then materializes the graph.
 
 ## Connect and use it in Cursor
 
-`graphauthor init` has already created `.cursor/mcp.json`. It uses the exact
+`graphauthor attach` has merged `.cursor/mcp.json`. It uses the exact
 Python environment that installed Graphauthor, which works even when Cursor
 was launched from its GUI. Once the agent materializes `graph.lbug`, reload the
 Cursor window if needed and enable **graphauthor** in the MCP tools list.
@@ -77,10 +75,10 @@ For Claude Code and Codex setup, see the [general agent-client guide](AGENT_CLIE
 
 ## Existing project configuration
 
-For a project not created with `graphauthor init`, use
+For a project where you do not want to run `graphauthor attach`, use
 `.cursor/mcp.json.example` as the starting point. Set `SST_DB_PATH` to the
-absolute path of its materialized `graph.lbug`. Cursor supports project-local
-MCP configuration at `.cursor/mcp.json`. [Cursor MCP documentation](https://docs.cursor.com/context/model-context-protocol)
+absolute path of its materialized `.graphauthor/graph.lbug`. Cursor supports
+project-local MCP configuration at `.cursor/mcp.json`. [Cursor MCP documentation](https://docs.cursor.com/context/model-context-protocol)
 
 ## Boundaries
 

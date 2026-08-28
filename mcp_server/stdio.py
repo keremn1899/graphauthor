@@ -19,6 +19,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Callable
 
 import mcp.types as types
 from mcp.server import Server
@@ -475,10 +476,22 @@ def build_server(
     surface: Surface | None,
     transcript_path: str | None = None,
     transcript_level: str | None = None,
+    surface_supplier: Callable[[], Surface | None] | None = None,
 ) -> Server:
     server = Server("graphauthor")
     retrieve = Retrieve(surface) if surface is not None else None
     level = (transcript_level or os.environ.get("SST_MCP_TRANSCRIPT_LEVEL") or "slim").strip().lower()
+
+    def _current_surface() -> Surface | None:
+        """Open a graph after an agent has materialized it in this session."""
+        nonlocal surface, retrieve
+        if surface_supplier is None:
+            return surface
+        current = surface_supplier()
+        if current is not surface:
+            surface = current
+            retrieve = Retrieve(current) if current is not None else None
+        return surface
 
     def _log(name: str, arguments: dict, out: dict) -> None:
         """Append-only jsonl transcript.
@@ -538,17 +551,22 @@ def build_server(
 
     @server.list_tools()
     async def _list_tools() -> list[types.Tool]:
-        caps = set(getattr(surface, "_capabilities", ["query"]))
+        current = _current_surface()
+        # A tool client may cache this list before the agent has built its
+        # first graph. Keep the normal verbs visible so that the same session
+        # can call orient again after materialization without re-attaching.
+        if current is None:
+            return [tool for tool in TOOLS if tool.name not in hidden_tools]
+        caps = set(getattr(current, "_capabilities", ["query"]))
         out = []
-        if surface is not None:
-            for t in TOOLS:
-                if t.name in ("propose", "proposal_status") and "propose" not in caps:
-                    continue  # absent, not stubbed, until a write policy is configured
-                if t.name == "history" and "history" not in caps:
-                    continue
-                if t.name in hidden_tools:
-                    continue
-                out.append(t)
+        for t in TOOLS:
+            if t.name in ("propose", "proposal_status") and "propose" not in caps:
+                continue  # absent, not stubbed, until a write policy is configured
+            if t.name == "history" and "history" not in caps:
+                continue
+            if t.name in hidden_tools:
+                continue
+            out.append(t)
         return out
 
     @server.call_tool()
@@ -562,18 +580,23 @@ def build_server(
             }
             _log(name, args, out)
             return [types.TextContent(type="text", text=json.dumps(out))]
-        if surface is None:
+        current = _current_surface()
+        if current is None:
             out = {
+                "kind": "NO_GRAPH_YET",
+                "outcome": "NO_GRAPH_YET",
+                "graph_path": os.environ.get("SST_DB_PATH", ""),
                 "error": (
-                    f"{name} needs a graph, and SST_DB_PATH names no built one. "
-                    "Build a workbook graph with scripts/workbook.py, then "
-                    "restart with SST_DB_PATH pointing at it."
-                )
+                    "No graph has been materialized yet. Keep the agent-authored "
+                    "construction program in .graphauthor/build.py, then prepare, "
+                    "validate, and materialize .graphauthor/graph.lbug. Call orient "
+                    "again afterwards; this server will open it automatically."
+                ),
             }
         elif name == "orient":
-            out = surface.orient(context=args.get("context", "graph_card"))
+            out = current.orient(context=args.get("context", "graph_card"))
         elif name == "contract":
-            out = surface.contract(
+            out = current.contract(
                 include_markdown=bool(args.get("include_markdown", True))
             )
         elif name == "lookup":
@@ -614,7 +637,7 @@ def build_server(
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "run_traversal":
-            out = surface.run_traversal(
+            out = current.run_traversal(
                 args["name"],
                 args.get("parameters") or {},
                 version=args.get("version"),
@@ -623,7 +646,7 @@ def build_server(
                 explain=bool(args.get("explain", False)),
             )
         elif name == "run_ephemeral_traversal":
-            out = surface.run_ephemeral_traversal(
+            out = current.run_ephemeral_traversal(
                 args["program"],
                 args.get("parameters") or {},
                 evidence=args.get("evidence", "packet"),
@@ -631,14 +654,14 @@ def build_server(
                 explain=bool(args.get("explain", False)),
             )
         elif name == "retrieve":
-            out = surface.retrieve(
+            out = current.retrieve(
                 args["program"],
                 evidence=args.get("evidence", "content"),
                 context_ref=args.get("context_ref", ""),
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "read_cypher":
-            out = surface.read_cypher(
+            out = current.read_cypher(
                 args["query"],
                 args.get("parameters") or {},
                 max_rows=int(args.get("max_rows") or 200),
@@ -647,9 +670,9 @@ def build_server(
                 graph_version=args.get("graph_version", ""),
             )
         elif name == "history":
-            out = surface.history_action(args)
+            out = current.history_action(args)
         elif name == "propose":
-            out = surface.propose(
+            out = current.propose(
                 encoding=args.get("encoding") or {},
                 provenance=args.get("provenance"),
                 target_gap_id=args.get("target_gap_id", ""),
@@ -660,7 +683,7 @@ def build_server(
                 traversal_receipt=args.get("traversal_receipt"),
             )
         elif name == "proposal_status":
-            out = surface.proposal_status(args.get("proposal_id", ""))
+            out = current.proposal_status(args.get("proposal_id", ""))
         else:
             out = {"error": f"unknown tool: {name}"}
         _log(name, args, out if isinstance(out, dict) else {})
@@ -671,37 +694,37 @@ def build_server(
 
 async def _amain() -> None:
     db_path = os.environ.get("SST_DB_PATH", "")
-    surface: Surface | None = None
-    if db_path:
-        try:
-            surface = Surface(
-                Path(db_path),
-                handbook=os.environ.get("SST_MCP_HANDBOOK") or None,
-                store_path=os.environ.get("SST_MCP_STORE_PATH") or None,
-                enable_history=os.environ.get("SST_MCP_HISTORY", "1").strip().lower() not in ("0", "false", "no"),
-                enable_proposals=os.environ.get("SST_MCP_PROPOSALS", "").strip().lower() in ("1", "true", "yes"),
-            )
-        except GraphInUseError as exc:
-            print(str(exc), file=sys.stderr)
-            raise SystemExit(2)
-        except EmptyGraphError:
-            # Construction is out-of-process on this branch, so an empty graph is
-            # a setup error here rather than the state a construction verb would
-            # have repaired in place.
-            print(
-                f"no built graph at {db_path}; build one with "
-                "scripts/workbook.py",
-                file=sys.stderr,
-            )
-            raise SystemExit(2)
-    if surface is None:
-        print(
-            "SST_DB_PATH is required and must name a built graph; build one "
-            "with scripts/workbook.py",
-            file=sys.stderr,
-        )
-        raise SystemExit(2)
-    server = build_server(surface, transcript_path=os.environ.get("SST_MCP_TRANSCRIPT") or None)
+
+    class LazySurface:
+        """Wait for the agent-owned workbook to materialize its first graph."""
+
+        surface: Surface | None = None
+
+        def get(self) -> Surface | None:
+            if self.surface is not None:
+                return self.surface
+            if not db_path or not Path(db_path).is_file():
+                return None
+            try:
+                self.surface = Surface(
+                    Path(db_path),
+                    handbook=os.environ.get("SST_MCP_HANDBOOK") or None,
+                    store_path=os.environ.get("SST_MCP_STORE_PATH") or None,
+                    enable_history=os.environ.get("SST_MCP_HISTORY", "1").strip().lower() not in ("0", "false", "no"),
+                    enable_proposals=os.environ.get("SST_MCP_PROPOSALS", "").strip().lower() in ("1", "true", "yes"),
+                )
+            except EmptyGraphError:
+                return None
+            except GraphInUseError as exc:
+                print(str(exc), file=sys.stderr)
+                return None
+            return self.surface
+
+    lazy = LazySurface()
+    server = build_server(
+        None, transcript_path=os.environ.get("SST_MCP_TRANSCRIPT") or None,
+        surface_supplier=lazy.get,
+    )
     async with stdio_server() as (read, write):
         await server.run(read, write, server.create_initialization_options())
 
